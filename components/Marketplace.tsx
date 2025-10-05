@@ -132,6 +132,9 @@ export default function Marketplace() {
             Powered by Raydium AMM • {listings.length} listings
           </div>
         </div>
+        <div className="text-xs text-white/60">
+          Verify transactions on <a className="underline" href={`https://solscan.io/?cluster=devnet`} target="_blank" rel="noreferrer">Solscan (devnet)</a>
+        </div>
         
         {/* Filters */}
         <div className="flex space-x-2 mb-4">

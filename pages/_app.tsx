@@ -13,9 +13,12 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false);
 
-  // Configure network (devnet for hackathon)
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  // Configure network (mainnet) with custom RPC if provided
+  const network = WalletAdapterNetwork.Mainnet;
+  const endpoint = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_SOLANA_RPC) return process.env.NEXT_PUBLIC_SOLANA_RPC;
+    return clusterApiUrl(network);
+  }, [network]);
 
   // Configure wallets (Phantom for sponsor integration)
   const wallets = useMemo(

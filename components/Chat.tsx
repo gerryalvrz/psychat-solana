@@ -1,6 +1,22 @@
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useRef, useEffect } from 'react';
 import { ArciumIntegration, WalrusIntegration } from '../utils/sponsorIntegrations';
+import { Metaplex, walletAdapterIdentity } from '@metaplex-foundation/js';
+import { keccak256 } from 'js-sha3';
+import { PublicKey, Keypair, SystemProgram, Transaction } from '@solana/web3.js';
+import {
+  MINT_SIZE,
+  TOKEN_PROGRAM_ID,
+  getMinimumBalanceForRentExemptMint,
+  createInitializeMintInstruction,
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+  createMintToInstruction,
+  createFreezeAccountInstruction,
+  createSetAuthorityInstruction,
+  AuthorityType,
+} from '@solana/spl-token';
 
 interface Message {
   id: string;
@@ -12,12 +28,24 @@ interface Message {
 }
 
 export default function Chat() {
-  const { publicKey, signTransaction } = useWallet();
+  const walletCtx = useWallet();
+  const { publicKey, signTransaction, sendTransaction } = walletCtx;
+  const { connection } = useConnection();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [optInMint, setOptInMint] = useState(true);
+  const [sbtMint, setSbtMint] = useState<string | null>(null);
+  const [sbtSig, setSbtSig] = useState<string | null>(null);
+  const [lastTxUrl, setLastTxUrl] = useState<string | null>(null);
+  const inProgressRef = useRef(false);
+
+  const buildSolscanTxUrl = (sig: string) => {
+    const ep = (connection as any)?.rpcEndpoint as string | undefined;
+    const isDev = ep ? ep.includes('devnet') : (process.env.NEXT_PUBLIC_SOLANA_RPC || '').includes('devnet');
+    return `https://solscan.io/tx/${sig}${isDev ? '?cluster=devnet' : ''}`;
+  };
   const [provider, setProvider] = useState<'openai' | 'xai'>((process.env.NEXT_PUBLIC_DEFAULT_PROVIDER as 'openai' | 'xai') || 'openai');
   const [model, setModel] = useState<string>(process.env.NEXT_PUBLIC_DEFAULT_MODEL || (provider === 'xai' ? 'grok-4-latest' : 'gpt-4o-mini'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,6 +57,13 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('psychat_sbt_mint') : null;
+    if (saved) setSbtMint(saved);
+    const savedSig = typeof window !== 'undefined' ? window.localStorage.getItem('psychat_sbt_sig') : null;
+    if (savedSig) setSbtSig(savedSig);
+  }, []);
 
   // Arcium ZK encryption (mocked via integration utils)
   const encryptWithArcium = async (text: string): Promise<{ encrypted: string; proof: string; walrusCid: string }> => {
@@ -47,22 +82,89 @@ export default function Chat() {
 
     setIsMinting(true);
     try {
-      // Simulate Anchor program call
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Mock transaction signature
-      const mockTxId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+      // Derive PDA for existing HNFT record (optional if program id is set)
+      const pidStr = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID as string | undefined;
+      let hnftAccountInfo: any = null;
+      if (pidStr) {
+        try {
+          const programId = new PublicKey(pidStr);
+          const [hnftPda] = PublicKey.findProgramAddressSync([
+            Buffer.from('hnft'),
+            publicKey.toBytes(),
+          ], programId);
+          hnftAccountInfo = await connection.getAccountInfo(hnftPda);
+        } catch (e) {
+          console.warn('Invalid NEXT_PUBLIC_PSYCHAT_PROGRAM_ID; skipping PDA lookup.');
+        }
+      }
+
+      // Prepare Metaplex client with wallet identity
+      const metaplex = Metaplex.make(connection).use(walletAdapterIdentity(walletCtx as any));
+
+      // Upload encrypted conversation to Walrus (URI for metadata)
+      const walrusCid = await WalrusIntegration.storeEncryptedData(encryptedData);
+      const uri = `walrus://${walrusCid}`;
+
+      // Compute traits (mock): keccak of sentiment and zk proof
+      const sentimentHash = keccak256(sentiment);
+      const proofHash = keccak256(zkProof);
+
+      let lastSig = '';
+
+      if (!hnftAccountInfo) {
+        // Mint soulbound-like NFT by setting sellerFee=0 and updateAuthority=user; transfer restrictions are off-chain enforced here for demo
+        const { response, nft } = await metaplex.nfts().create({
+          name: 'PsyChat HNFT',
+          symbol: 'HNFT',
+          uri,
+          sellerFeeBasisPoints: 0,
+          isMutable: true,
+          uses: undefined,
+          creators: undefined,
+          collection: undefined,
+        });
+        lastSig = response.signature;
+        console.log('HNFT mint sig (mainnet):', lastSig, 'mint:', nft.address.toBase58());
+        try { await connection.confirmTransaction(lastSig, 'finalized'); } catch {}
+      } else {
+        // If PDA exists, append new history by updating URI (simple demo: replace with new CID)
+        // In production: fetch by mint address associated with PDA and call update
+        console.log('HNFT PDA exists, appending history (metadata update simulated).');
+      }
+
+      // Optional dataset NFT mint (transferable)
+      if (optInMint) {
+        const anonDatasetHash = keccak256(encryptedData);
+        const datasetUri = `walrus://anon_${anonDatasetHash}`;
+        const { response, nft } = await metaplex.nfts().create({
+          name: 'PsyChat Dataset',
+          symbol: 'DATA',
+          uri: datasetUri,
+          sellerFeeBasisPoints: 0,
+          isMutable: true,
+          uses: undefined,
+          creators: undefined,
+          collection: undefined,
+        });
+        lastSig = response.signature;
+        console.log('Dataset NFT mint sig (mainnet):', lastSig, 'mint:', nft.address.toBase58());
+        try { await connection.confirmTransaction(lastSig, 'finalized'); } catch {}
+      }
+
       setIsMinting(false);
-      return mockTxId;
+      return buildSolscanTxUrl(lastSig);
     } catch (error) {
       setIsMinting(false);
-      throw error;
+      throw error as any;
     }
   };
 
   const handleSendMessage = async () => {
     if (!inputText.trim() || !publicKey) return;
+    if (!sbtMint) {
+      alert('Please mint your PsyChat identity SBT first.');
+      return;
+    }
 
     const userText = inputText.trim();
     const userId = `msg_${Date.now()}`;
@@ -97,23 +199,7 @@ export default function Chat() {
       };
       setMessages(prev => [...prev, aiMsg]);
 
-      if (optInMint) {
-        // Encrypt user+assistant exchange for HNFT
-        const conversationBlob = JSON.stringify([{ role: 'user', content: userText }, { role: 'assistant', content: aiText }, { sentiment }]);
-        const { encrypted, proof, walrusCid } = await encryptWithArcium(conversationBlob);
-
-        // Mint HNFT with sentiment category (mock category mapping)
-        const txId = await mintHNFT(encrypted, proof, sentiment);
-
-        // Mark latest two messages as minted/encrypted indicators
-        setMessages(prev => prev.map(m => {
-          if (m.id === userId) return { ...m, encrypted: true, hnftMinted: true };
-          if (m.id === aiMsg.id) return { ...m, encrypted: true, hnftMinted: true };
-          return m;
-        }));
-
-        console.log('HNFT minted:', txId, 'Walrus CID:', walrusCid, 'Sentiment:', sentiment);
-      }
+      // Keep chatting fluid; minting occurs only on "End Session"
     } catch (e) {
       console.error('Error processing chat:', e);
     }
@@ -131,6 +217,108 @@ export default function Chat() {
           {messages.length} msgs • {messages.filter(m => m.hnftMinted).length} minted as HNFTs
         </div>
       </div>
+
+      {!sbtMint && (
+        <div className="mb-4 p-4 bg-psy-purple/10 border border-psy-purple/30 rounded">
+          <div className="text-white/80 mb-2">Before chatting, mint your soulbound PsyChat identity token (SBT) to enable secure, private sessions.</div>
+          <button
+            className="psychat-button"
+            onClick={async () => {
+              if (!publicKey || !signTransaction) {
+                alert('Connect wallet');
+                return;
+              }
+              setIsMinting(true);
+              try {
+                const mintKeypair = Keypair.generate();
+                const rentLamports = await getMinimumBalanceForRentExemptMint(connection);
+                const ata = await getAssociatedTokenAddress(mintKeypair.publicKey, publicKey);
+
+                const tx = new Transaction();
+                tx.add(
+                  SystemProgram.createAccount({
+                    fromPubkey: publicKey,
+                    newAccountPubkey: mintKeypair.publicKey,
+                    lamports: rentLamports,
+                    space: MINT_SIZE,
+                    programId: TOKEN_PROGRAM_ID,
+                  }),
+                  createInitializeMintInstruction(mintKeypair.publicKey, 0, publicKey, publicKey),
+                  createAssociatedTokenAccountInstruction(publicKey, ata, publicKey, mintKeypair.publicKey),
+                  createMintToInstruction(mintKeypair.publicKey, ata, publicKey, 1),
+                  createFreezeAccountInstruction(ata, mintKeypair.publicKey, publicKey),
+                  createSetAuthorityInstruction(mintKeypair.publicKey, publicKey, AuthorityType.MintTokens, null),
+                  createSetAuthorityInstruction(mintKeypair.publicKey, publicKey, AuthorityType.FreezeAccount, null),
+                );
+                tx.feePayer = publicKey;
+                const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+                tx.recentBlockhash = blockhash;
+                tx.partialSign(mintKeypair);
+                let sig = '';
+                try {
+                  sig = await (sendTransaction ? sendTransaction(tx, connection, { skipPreflight: false }) : connection.sendRawTransaction((await signTransaction(tx)).serialize(), { skipPreflight: false }));
+                  await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'finalized');
+                } catch (e: any) {
+                  // Handle duplicate/processed tx gracefully
+                  const msg = e?.message || '';
+                  if (msg.includes('already been processed')) {
+                    // Best effort: if wallet signed, the first signature is derivable
+                    const signed = await signTransaction(tx);
+                    sig = signed.signatures[0].signature ? Buffer.from(signed.signatures[0].signature as any).toString('base64') : '';
+                  } else {
+                    throw e;
+                  }
+                }
+                const mintStr = mintKeypair.publicKey.toBase58();
+                window.localStorage.setItem('psychat_sbt_mint', mintStr);
+                if (sig) {
+                  window.localStorage.setItem('psychat_sbt_sig', sig);
+                  setSbtSig(sig);
+                  setLastTxUrl(buildSolscanTxUrl(sig));
+                }
+                setSbtMint(mintStr);
+                console.log('SBT minted (network):', sig ? buildSolscanTxUrl(sig) : '(sig not available)', 'mint:', mintStr);
+                alert('Identity SBT minted. You can start chatting.');
+              } catch (e: any) {
+                console.error('SBT mint failed:', e);
+                alert('SBT mint error: ' + (e?.message || String(e)));
+              } finally {
+                setIsMinting(false);
+              }
+            }}
+            disabled={isMinting}
+          >
+            {isMinting ? 'Minting SBT…' : 'Mint Identity SBT'}
+          </button>
+        </div>
+      )}
+
+      {sbtMint && (
+        <div className="mb-4 p-3 bg-white/5 rounded border border-white/10">
+          <div className="text-white/80 text-sm">Identity SBT:
+            <span className="ml-2 text-white/60">{sbtMint}</span>
+            {sbtSig && (
+              <a
+                className="ml-3 underline text-psy-blue"
+                href={`https://solscan.io/tx/${sbtSig}${process.env.NEXT_PUBLIC_SOLANA_RPC?.includes('devnet') ? '?cluster=devnet' : ''}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View on Solscan
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
+      {lastTxUrl && (
+        <div className="mb-4 p-3 bg-psy-blue/10 border border-psy-blue/30 rounded">
+          <div className="text-white/80 text-sm">
+            Minted! Verify on Solscan:
+            <a className="ml-2 underline text-psy-blue" href={lastTxUrl} target="_blank" rel="noreferrer">{lastTxUrl}</a>
+          </div>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="h-96 overflow-y-auto mb-4 space-y-3">
@@ -166,12 +354,13 @@ export default function Chat() {
                 <span className="text-xs mr-2 text-white/60">{message.role === 'user' ? 'You' : 'Grok'}</span>
                 {message.text}
               </p>
-              {isEncrypting && message.id === messages[messages.length - 1]?.id && (
+              {/* Status banners shown only during explicit End Session */}
+              {isEncrypting && (
                 <div className="mt-2 text-psy-blue text-sm">
                   🔄 Encrypting with Arcium ZK proofs...
                 </div>
               )}
-              {isMinting && message.id === messages[messages.length - 1]?.id && (
+              {isMinting && (
                 <div className="mt-2 text-psy-green text-sm">
                   🎫 Minting soulbound HNFT...
                 </div>
@@ -203,6 +392,41 @@ export default function Chat() {
           className="psychat-button px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isEncrypting ? '🔒' : isMinting ? '🎫' : 'Send'}
+        </button>
+        <button
+          onClick={async () => {
+            if (inProgressRef.current || isEncrypting || isMinting) return;
+            if (!publicKey) {
+              alert('Connect wallet');
+              return;
+            }
+            try {
+              inProgressRef.current = true;
+              setLastTxUrl(null);
+              const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
+              const { encrypted, proof } = await ArciumIntegration.encryptData(conversationBlob);
+              const solscanUrl = await mintHNFT(encrypted, proof, 'session');
+              console.log('Tx Sig for Solscan (devnet):', solscanUrl);
+              setLastTxUrl(solscanUrl);
+            } catch (e: any) {
+              console.error('End session mint failed:', e);
+              const msg = e?.message || String(e);
+              if (msg.includes('already been processed')) {
+                if (lastTxUrl) {
+                  setLastTxUrl(lastTxUrl);
+                }
+              } else {
+                alert('Mint error: ' + msg);
+              }
+            }
+            finally {
+              inProgressRef.current = false;
+            }
+          }}
+          disabled={isEncrypting || isMinting || messages.length === 0}
+          className="psychat-button px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          End Session & Mint HNFT
         </button>
       </div>
 

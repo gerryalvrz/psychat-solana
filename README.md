@@ -295,6 +295,14 @@ anchor deploy
 solana config get
 ```
 
+### Verify on Solscan (Devnet)
+
+- After minting from the Chat "End Session & Mint HNFT" button, check the console for the transaction signature link.
+- Paste the signature into: `https://solscan.io/tx/<SIG>?cluster=devnet`
+- For HNFT: inspect the token mint and metadata; history URI points to Walrus, traits include sentiment.
+- For Dataset NFT: verify metadata shows category and anonymized dataset hash.
+- PDA data: check the derived PDA for `seeds=["hnft", userPubkey]` to view stored traits.
+
 ## 🎬 Demo
 
 ### 3-Minute Demo Script

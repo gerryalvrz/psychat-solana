@@ -31,8 +31,17 @@ export class ArciumIntegration {
     // Mock Arcium ZK encryption
     // In production, this would use the Arcium SDK for zero-knowledge proofs
     try {
-      // Simulate ZK encryption process
-      const encrypted = btoa(data); // Base64 encoding as mock
+      // Simulate ZK encryption process with UTF-8 safe base64
+      const encrypted = ((): string => {
+        if (typeof window === 'undefined') {
+          // Node/server side
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          return Buffer.from(data, 'utf-8').toString('base64');
+        }
+        // Browser side
+        return btoa(unescape(encodeURIComponent(data)));
+      })();
       const proof = `zk_proof_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       return { encrypted, proof };
