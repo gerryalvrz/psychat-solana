@@ -1,5 +1,8 @@
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
+import { getAnchorProgram } from '../lib/anchor';
+import { keccak256 } from 'js-sha3';
 
 interface DataListing {
   id: string;
@@ -22,7 +25,8 @@ interface Bid {
 }
 
 export default function Marketplace() {
-  const { publicKey } = useWallet();
+  const { publicKey, wallet } = useWallet() as any;
+  const { connection } = useConnection();
   const [listings, setListings] = useState<DataListing[]>([]);
   const [selectedListing, setSelectedListing] = useState<DataListing | null>(null);
   const [bidAmount, setBidAmount] = useState('');
@@ -97,6 +101,28 @@ export default function Marketplace() {
       console.error('Bidding failed:', error);
     } finally {
       setIsBidding(false);
+    }
+  };
+
+  const handleClaim = async (category: string) => {
+    if (!publicKey) return;
+    const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+    if (!pid) {
+      alert('Program not configured');
+      return;
+    }
+    try {
+      const program = getAnchorProgram(connection, wallet, pid);
+      const proof = keccak256(category + '_valid');
+      const sig = await (program as any).methods
+        .claimUbi(proof, category)
+        .accounts({ user: publicKey })
+        .rpc();
+      console.log('Claim $rUSD sig:', sig);
+      alert('Claimed $rUSD! Verify on Solscan.');
+    } catch (e: any) {
+      console.error('Claim failed', e);
+      alert('Claim failed: ' + (e?.message || String(e)));
     }
   };
 
@@ -200,9 +226,14 @@ export default function Marketplace() {
               </div>
             </div>
 
-            <button className="w-full psychat-button mt-4">
-              View Details
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              <button className="w-full psychat-button" onClick={() => setSelectedListing(listing)}>
+                View Details
+              </button>
+              <button className="w-full psychat-button bg-psy-green" onClick={() => handleClaim(listing.category)}>
+                Claim $rUSD
+              </button>
+            </div>
           </div>
         ))}
       </div>

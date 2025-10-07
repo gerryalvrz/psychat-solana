@@ -170,6 +170,40 @@ pub mod psychat {
         // In production, this would integrate with Arcium SDK
         proof.len() > 0 && data.len() > 0
     }
+
+    /// Append Walrus URI and trait to existing HNFT record (mock confidential)
+    pub fn append_history(
+        ctx: Context<AppendHistory>,
+        uri: String,
+        trait_id: String,
+        trait_data: String,
+    ) -> Result<()> {
+        let hnft = &mut ctx.accounts.hnft;
+        require!(hnft.owner == ctx.accounts.user.key(), ErrorCode::Unauthorized);
+        // Overwrite encrypted_data with URI pointer for demo; real impl would have separate field
+        hnft.encrypted_data = uri;
+        hnft.zk_proof = trait_id;
+        hnft.category = 0; // not used here, keep shape compatible
+        emit!(HNFTMinted {
+            owner: ctx.accounts.user.key(),
+            hnft: hnft.key(),
+            category: hnft.category,
+            timestamp: Clock::get()?.unix_timestamp,
+        });
+        Ok(())
+    }
+
+    /// Claim UBI in $rUSD via Reflect (mocked)
+    pub fn claim_ubi(ctx: Context<ClaimUbi>, _zkp_proof: String, _category: String) -> Result<()> {
+        // Here we would CPI into Reflect to mint/transfer rUSD and take DAO fee
+        // For demo, just succeed
+        Ok(())
+    }
+
+    /// Stake UBI yields via Raydium (mocked)
+    pub fn stake_ubi(_ctx: Context<StakeUbi>) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -250,6 +284,26 @@ pub struct AutoCompound<'info> {
     pub compound: Account<'info, AutoCompoundRecord>,
     
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct AppendHistory<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(mut, seeds = [b"hnft", user.key().as_ref()], bump)]
+    pub hnft: Account<'info, HNFT>,
+}
+
+#[derive(Accounts)]
+pub struct ClaimUbi<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct StakeUbi<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
 }
 
 #[account]

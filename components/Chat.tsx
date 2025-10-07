@@ -2,6 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useRef, useEffect } from 'react';
 import { ArciumIntegration, WalrusIntegration } from '../utils/sponsorIntegrations';
+import { getAnchorProgram } from '../lib/anchor';
 import { Metaplex, walletAdapterIdentity } from '@metaplex-foundation/js';
 import { keccak256 } from 'js-sha3';
 import { PublicKey, Keypair, SystemProgram, Transaction } from '@solana/web3.js';
@@ -405,6 +406,30 @@ export default function Chat() {
               setLastTxUrl(null);
               const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
               const { encrypted, proof } = await ArciumIntegration.encryptData(conversationBlob);
+
+              // Prefer on-chain append via Anchor if program is configured
+              try {
+                const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+                if (pid) {
+                  const program = getAnchorProgram(connection, walletCtx as any, pid);
+                  const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
+                  const [hnftPda] = PublicKey.findProgramAddressSync([
+                    Buffer.from('hnft'),
+                    publicKey.toBytes(),
+                  ], new PublicKey(pid));
+                  const sig = await (program as any).methods
+                    .appendHistory(`walrus://${walrusCid}`, keccak256('session'), 'session')
+                    .accounts({ hnft: hnftPda, user: publicKey })
+                    .rpc();
+                  const url = buildSolscanTxUrl(sig);
+                  console.log('append_history sig:', sig);
+                  setLastTxUrl(url);
+                  return;
+                }
+              } catch (e) {
+                console.warn('Anchor append_history not available, falling back to client NFT flow:', e);
+              }
+
               const solscanUrl = await mintHNFT(encrypted, proof, 'session');
               console.log('Tx Sig for Solscan (devnet):', solscanUrl);
               setLastTxUrl(solscanUrl);
