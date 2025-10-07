@@ -13,8 +13,9 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false);
 
-  // Configure network (mainnet) with custom RPC if provided
-  const network = WalletAdapterNetwork.Mainnet;
+  // Configure network with safe default to devnet on Vercel unless overridden
+  const envNetwork = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as 'devnet' | 'mainnet' | 'testnet' | undefined) || 'devnet';
+  const network = envNetwork === 'mainnet' ? WalletAdapterNetwork.Mainnet : envNetwork === 'testnet' ? WalletAdapterNetwork.Testnet : WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => {
     if (process.env.NEXT_PUBLIC_SOLANA_RPC) return process.env.NEXT_PUBLIC_SOLANA_RPC;
     return clusterApiUrl(network);
