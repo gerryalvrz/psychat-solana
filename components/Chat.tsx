@@ -413,12 +413,10 @@ export default function Chat() {
                 if (pid) {
                   const program = getAnchorProgram(connection, walletCtx as any, pid);
                   const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
-                  const [hnftPda] = PublicKey.findProgramAddressSync([
-                    Buffer.from('hnft'),
-                    publicKey.toBytes(),
-                  ], new PublicKey(pid));
+                  const hnftSeeds = [Buffer.from('hnft'), publicKey.toBytes()];
+                  const [hnftPda] = PublicKey.findProgramAddressSync(hnftSeeds, new PublicKey(pid));
                   const sig = await (program as any).methods
-                    .appendHistory(`walrus://${walrusCid}`, keccak256('session'), 'session')
+                    .appendHistory(`walrus://${walrusCid}`, keccak256('psychiatry'), 'psychiatry')
                     .accounts({ hnft: hnftPda, user: publicKey })
                     .rpc();
                   const url = buildSolscanTxUrl(sig);

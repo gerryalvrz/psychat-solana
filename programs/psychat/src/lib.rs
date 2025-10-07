@@ -204,6 +204,21 @@ pub mod psychat {
     pub fn stake_ubi(_ctx: Context<StakeUbi>) -> Result<()> {
         Ok(())
     }
+
+    /// Mint a dataset NFT linked to the user's HNFT; stores dataset URI and category
+    pub fn mint_dataset_nft(
+        ctx: Context<MintDatasetNft>,
+        dataset_uri: String,
+        category: String,
+    ) -> Result<()> {
+        let dataset = &mut ctx.accounts.dataset;
+        dataset.owner = ctx.accounts.user.key();
+        dataset.hnft = ctx.accounts.hnft.key();
+        dataset.dataset_uri = dataset_uri;
+        dataset.category = category;
+        dataset.created_at = Clock::get()?.unix_timestamp;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -306,6 +321,23 @@ pub struct StakeUbi<'info> {
     pub user: Signer<'info>,
 }
 
+#[derive(Accounts)]
+pub struct MintDatasetNft<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(mut, seeds = [b"hnft", user.key().as_ref()], bump)]
+    pub hnft: Account<'info, HNFT>,
+    #[account(
+        init,
+        payer = user,
+        space = 8 + 32 + 32 + 256 + 64 + 8,
+        seeds = [b"dataset", hnft.key().as_ref()],
+        bump
+    )]
+    pub dataset: Account<'info, Dataset>,
+    pub system_program: Program<'info, System>,
+}
+
 #[account]
 pub struct HNFT {
     pub owner: Pubkey,
@@ -345,6 +377,15 @@ pub struct AutoCompoundRecord {
     pub amount: u64,
     pub yield_pool: Pubkey,
     pub timestamp: i64,
+}
+
+#[account]
+pub struct Dataset {
+    pub owner: Pubkey,
+    pub hnft: Pubkey,
+    pub dataset_uri: String,
+    pub category: String,
+    pub created_at: i64,
 }
 
 #[event]

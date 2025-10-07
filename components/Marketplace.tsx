@@ -3,6 +3,8 @@ import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import { getAnchorProgram } from '../lib/anchor';
 import { keccak256 } from 'js-sha3';
+import { WalrusIntegration } from '../utils/sponsorIntegrations';
+import { PublicKey } from '@solana/web3.js';
 
 interface DataListing {
   id: string;
@@ -126,6 +128,34 @@ export default function Marketplace() {
     }
   };
 
+  const handleMintDataset = async (category: string) => {
+    if (!publicKey) return;
+    const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+    if (!pid) {
+      alert('Program not configured');
+      return;
+    }
+    try {
+      // Link to user's latest HNFT history (Walrus) by creating a derived dataset state
+      const program = getAnchorProgram(connection, wallet, pid);
+      const [hnftPda] = PublicKey.findProgramAddressSync([
+        Buffer.from('hnft'),
+        publicKey.toBytes(),
+      ], new PublicKey(pid));
+      // For demo, dataset URI points to same Walrus CID space
+      const demoCid = await WalrusIntegration.storeEncryptedData(`dataset:${category}:${Date.now()}`);
+      const sig = await (program as any).methods
+        .mintDatasetNft(`walrus://${demoCid}`, category)
+        .accounts({ user: publicKey, hnft: hnftPda })
+        .rpc();
+      console.log('Mint dataset NFT sig:', sig);
+      alert('Dataset NFT minted and linked!');
+    } catch (e: any) {
+      console.error('Mint dataset failed', e);
+      alert('Mint dataset failed: ' + (e?.message || String(e)));
+    }
+  };
+
   const formatTimeRemaining = (endTime: Date) => {
     const now = new Date();
     const diff = endTime.getTime() - now.getTime();
@@ -232,6 +262,9 @@ export default function Marketplace() {
               </button>
               <button className="w-full psychat-button bg-psy-green" onClick={() => handleClaim(listing.category)}>
                 Claim $rUSD
+              </button>
+              <button className="w-full psychat-button bg-psy-blue" onClick={() => handleMintDataset(listing.category)}>
+                Mint Dataset NFT
               </button>
             </div>
           </div>
