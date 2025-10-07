@@ -1,5 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
+import { getAnchorProgram } from '../lib/anchor';
+import { keccak256 } from 'js-sha3';
+import { WalrusIntegration } from '../utils/sponsorIntegrations';
+import { PublicKey } from '@solana/web3.js';
 
 interface DataListing {
   id: string;
@@ -22,7 +27,8 @@ interface Bid {
 }
 
 export default function Marketplace() {
-  const { publicKey } = useWallet();
+  const { publicKey, wallet } = useWallet() as any;
+  const { connection } = useConnection();
   const [listings, setListings] = useState<DataListing[]>([]);
   const [selectedListing, setSelectedListing] = useState<DataListing | null>(null);
   const [bidAmount, setBidAmount] = useState('');
@@ -97,6 +103,56 @@ export default function Marketplace() {
       console.error('Bidding failed:', error);
     } finally {
       setIsBidding(false);
+    }
+  };
+
+  const handleClaim = async (category: string) => {
+    if (!publicKey) return;
+    const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+    if (!pid) {
+      alert('Program not configured');
+      return;
+    }
+    try {
+      const program = getAnchorProgram(connection, wallet, pid);
+      const proof = keccak256(category + '_valid');
+      const sig = await (program as any).methods
+        .claimUbi(proof, category)
+        .accounts({ user: publicKey })
+        .rpc();
+      console.log('Claim $rUSD sig:', sig);
+      alert('Claimed $rUSD! Verify on Solscan.');
+    } catch (e: any) {
+      console.error('Claim failed', e);
+      alert('Claim failed: ' + (e?.message || String(e)));
+    }
+  };
+
+  const handleMintDataset = async (category: string) => {
+    if (!publicKey) return;
+    const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+    if (!pid) {
+      alert('Program not configured');
+      return;
+    }
+    try {
+      // Link to user's latest HNFT history (Walrus) by creating a derived dataset state
+      const program = getAnchorProgram(connection, wallet, pid);
+      const [hnftPda] = PublicKey.findProgramAddressSync([
+        Buffer.from('hnft'),
+        publicKey.toBytes(),
+      ], new PublicKey(pid));
+      // For demo, dataset URI points to same Walrus CID space
+      const demoCid = await WalrusIntegration.storeEncryptedData(`dataset:${category}:${Date.now()}`);
+      const sig = await (program as any).methods
+        .mintDatasetNft(`walrus://${demoCid}`, category)
+        .accounts({ user: publicKey, hnft: hnftPda })
+        .rpc();
+      console.log('Mint dataset NFT sig:', sig);
+      alert('Dataset NFT minted and linked!');
+    } catch (e: any) {
+      console.error('Mint dataset failed', e);
+      alert('Mint dataset failed: ' + (e?.message || String(e)));
     }
   };
 
@@ -200,9 +256,17 @@ export default function Marketplace() {
               </div>
             </div>
 
-            <button className="w-full psychat-button mt-4">
-              View Details
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              <button className="w-full psychat-button" onClick={() => setSelectedListing(listing)}>
+                View Details
+              </button>
+              <button className="w-full psychat-button bg-psy-green" onClick={() => handleClaim(listing.category)}>
+                Claim $rUSD
+              </button>
+              <button className="w-full psychat-button bg-psy-blue" onClick={() => handleMintDataset(listing.category)}>
+                Mint Dataset NFT
+              </button>
+            </div>
           </div>
         ))}
       </div>

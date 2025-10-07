@@ -1,4 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
@@ -37,7 +38,8 @@ interface HNFTStats {
 }
 
 export default function Dashboard() {
-  const { publicKey } = useWallet();
+  const { publicKey, wallet } = useWallet() as any;
+  const { connection } = useConnection();
   const [earnings, setEarnings] = useState<Earnings>({
     totalEarned: 12.5,
     currency: 'SOL',
@@ -100,8 +102,24 @@ export default function Dashboard() {
 
     setIsStaking(true);
     try {
-      // Mock Reflect $rUSD staking integration
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Try on-chain stake via Anchor if configured; fallback to mock
+      const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+      if (pid && publicKey) {
+        try {
+          const { getAnchorProgram } = await import('../lib/anchor');
+          const program = getAnchorProgram(connection, wallet, pid);
+          const sig = await (program as any).methods
+            .stakeUbi()
+            .accounts({ user: publicKey })
+            .rpc();
+          console.log('Stake UBI sig:', sig);
+        } catch (e) {
+          console.warn('Anchor stakeUbi unavailable, using mock:', e);
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
       
       const amount = parseFloat(stakeAmount);
       setEarnings(prev => ({
