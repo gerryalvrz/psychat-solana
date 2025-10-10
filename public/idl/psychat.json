@@ -1,0 +1,314 @@
+{
+  "version": "0.1.0",
+  "name": "psychat",
+  "instructions": [
+    {
+      "name": "mintHnft",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "hnft",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "hnft"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "user",
+                "path": "key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "encryptedData",
+          "type": "string"
+        },
+        {
+          "name": "zkProof",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "mintDatasetNft",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "hnft",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "hnft"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "user",
+                "path": "key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dataset",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "dataset"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "hnft",
+                "path": "key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "datasetUri",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "claimUbi",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "zkpProof",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "stakeUbi",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Hnft",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "encryptedData",
+            "type": "string"
+          },
+          {
+            "name": "zkProof",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "u8"
+          },
+          {
+            "name": "mintTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "isListed",
+            "type": "bool"
+          },
+          {
+            "name": "isSoulbound",
+            "type": "bool"
+          },
+          {
+            "name": "listingPrice",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dataset",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "hnft",
+            "type": "publicKey"
+          },
+          {
+            "name": "datasetUri",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "isTradeable",
+            "type": "bool"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "HnftMinted",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "hnft",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "category",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "DatasetNftMinted",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "dataset",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "hnft",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidZkProof",
+      "msg": "Invalid ZK proof"
+    },
+    {
+      "code": 6001,
+      "name": "Unauthorized",
+      "msg": "Unauthorized access"
+    },
+    {
+      "code": 6002,
+      "name": "AlreadyListed",
+      "msg": "HNFT already listed"
+    },
+    {
+      "code": 6003,
+      "name": "ListingInactive",
+      "msg": "Listing is inactive"
+    },
+    {
+      "code": 6004,
+      "name": "BidTooLow",
+      "msg": "Bid amount too low"
+    },
+    {
+      "code": 6005,
+      "name": "HnftAlreadyExists",
+      "msg": "HNFT already exists for this user"
+    }
+  ]
+}

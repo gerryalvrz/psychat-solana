@@ -14,9 +14,14 @@ interface DataListing {
   price: number;
   currency: 'SOL' | 'rUSD';
   seller: string;
+  buyer: string;
+  buyerType: 'AI Training' | 'Academic Research' | 'Consumer Patterns' | 'Corporate Wellness';
+  purpose: string;
   bids: number;
   endTime: Date;
   liquidity: number;
+  verified: boolean;
+  ethicsApproved: boolean;
 }
 
 interface Bid {
@@ -35,7 +40,7 @@ export default function Marketplace() {
   const [isBidding, setIsBidding] = useState(false);
   const [filter, setFilter] = useState<'all' | 'anxiety' | 'depression' | 'stress' | 'relationships'>('all');
 
-  // Mock data for demo
+  // Mock data for demo with buyer transparency
   useEffect(() => {
     const mockListings: DataListing[] = [
       {
@@ -43,36 +48,68 @@ export default function Marketplace() {
         title: 'Anxiety Trends Q3 2024',
         description: 'Aggregated insights from 1,200+ therapy sessions focusing on anxiety patterns, triggers, and coping mechanisms.',
         category: 'anxiety',
-        price: 2.5,
+        price: 3.5,
         currency: 'SOL',
-        seller: 'MotusDAO Research',
+        seller: 'PsyChat Community',
+        buyer: 'OpenAI Research',
+        buyerType: 'AI Training',
+        purpose: 'Training GPT-5 on mental health empathy and therapeutic responses',
         bids: 12,
         endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         liquidity: 15000,
+        verified: true,
+        ethicsApproved: true,
       },
       {
         id: '2',
         title: 'Depression Recovery Patterns',
         description: 'Anonymized data from 800+ users showing recovery trajectories and effective intervention points.',
         category: 'depression',
-        price: 1.8,
+        price: 2.1,
         currency: 'rUSD',
         seller: 'PsyChat Community',
+        buyer: 'Stanford Psychology Lab',
+        buyerType: 'Academic Research',
+        purpose: 'Anxiety patterns in remote workers study for peer-reviewed research',
         bids: 8,
         endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
         liquidity: 8500,
+        verified: true,
+        ethicsApproved: true,
       },
       {
         id: '3',
         title: 'Workplace Stress Analytics',
         description: 'Professional stress patterns and productivity correlations from remote work data.',
         category: 'stress',
-        price: 3.2,
+        price: 1.8,
         currency: 'SOL',
-        seller: 'Corporate Wellness',
+        seller: 'PsyChat Community',
+        buyer: 'Headspace Inc.',
+        buyerType: 'Consumer Patterns',
+        purpose: 'Meditation app feature optimization and user experience enhancement',
         bids: 15,
         endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         liquidity: 22000,
+        verified: true,
+        ethicsApproved: true,
+      },
+      {
+        id: '4',
+        title: 'Relationship Therapy Insights',
+        description: 'Communication patterns and conflict resolution strategies from couples therapy sessions.',
+        category: 'relationships',
+        price: 2.8,
+        currency: 'rUSD',
+        seller: 'PsyChat Community',
+        buyer: 'BetterHelp',
+        buyerType: 'Corporate Wellness',
+        purpose: 'Improving therapist matching algorithms and session quality',
+        bids: 6,
+        endTime: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        liquidity: 12000,
+        verified: true,
+        ethicsApproved: true,
       },
     ];
     setListings(mockListings);
@@ -178,6 +215,16 @@ export default function Marketplace() {
     return colors[category as keyof typeof colors] || colors.general;
   };
 
+  const getBuyerTypeColor = (buyerType: string) => {
+    const colors = {
+      'AI Training': 'bg-purple-500/20 text-purple-300',
+      'Academic Research': 'bg-blue-500/20 text-blue-300',
+      'Consumer Patterns': 'bg-green-500/20 text-green-300',
+      'Corporate Wellness': 'bg-orange-500/20 text-orange-300',
+    };
+    return colors[buyerType as keyof typeof colors] || colors['AI Training'];
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -223,9 +270,14 @@ export default function Marketplace() {
             onClick={() => setSelectedListing(listing)}
           >
             <div className="flex justify-between items-start mb-3">
-              <span className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(listing.category)}`}>
-                {listing.category}
-              </span>
+              <div className="flex space-x-2">
+                <span className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(listing.category)}`}>
+                  {listing.category}
+                </span>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${getBuyerTypeColor(listing.buyerType)}`}>
+                  {listing.buyerType}
+                </span>
+              </div>
               <span className="text-xs text-white/60">
                 {formatTimeRemaining(listing.endTime)}
               </span>
@@ -234,6 +286,15 @@ export default function Marketplace() {
             <h3 className="text-lg font-semibold text-white mb-2">
               {listing.title}
             </h3>
+
+            <div className="mb-3">
+              <div className="text-sm text-psy-blue font-medium mb-1">
+                👤 {listing.buyer}
+              </div>
+              <div className="text-xs text-white/70">
+                Purpose: {listing.purpose}
+              </div>
+            </div>
 
             <p className="text-white/70 text-sm mb-4 line-clamp-2">
               {listing.description}
@@ -253,6 +314,18 @@ export default function Marketplace() {
               <div className="flex justify-between text-sm">
                 <span className="text-white/60">Liquidity:</span>
                 <span className="text-psy-blue">${listing.liquidity.toLocaleString()}</span>
+              </div>
+              <div className="flex space-x-2 mt-2">
+                {listing.verified && (
+                  <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">
+                    ✓ Verified Buyer
+                  </span>
+                )}
+                {listing.ethicsApproved && (
+                  <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                    ✓ Ethics Approved
+                  </span>
+                )}
               </div>
             </div>
 
@@ -353,6 +426,43 @@ export default function Marketplace() {
           </div>
         </div>
       )}
+
+      {/* Data Buyer Directory */}
+      <div className="psychat-card p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Data Buyer Directory</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-psy-blue mb-1">12</div>
+            <div className="text-sm text-white/60">AI Companies</div>
+            <div className="text-xs text-white/50">OpenAI, Anthropic, Google</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-psy-green mb-1">8</div>
+            <div className="text-sm text-white/60">Research Labs</div>
+            <div className="text-xs text-white/50">Stanford, MIT, Harvard</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-psy-purple mb-1">5</div>
+            <div className="text-sm text-white/60">Wellness Apps</div>
+            <div className="text-xs text-white/50">Headspace, Calm, BetterHelp</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-psy-orange mb-1">3</div>
+            <div className="text-sm text-white/60">Corporate</div>
+            <div className="text-xs text-white/50">Fortune 500 Companies</div>
+          </div>
+        </div>
+        
+        <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
+          <div className="text-sm text-white/80 mb-2">
+            <strong>Full Transparency:</strong> See exactly who's buying your data and why. 
+            All buyers are verified and ethics-approved.
+          </div>
+          <div className="text-xs text-white/60">
+            Revenue Split: 70% to you, 30% to platform • All transactions on-chain
+          </div>
+        </div>
+      </div>
 
       {/* Info Panel */}
       <div className="psychat-card p-6">

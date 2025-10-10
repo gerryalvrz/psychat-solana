@@ -9,7 +9,7 @@ export function getAnchorProgram(connection: Connection, wallet: any, programIdS
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const anchor = require('@coral-xyz/anchor');
     const provider = new anchor.AnchorProvider(connection, wallet, { preflightCommitment: 'confirmed' });
-    const idlPath = (process.env.NEXT_PUBLIC_PSYCHAT_IDL_PATH as string) || '/target/idl/psychat.json';
+    const idlPath = (process.env.NEXT_PUBLIC_PSYCHAT_IDL_PATH as string) || '/idl/psychat.json';
     return {
       methods: new Proxy(
         {},

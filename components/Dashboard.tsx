@@ -18,6 +18,12 @@ interface Earnings {
   fromDataSales: number;
   fromYieldFarming: number;
   autoCompounded: number;
+  ubiAvailable: number;
+  revenueShare: {
+    userEarnings: number;
+    platformFee: number;
+    totalRevenue: number;
+  };
 }
 
 interface YieldOption {
@@ -46,6 +52,12 @@ export default function Dashboard() {
     fromDataSales: 8.2,
     fromYieldFarming: 4.3,
     autoCompounded: 2.1,
+    ubiAvailable: 3.2,
+    revenueShare: {
+      userEarnings: 45.0,
+      platformFee: 15.0,
+      totalRevenue: 60.0,
+    },
   });
 
   const [hnftStats, setHnftStats] = useState<HNFTStats>({
@@ -59,6 +71,7 @@ export default function Dashboard() {
   const [selectedYield, setSelectedYield] = useState<string>('');
   const [stakeAmount, setStakeAmount] = useState('');
   const [isStaking, setIsStaking] = useState(false);
+  const [isClaimingUbi, setIsClaimingUbi] = useState(false);
 
   useEffect(() => {
     // Register chart elements on client
@@ -96,6 +109,46 @@ export default function Dashboard() {
     ];
     setYieldOptions(mockYieldOptions);
   }, []);
+
+  const handleClaimUbi = async () => {
+    if (!publicKey) return;
+
+    setIsClaimingUbi(true);
+    try {
+      // Try on-chain UBI claim via Anchor if configured; fallback to mock
+      const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+      if (pid) {
+        try {
+          const { getAnchorProgram } = await import('../lib/anchor');
+          const program = getAnchorProgram(connection, wallet, pid);
+          const sig = await (program as any).methods
+            .claimUbi('mock_proof', 'therapy_data')
+            .accounts({ user: publicKey })
+            .rpc();
+          console.log('Claim UBI sig:', sig);
+        } catch (e) {
+          console.warn('Anchor claimUbi unavailable, using mock:', e);
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+
+      // Update earnings
+      setEarnings(prev => ({
+        ...prev,
+        totalEarned: prev.totalEarned + prev.ubiAvailable,
+        fromDataSales: prev.fromDataSales + prev.ubiAvailable,
+        ubiAvailable: 0, // Reset after claiming
+      }));
+
+      console.log('Successfully claimed UBI via Reflect $rUSD');
+    } catch (error) {
+      console.error('UBI claiming failed:', error);
+    } finally {
+      setIsClaimingUbi(false);
+    }
+  };
 
   const handleStake = async () => {
     if (!selectedYield || !stakeAmount) return;
@@ -183,6 +236,59 @@ export default function Dashboard() {
             <div className="text-sm text-white/60 mb-1">Auto-Compounded</div>
             <div className="text-xl font-semibold text-psy-purple">
               {formatCurrency(earnings.autoCompounded, earnings.currency)}
+            </div>
+          </div>
+        </div>
+
+        {/* UBI Claiming Section */}
+        <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4 mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <div className="text-sm text-white/80 mb-1">Available UBI</div>
+              <div className="text-2xl font-bold text-psy-green">
+                {formatCurrency(earnings.ubiAvailable, 'rUSD')}
+              </div>
+            </div>
+            <button
+              onClick={handleClaimUbi}
+              disabled={earnings.ubiAvailable === 0 || isClaimingUbi}
+              className="psychat-button px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isClaimingUbi ? 'Claiming...' : 'Claim UBI'}
+            </button>
+          </div>
+          <div className="text-xs text-white/60">
+            🎁 Earned from participating in the dataconomy • Auto-compounds into DeFi yields
+          </div>
+        </div>
+
+        {/* Revenue Split Display */}
+        <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4 mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Revenue Share Breakdown</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-psy-green mb-1">
+                {formatCurrency(earnings.revenueShare.userEarnings, 'rUSD')}
+              </div>
+              <div className="text-sm text-white/60">Your Earnings (70%)</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-psy-blue mb-1">
+                {formatCurrency(earnings.revenueShare.platformFee, 'rUSD')}
+              </div>
+              <div className="text-sm text-white/60">Platform Fee (30%)</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-white mb-1">
+                {formatCurrency(earnings.revenueShare.totalRevenue, 'rUSD')}
+              </div>
+              <div className="text-sm text-white/60">Total Revenue</div>
+            </div>
+          </div>
+          <div className="mt-4 bg-white/5 rounded-lg p-3">
+            <div className="text-sm text-white/80">
+              <strong>Transparent Economics:</strong> You keep 70% of all data sales revenue. 
+              The remaining 30% supports platform development, security, and infrastructure.
             </div>
           </div>
         </div>

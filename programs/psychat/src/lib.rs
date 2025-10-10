@@ -9,6 +9,7 @@ pub mod psychat {
 
     /// Mint a soulbound HNFT (Health NFT) for encrypted therapy data
     /// Integrates with Arcium ZK proofs for privacy-preserving encryption
+    /// Only ONE HNFT per user allowed (soulbound identity)
     pub fn mint_hnft(
         ctx: Context<MintHNFT>,
         encrypted_data: String,
@@ -18,20 +19,20 @@ pub mod psychat {
         let hnft = &mut ctx.accounts.hnft;
         let user = &ctx.accounts.user;
         
-        // Verify ZK proof (Arcium integration)
+        // Verify ZK proof (Arcium integration - simplified for hackathon)
         require!(
             verify_zk_proof(&zk_proof, &encrypted_data),
             ErrorCode::InvalidZKProof
         );
         
-        // Initialize soulbound HNFT
+        // Initialize soulbound HNFT (only one per user)
         hnft.owner = user.key();
         hnft.encrypted_data = encrypted_data;
         hnft.zk_proof = zk_proof;
         hnft.category = category;
         hnft.mint_timestamp = Clock::get()?.unix_timestamp;
         hnft.is_listed = false;
-        hnft.is_soulbound = true; // Non-transferable
+        hnft.is_soulbound = true; // Non-transferable, soulbound to user
         
         emit!(HNFTMinted {
             owner: user.key(),
@@ -206,17 +207,38 @@ pub mod psychat {
     }
 
     /// Mint a dataset NFT linked to the user's HNFT; stores dataset URI and category
+    /// This creates a tradeable asset separate from the soulbound HNFT
     pub fn mint_dataset_nft(
         ctx: Context<MintDatasetNft>,
         dataset_uri: String,
         category: String,
     ) -> Result<()> {
         let dataset = &mut ctx.accounts.dataset;
-        dataset.owner = ctx.accounts.user.key();
-        dataset.hnft = ctx.accounts.hnft.key();
+        let user = &ctx.accounts.user;
+        let hnft = &ctx.accounts.hnft;
+        
+        // Verify user owns the HNFT
+        require!(
+            hnft.owner == user.key(),
+            ErrorCode::Unauthorized
+        );
+        
+        // Initialize tradeable dataset NFT
+        dataset.owner = user.key();
+        dataset.hnft = hnft.key();
         dataset.dataset_uri = dataset_uri;
         dataset.category = category;
         dataset.created_at = Clock::get()?.unix_timestamp;
+        dataset.is_tradeable = true; // This can be sold/transferred
+        
+        emit!(DatasetNFTMinted {
+            owner: user.key(),
+            dataset: dataset.key(),
+            hnft: hnft.key(),
+            category: category.clone(),
+            timestamp: Clock::get()?.unix_timestamp,
+        });
+        
         Ok(())
     }
 }
@@ -229,7 +251,7 @@ pub struct MintHNFT<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 256 + 256 + 1 + 8 + 1 + 1 + 8,
+        space = 8 + 32 + 256 + 256 + 1 + 8 + 1 + 1 + 8, // 571 bytes total
         seeds = [b"hnft", user.key().as_ref()],
         bump
     )]
@@ -330,7 +352,7 @@ pub struct MintDatasetNft<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 32 + 256 + 64 + 8,
+        space = 8 + 32 + 32 + 256 + 64 + 8 + 1, // Added 1 byte for is_tradeable
         seeds = [b"dataset", hnft.key().as_ref()],
         bump
     )]
@@ -386,6 +408,7 @@ pub struct Dataset {
     pub dataset_uri: String,
     pub category: String,
     pub created_at: i64,
+    pub is_tradeable: bool,
 }
 
 #[event]
@@ -421,6 +444,15 @@ pub struct AutoCompounded {
     pub timestamp: i64,
 }
 
+#[event]
+pub struct DatasetNFTMinted {
+    pub owner: Pubkey,
+    pub dataset: Pubkey,
+    pub hnft: Pubkey,
+    pub category: String,
+    pub timestamp: i64,
+}
+
 #[error_code]
 pub enum ErrorCode {
     #[msg("Invalid ZK proof")]
@@ -433,5 +465,7 @@ pub enum ErrorCode {
     ListingInactive,
     #[msg("Bid amount too low")]
     BidTooLow,
+    #[msg("HNFT already exists for this user")]
+    HNFTAlreadyExists,
 }
 
