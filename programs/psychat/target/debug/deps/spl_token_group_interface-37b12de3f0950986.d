@@ -1,0 +1,10 @@
+/Users/main/PsyChat/programs/psychat/target/debug/deps/spl_token_group_interface-37b12de3f0950986.d: /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/error.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/instruction.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/state.rs
+
+/Users/main/PsyChat/programs/psychat/target/debug/deps/libspl_token_group_interface-37b12de3f0950986.dylib: /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/error.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/instruction.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/state.rs
+
+/Users/main/PsyChat/programs/psychat/target/debug/deps/libspl_token_group_interface-37b12de3f0950986.rlib: /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/error.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/instruction.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/state.rs
+
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/lib.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/error.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/instruction.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-token-group-interface-0.5.0/src/state.rs:

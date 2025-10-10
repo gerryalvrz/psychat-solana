@@ -1,54 +1,40 @@
-// Minimal dynamic Anchor loader to avoid hard dependency during local dev
-// Returns an object compatible with program.methods.*.accounts().rpc() pattern or throws if unavailable
+import { AnchorProvider, Program, Idl } from '@coral-xyz/anchor';
+import { Connection, PublicKey } from '@solana/web3.js';
 
-import type { Connection, PublicKey } from '@solana/web3.js';
+// Load IDL dynamically based on environment variable
+const loadIdl = async () => {
+  const idlPath = process.env.NEXT_PUBLIC_PSYCHAT_IDL_PATH || '/idl/psychat.json';
+  const response = await fetch(idlPath);
+  return await response.json();
+};
 
-export function getAnchorProgram(connection: Connection, wallet: any, programIdStr: string): any {
+export async function getAnchorProgram(connection: Connection, wallet: any, programIdStr: string): Promise<Program> {
   try {
-    // Defer require to runtime to avoid TS/module resolution errors if not installed
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const anchor = require('@coral-xyz/anchor');
-    const provider = new anchor.AnchorProvider(connection, wallet, { preflightCommitment: 'confirmed' });
-    const idlPath = (process.env.NEXT_PUBLIC_PSYCHAT_IDL_PATH as string) || '/idl/psychat.json';
-    return {
-      methods: new Proxy(
-        {},
-        {
-          get: (_t, methodName: string) => {
-            return (...args: any[]) => {
-              return {
-                accounts: (_accounts: Record<string, any>) => {
-                  return {
-                    async rpc() {
-                      // Load IDL on-demand
-                      return await (async () => {
-                        let idl: any;
-                        try {
-                          // Try to require local idl when running in node
-                          // eslint-disable-next-line @typescript-eslint/no-var-requires
-                          idl = require(`.${idlPath}`);
-                        } catch {
-                          // Fallback: attempt fetch in browser
-                          const res = await fetch(idlPath);
-                          idl = await res.json();
-                        }
-                        const programId = new (require('@solana/web3.js').PublicKey)(programIdStr);
-                        const program = new anchor.Program(idl, programId, provider);
-                        // Invoke the actual anchor method
-                        return await (program as any).methods[methodName](...args).accounts(_accounts).rpc();
-                      })();
-                    },
-                  };
-                },
-              };
-            };
-          },
-        }
-      ),
-    };
-  } catch (e) {
-    throw new Error('Anchor SDK unavailable');
+    const programId = new PublicKey(programIdStr);
+    
+    console.log('Creating Anchor program with program ID:', programId.toBase58());
+    console.log('Connection endpoint:', connection.rpcEndpoint);
+    
+    // Create AnchorProvider with wallet
+    const provider = new AnchorProvider(
+      connection,
+      wallet,
+      {
+        preflightCommitment: 'processed',
+        commitment: 'processed',
+      }
+    );
+    
+    // Load the IDL dynamically
+    const programIdl = await loadIdl() as Idl;
+    
+    // Create the Program instance
+    const program = new Program(programIdl, provider);
+    
+    console.log('Anchor program created successfully');
+    return program;
+  } catch (error) {
+    console.error('Failed to create Anchor program:', error);
+    throw new Error('Program creation failed: ' + (error as Error).message);
   }
 }
-
-

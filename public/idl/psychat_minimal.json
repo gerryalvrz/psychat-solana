@@ -1,0 +1,42 @@
+{
+  "version": "0.1.0",
+  "name": "psychat",
+  "instructions": [
+    {
+      "name": "mintHnft",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "hnft",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "encryptedData",
+          "type": "string"
+        },
+        {
+          "name": "zkProof",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [],
+  "errors": []
+}

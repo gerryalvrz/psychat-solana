@@ -1,0 +1,180 @@
+{
+  "address": "DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6",
+  "metadata": {
+    "name": "psychat",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "PsyChat - Solana-native mental health platform"
+  },
+  "version": "0.1.0",
+  "name": "psychat",
+  "instructions": [
+    {
+      "name": "mintHnft",
+      "discriminator": [
+        37,
+        104,
+        143,
+        128,
+        57,
+        189,
+        62,
+        137
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "hnft",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [104, 110, 102, 116]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "encryptedData",
+          "type": "string"
+        },
+        {
+          "name": "zkProof",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Hnft",
+      "discriminator": [
+        170,
+        138,
+        17,
+        104,
+        131,
+        230,
+        224,
+        8
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "encrypted_data",
+            "type": "string"
+          },
+          {
+            "name": "zk_proof",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "u8"
+          },
+          {
+            "name": "mint_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "is_listed",
+            "type": "bool"
+          },
+          {
+            "name": "is_soulbound",
+            "type": "bool"
+          },
+          {
+            "name": "listing_price",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Hnft",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "encrypted_data",
+            "type": "string"
+          },
+          {
+            "name": "zk_proof",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "u8"
+          },
+          {
+            "name": "mint_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "is_listed",
+            "type": "bool"
+          },
+          {
+            "name": "is_soulbound",
+            "type": "bool"
+          },
+          {
+            "name": "listing_price",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidZKProof",
+      "msg": "Invalid ZK proof"
+    },
+    {
+      "code": 6001,
+      "name": "Unauthorized",
+      "msg": "Unauthorized access"
+    },
+    {
+      "code": 6005,
+      "name": "HNFTAlreadyExists",
+      "msg": "HNFT already exists for this user"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Mint, Transfer};
+// use anchor_spl::token::{self, Token, TokenAccount, Mint, Transfer};
 
-declare_id!("PsyChat1111111111111111111111111111111111111");
+declare_id!("DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6");
 
 #[program]
 pub mod psychat {
@@ -165,19 +165,13 @@ pub mod psychat {
         Ok(())
     }
 
-    /// Helper function to verify Arcium ZK proofs
-    fn verify_zk_proof(proof: &str, data: &str) -> bool {
-        // Mock ZK proof verification
-        // In production, this would integrate with Arcium SDK
-        proof.len() > 0 && data.len() > 0
-    }
 
     /// Append Walrus URI and trait to existing HNFT record (mock confidential)
     pub fn append_history(
         ctx: Context<AppendHistory>,
         uri: String,
         trait_id: String,
-        trait_data: String,
+        _trait_data: String,
     ) -> Result<()> {
         let hnft = &mut ctx.accounts.hnft;
         require!(hnft.owner == ctx.accounts.user.key(), ErrorCode::Unauthorized);
@@ -195,7 +189,7 @@ pub mod psychat {
     }
 
     /// Claim UBI in $rUSD via Reflect (mocked)
-    pub fn claim_ubi(ctx: Context<ClaimUbi>, _zkp_proof: String, _category: String) -> Result<()> {
+    pub fn claim_ubi(_ctx: Context<ClaimUbi>, _zkp_proof: String, _category: String) -> Result<()> {
         // Here we would CPI into Reflect to mint/transfer rUSD and take DAO fee
         // For demo, just succeed
         Ok(())
@@ -227,7 +221,7 @@ pub mod psychat {
         dataset.owner = user.key();
         dataset.hnft = hnft.key();
         dataset.dataset_uri = dataset_uri;
-        dataset.category = category;
+        dataset.category = category.clone();
         dataset.created_at = Clock::get()?.unix_timestamp;
         dataset.is_tradeable = true; // This can be sold/transferred
         
@@ -241,6 +235,13 @@ pub mod psychat {
         
         Ok(())
     }
+}
+
+/// Helper function to verify Arcium ZK proofs
+fn verify_zk_proof(proof: &str, data: &str) -> bool {
+    // Mock ZK proof verification
+    // In production, this would integrate with Arcium SDK
+    proof.len() > 0 && data.len() > 0
 }
 
 #[derive(Accounts)]

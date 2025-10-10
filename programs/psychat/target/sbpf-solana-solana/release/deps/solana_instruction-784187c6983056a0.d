@@ -1,0 +1,10 @@
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/deps/libsolana_instruction-784187c6983056a0.rmeta: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/account_meta.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/error.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/syscalls.rs
+
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/deps/libsolana_instruction-784187c6983056a0.rlib: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/account_meta.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/error.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/syscalls.rs
+
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/deps/solana_instruction-784187c6983056a0.d: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/account_meta.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/error.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/syscalls.rs
+
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/lib.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/account_meta.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/error.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-instruction-2.3.0/src/syscalls.rs:

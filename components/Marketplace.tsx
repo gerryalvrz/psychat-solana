@@ -151,7 +151,7 @@ export default function Marketplace() {
       return;
     }
     try {
-      const program = getAnchorProgram(connection, wallet, pid);
+      const program = await getAnchorProgram(connection, wallet, pid);
       const proof = keccak256(category + '_valid');
       const sig = await (program as any).methods
         .claimUbi(proof, category)
@@ -174,7 +174,7 @@ export default function Marketplace() {
     }
     try {
       // Link to user's latest HNFT history (Walrus) by creating a derived dataset state
-      const program = getAnchorProgram(connection, wallet, pid);
+      const program = await getAnchorProgram(connection, wallet, pid);
       const [hnftPda] = PublicKey.findProgramAddressSync([
         Buffer.from('hnft'),
         publicKey.toBytes(),

@@ -120,7 +120,7 @@ export default function Dashboard() {
       if (pid) {
         try {
           const { getAnchorProgram } = await import('../lib/anchor');
-          const program = getAnchorProgram(connection, wallet, pid);
+          const program = await getAnchorProgram(connection, wallet, pid);
           const sig = await (program as any).methods
             .claimUbi('mock_proof', 'therapy_data')
             .accounts({ user: publicKey })
@@ -160,7 +160,7 @@ export default function Dashboard() {
       if (pid && publicKey) {
         try {
           const { getAnchorProgram } = await import('../lib/anchor');
-          const program = getAnchorProgram(connection, wallet, pid);
+          const program = await getAnchorProgram(connection, wallet, pid);
           const sig = await (program as any).methods
             .stakeUbi()
             .accounts({ user: publicKey })

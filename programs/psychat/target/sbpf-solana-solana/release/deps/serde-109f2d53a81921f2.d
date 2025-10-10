@@ -1,0 +1,14 @@
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/deps/libserde-109f2d53a81921f2.rmeta: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/build/serde-3f80ffc467efe792/out/private.rs
+
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/deps/libserde-109f2d53a81921f2.rlib: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/build/serde-3f80ffc467efe792/out/private.rs
+
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/deps/serde-109f2d53a81921f2.d: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/build/serde-3f80ffc467efe792/out/private.rs
+
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs:
+/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/build/serde-3f80ffc467efe792/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/main/PsyChat/programs/psychat/target/sbpf-solana-solana/release/build/serde-3f80ffc467efe792/out

@@ -1,0 +1,15 @@
+/Users/main/PsyChat/programs/psychat/target/debug/deps/thiserror-35fbd46ac63a6f85.d: /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/provide.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs /Users/main/PsyChat/programs/psychat/target/debug/build/thiserror-c07f3d9b367d5d55/out/private.rs
+
+/Users/main/PsyChat/programs/psychat/target/debug/deps/libthiserror-35fbd46ac63a6f85.rlib: /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/provide.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs /Users/main/PsyChat/programs/psychat/target/debug/build/thiserror-c07f3d9b367d5d55/out/private.rs
+
+/Users/main/PsyChat/programs/psychat/target/debug/deps/libthiserror-35fbd46ac63a6f85.rmeta: /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/provide.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs /Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs /Users/main/PsyChat/programs/psychat/target/debug/build/thiserror-c07f3d9b367d5d55/out/private.rs
+
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/provide.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs:
+/Users/main/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs:
+/Users/main/PsyChat/programs/psychat/target/debug/build/thiserror-c07f3d9b367d5d55/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/main/PsyChat/programs/psychat/target/debug/build/thiserror-c07f3d9b367d5d55/out

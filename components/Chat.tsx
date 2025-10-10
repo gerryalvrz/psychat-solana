@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ArciumIntegration, WalrusIntegration } from '../utils/sponsorIntegrations';
 import { getAnchorProgram } from '../lib/anchor';
 import { keccak256 } from 'js-sha3';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, SystemProgram } from '@solana/web3.js';
 
 interface Message {
   id: string;
@@ -31,6 +31,16 @@ export default function Chat() {
   const [success, setSuccess] = useState<string | null>(null);
   const inProgressRef = useRef(false);
 
+  const clearMockData = () => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('psychat_hnft_pda');
+      window.localStorage.removeItem('psychat_hnft_sig');
+      setHnftPda(null);
+      setHnftSig(null);
+      console.log('Mock data cleared');
+    }
+  };
+
   const buildSolscanTxUrl = (sig: string) => {
     const ep = (connection as any)?.rpcEndpoint as string | undefined;
     const isDev = ep ? ep.includes('devnet') : (process.env.NEXT_PUBLIC_SOLANA_RPC || '').includes('devnet');
@@ -49,11 +59,71 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('psychat_hnft_pda') : null;
-    if (saved) setHnftPda(saved);
-    const savedSig = typeof window !== 'undefined' ? window.localStorage.getItem('psychat_hnft_sig') : null;
-    if (savedSig) setHnftSig(savedSig);
+    // Clear any existing mock data to force fresh minting
+    if (typeof window !== 'undefined') {
+      const saved = window.localStorage.getItem('psychat_hnft_pda');
+      const savedSig = window.localStorage.getItem('psychat_hnft_sig');
+      
+      // If we have mock data, clear it
+      if (saved && saved.startsWith('mock_')) {
+        console.log('Clearing mock HNFT data');
+        window.localStorage.removeItem('psychat_hnft_pda');
+        window.localStorage.removeItem('psychat_hnft_sig');
+        setHnftPda(null);
+        setHnftSig(null);
+      } else if (saved && savedSig) {
+        setHnftPda(saved);
+        setHnftSig(savedSig);
+      }
+    }
   }, []);
+
+  // Check for existing HNFT when wallet connects
+  useEffect(() => {
+    const checkExistingHNFT = async () => {
+      if (!publicKey || !connection) return;
+      
+      // Clear any cached HNFT data when wallet changes
+      setHnftPda(null);
+      setHnftSig(null);
+      
+      try {
+        const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+        if (!pid) return;
+        
+        const [hnftPda] = PublicKey.findProgramAddressSync([
+          Buffer.from('hnft'),
+          publicKey.toBytes(),
+        ], new PublicKey(pid));
+        
+        const existingHnft = await connection.getAccountInfo(hnftPda);
+        if (existingHnft) {
+          console.log('Found existing HNFT for user:', hnftPda.toBase58());
+          setHnftPda(hnftPda.toBase58());
+          // Try to get the actual transaction signature from recent transactions
+          try {
+            const signatures = await connection.getSignaturesForAddress(hnftPda, { limit: 1 });
+            if (signatures.length > 0) {
+              setHnftSig(signatures[0].signature);
+              window.localStorage.setItem('psychat_hnft_sig', signatures[0].signature);
+            } else {
+              setHnftSig('existing_hnft');
+              window.localStorage.setItem('psychat_hnft_sig', 'existing_hnft');
+            }
+          } catch (error) {
+            setHnftSig('existing_hnft');
+            window.localStorage.setItem('psychat_hnft_sig', 'existing_hnft');
+          }
+          // Store in localStorage
+          window.localStorage.setItem('psychat_hnft_pda', hnftPda.toBase58());
+        }
+      } catch (error) {
+        console.log('No existing HNFT found or error checking:', error);
+      }
+    };
+    
+    checkExistingHNFT();
+  }, [publicKey, connection]);
 
   // Arcium ZK encryption (mocked via integration utils)
   const encryptWithArcium = async (text: string): Promise<{ encrypted: string; proof: string; walrusCid: string }> => {
@@ -78,21 +148,63 @@ export default function Chat() {
       }
 
       try {
-        const program = getAnchorProgram(connection, walletCtx as any, pid);
+        console.log('Attempting to mint HNFT with program ID:', pid);
+        console.log('Connection endpoint:', connection.rpcEndpoint);
+        console.log('Wallet context:', walletCtx);
+        
+        // Check if program is actually deployed
+        try {
+          const programInfo = await connection.getAccountInfo(new PublicKey(pid));
+          console.log('Program info:', programInfo);
+          if (!programInfo) {
+            throw new Error(`Program not found at address ${pid}. Please deploy the program first.`);
+          }
+        } catch (error) {
+          console.error('Error checking program deployment:', error);
+          throw new Error(`Program not deployed at ${pid}. Please deploy the program first.`);
+        }
+        
+        const program = await getAnchorProgram(connection, walletCtx as any, pid);
+        console.log('Program loaded successfully:', program);
+        
         const [hnftPda] = PublicKey.findProgramAddressSync([
           Buffer.from('hnft'),
           publicKey.toBytes(),
         ], new PublicKey(pid));
+        console.log('HNFT PDA calculated:', hnftPda.toBase58());
+
+        // Check if HNFT already exists for this user
+        try {
+          const existingHnft = await connection.getAccountInfo(hnftPda);
+          if (existingHnft) {
+            console.log('HNFT already exists for this user:', hnftPda.toBase58());
+            // Set the existing HNFT data
+            setHnftPda(hnftPda.toBase58());
+            setHnftSig('existing_hnft');
+            throw new Error('HNFT already exists for this user. Please refresh the page to see it.');
+          }
+        } catch (error: any) {
+          if (error.message.includes('HNFT already exists')) {
+            throw error;
+          }
+          // If account doesn't exist, that's fine - we can create a new one
+          console.log('No existing HNFT found, proceeding with minting');
+        }
 
         const sig = await program.methods
           .mintHnft(encryptedData, zkProof, category)
           .accounts({ 
             user: publicKey,
-            hnft: hnftPda
+            hnft: hnftPda,
+            systemProgram: SystemProgram.programId
           })
-          .rpc();
+          .rpc({
+            skipPreflight: false,
+            preflightCommitment: 'processed',
+            commitment: 'confirmed'
+          });
 
-        console.log('HNFT minted:', sig, 'PDA:', hnftPda.toBase58());
+        console.log('HNFT minted successfully:', sig, 'PDA:', hnftPda.toBase58());
         
         // Store in localStorage
         window.localStorage.setItem('psychat_hnft_pda', hnftPda.toBase58());
@@ -102,21 +214,9 @@ export default function Chat() {
 
         setIsMinting(false);
         return buildSolscanTxUrl(sig);
-      } catch (anchorError) {
-        console.warn('Anchor program not available, using mock mode:', anchorError);
-        
-        // Mock mode for demo
-        const mockPda = `mock_hnft_${publicKey.toBase58().slice(0, 8)}`;
-        const mockSig = `mock_sig_${Date.now()}`;
-        
-        // Store in localStorage
-        window.localStorage.setItem('psychat_hnft_pda', mockPda);
-        window.localStorage.setItem('psychat_hnft_sig', mockSig);
-        setHnftPda(mockPda);
-        setHnftSig(mockSig);
-
+      } catch (error) {
         setIsMinting(false);
-        return buildSolscanTxUrl(mockSig);
+        throw error as any;
       }
     } catch (error) {
       setIsMinting(false);
@@ -187,10 +287,14 @@ export default function Chat() {
         <div className="mb-4 p-4 bg-psy-purple/10 border border-psy-purple/30 rounded">
           <div className="text-white/80 mb-2">Before chatting, mint your soulbound PsyChat identity HNFT to enable secure, private sessions.</div>
           <button
-            className="psychat-button"
+            className="psychat-button disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={async () => {
               if (!publicKey || !signTransaction) {
                 alert('Connect wallet');
+                return;
+              }
+              if (isMinting) {
+                console.log('Minting already in progress, ignoring click');
                 return;
               }
               setIsMinting(true);
@@ -203,7 +307,18 @@ export default function Chat() {
                 setSuccess('Identity HNFT minted successfully! You can now start chatting.');
               } catch (e: any) {
                 console.error('HNFT mint failed:', e);
-                setError('HNFT mint failed: ' + (e?.message || String(e)));
+                let errorMessage = e?.message || String(e);
+                
+                // Handle specific transaction errors
+                if (errorMessage.includes('This transaction has already been processed')) {
+                  errorMessage = 'Transaction already processed. Please wait a moment and try again.';
+                } else if (errorMessage.includes('HNFT already exists')) {
+                  errorMessage = 'You already have an HNFT. Please refresh the page to see it.';
+                } else if (errorMessage.includes('already in use')) {
+                  errorMessage = 'HNFT already exists for this wallet. Please refresh the page to see your existing HNFT.';
+                }
+                
+                setError('HNFT mint failed: ' + errorMessage);
               } finally {
                 setIsMinting(false);
               }
@@ -230,6 +345,16 @@ export default function Chat() {
               </a>
             )}
           </div>
+          {hnftPda.startsWith('mock_') && (
+            <div className="mt-2">
+              <button 
+                onClick={clearMockData}
+                className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded hover:bg-red-500/30"
+              >
+                Clear Mock Data & Retry
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -353,7 +478,7 @@ export default function Chat() {
               }
 
               try {
-                const program = getAnchorProgram(connection, walletCtx as any, pid);
+                const program = await getAnchorProgram(connection, walletCtx as any, pid);
                 const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
                 const datasetUri = `walrus://${walrusCid}`;
                 
