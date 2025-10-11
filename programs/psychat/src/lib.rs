@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-// use anchor_spl::token::{self, Token, TokenAccount, Mint, Transfer};
+// Removed unused token imports since ChatNFTs now use Metaplex
 
 declare_id!("DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6");
 
@@ -12,8 +12,8 @@ pub mod psychat {
     /// Only ONE HNFT per user allowed (soulbound identity)
     pub fn mint_hnft(
         ctx: Context<MintHNFT>,
-        encrypted_data: String,
-        zk_proof: String,
+        encrypted_data: [u8; 64],
+        zk_proof: [u8; 32],
         category: u8,
     ) -> Result<()> {
         let hnft = &mut ctx.accounts.hnft;
@@ -21,7 +21,7 @@ pub mod psychat {
         
         // Verify ZK proof (Arcium integration - simplified for hackathon)
         require!(
-            verify_zk_proof(&zk_proof, &encrypted_data),
+            verify_zk_proof_fixed(&zk_proof, &encrypted_data),
             ErrorCode::InvalidZKProof
         );
         
@@ -50,7 +50,7 @@ pub mod psychat {
         ctx: Context<ListData>,
         price: u64,
         currency: u8, // 0 = SOL, 1 = rUSD
-        description: String,
+        description: [u8; 64],
     ) -> Result<()> {
         let listing = &mut ctx.accounts.listing;
         let hnft = &mut ctx.accounts.hnft;
@@ -169,9 +169,9 @@ pub mod psychat {
     /// Append Walrus URI and trait to existing HNFT record (mock confidential)
     pub fn append_history(
         ctx: Context<AppendHistory>,
-        uri: String,
-        trait_id: String,
-        _trait_data: String,
+        uri: [u8; 64],
+        trait_id: [u8; 32],
+        _trait_data: [u8; 32],
     ) -> Result<()> {
         let hnft = &mut ctx.accounts.hnft;
         require!(hnft.owner == ctx.accounts.user.key(), ErrorCode::Unauthorized);
@@ -200,12 +200,15 @@ pub mod psychat {
         Ok(())
     }
 
+
     /// Mint a dataset NFT linked to the user's HNFT; stores dataset URI and category
     /// This creates a tradeable asset separate from the soulbound HNFT
+    /// nft_mint: The SPL token mint address of the actual NFT minted via Metaplex
     pub fn mint_dataset_nft(
         ctx: Context<MintDatasetNft>,
-        dataset_uri: String,
-        category: String,
+        nft_mint: Pubkey,
+        dataset_uri: [u8; 32],
+        category: [u8; 16],
     ) -> Result<()> {
         let dataset = &mut ctx.accounts.dataset;
         let user = &ctx.accounts.user;
@@ -217,11 +220,12 @@ pub mod psychat {
             ErrorCode::Unauthorized
         );
         
-        // Initialize tradeable dataset NFT
+        // Initialize tradeable dataset NFT registry entry
         dataset.owner = user.key();
         dataset.hnft = hnft.key();
-        dataset.dataset_uri = dataset_uri;
-        dataset.category = category.clone();
+        dataset.nft_mint = nft_mint; // Link to actual SPL NFT
+        dataset.dataset_uri = dataset_uri; // Use 32-byte array directly
+        dataset.category = category; // Use fixed-size array
         dataset.created_at = Clock::get()?.unix_timestamp;
         dataset.is_tradeable = true; // This can be sold/transferred
         
@@ -229,7 +233,7 @@ pub mod psychat {
             owner: user.key(),
             dataset: dataset.key(),
             hnft: hnft.key(),
-            category: category.clone(),
+            category: category,
             timestamp: Clock::get()?.unix_timestamp,
         });
         
@@ -237,11 +241,11 @@ pub mod psychat {
     }
 }
 
-/// Helper function to verify Arcium ZK proofs
-fn verify_zk_proof(proof: &str, data: &str) -> bool {
+/// Helper function to verify Arcium ZK proofs (fixed-size version)
+fn verify_zk_proof_fixed(proof: &[u8; 32], data: &[u8; 64]) -> bool {
     // Mock ZK proof verification
     // In production, this would integrate with Arcium SDK
-    proof.len() > 0 && data.len() > 0
+    !proof.iter().all(|&x| x == 0) && !data.iter().all(|&x| x == 0)
 }
 
 #[derive(Accounts)]
@@ -252,7 +256,7 @@ pub struct MintHNFT<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 256 + 256 + 1 + 8 + 1 + 1 + 8, // 571 bytes total
+        space = 8 + 32 + 64 + 32 + 1 + 8 + 1 + 1 + 8, // 147 bytes total (much smaller!)
         seeds = [b"hnft", user.key().as_ref()],
         bump
     )]
@@ -275,7 +279,7 @@ pub struct ListData<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 32 + 8 + 1 + 256 + 8 + 1 + 8,
+        space = 8 + 32 + 32 + 8 + 1 + 64 + 8 + 1 + 8, // Reduced from 256 to 64 bytes
         seeds = [b"listing", hnft.key().as_ref()],
         bump
     )]
@@ -344,6 +348,7 @@ pub struct StakeUbi<'info> {
     pub user: Signer<'info>,
 }
 
+
 #[derive(Accounts)]
 pub struct MintDatasetNft<'info> {
     #[account(mut)]
@@ -353,7 +358,7 @@ pub struct MintDatasetNft<'info> {
     #[account(
         init,
         payer = user,
-        space = 8 + 32 + 32 + 256 + 64 + 8 + 1, // Added 1 byte for is_tradeable
+        space = 8 + 32 + 32 + 32 + 32 + 16 + 8 + 1, // 8 (discriminator) + 32 + 32 + 32 + 32 + 16 + 8 + 1 = 161 bytes
         seeds = [b"dataset", hnft.key().as_ref()],
         bump
     )]
@@ -364,8 +369,8 @@ pub struct MintDatasetNft<'info> {
 #[account]
 pub struct HNFT {
     pub owner: Pubkey,
-    pub encrypted_data: String, // Arcium ZK encrypted
-    pub zk_proof: String,       // Arcium ZK proof
+    pub encrypted_data: [u8; 64], // Fixed-size array instead of String
+    pub zk_proof: [u8; 32],      // Fixed-size array instead of String
     pub category: u8,           // 0=anxiety, 1=depression, 2=stress, etc.
     pub mint_timestamp: i64,
     pub is_listed: bool,
@@ -379,7 +384,7 @@ pub struct DataListing {
     pub seller: Pubkey,
     pub price: u64,
     pub currency: u8,            // 0=SOL, 1=rUSD
-    pub description: String,
+    pub description: [u8; 64],   // Fixed-size array instead of String
     pub created_at: i64,
     pub is_active: bool,
     pub bid_count: u64,
@@ -404,12 +409,13 @@ pub struct AutoCompoundRecord {
 
 #[account]
 pub struct Dataset {
-    pub owner: Pubkey,
-    pub hnft: Pubkey,
-    pub dataset_uri: String,
-    pub category: String,
-    pub created_at: i64,
-    pub is_tradeable: bool,
+    pub owner: Pubkey,        // 32 bytes
+    pub hnft: Pubkey,         // 32 bytes  
+    pub nft_mint: Pubkey,     // 32 bytes
+    pub dataset_uri: [u8; 32], // 32 bytes (reduced from 64 to 32)
+    pub category: [u8; 16],   // 16 bytes
+    pub created_at: i64,     // 8 bytes
+    pub is_tradeable: bool,   // 1 byte
 }
 
 #[event]
@@ -450,7 +456,7 @@ pub struct DatasetNFTMinted {
     pub owner: Pubkey,
     pub dataset: Pubkey,
     pub hnft: Pubkey,
-    pub category: String,
+    pub category: [u8; 16],
     pub timestamp: i64,
 }
 

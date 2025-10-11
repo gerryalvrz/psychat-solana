@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { getAnchorProgram } from '../lib/anchor';
 import { keccak256 } from 'js-sha3';
 import { WalrusIntegration } from '../utils/sponsorIntegrations';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Keypair } from '@solana/web3.js';
+import { Metaplex, keypairIdentity } from '@metaplex-foundation/js';
 
 interface DataListing {
   id: string;
@@ -39,6 +40,28 @@ export default function Marketplace() {
   const [bidAmount, setBidAmount] = useState('');
   const [isBidding, setIsBidding] = useState(false);
   const [filter, setFilter] = useState<'all' | 'anxiety' | 'depression' | 'stress' | 'relationships'>('all');
+  const [nftMetadata, setNftMetadata] = useState<Map<string, any>>(new Map());
+
+  // Fetch NFT metadata from Metaplex
+  const fetchNFTMetadata = async (mintAddress: string) => {
+    try {
+      const metaplex = Metaplex.make(connection);
+      const nft = await metaplex.nfts().findByMint({ mintAddress: new PublicKey(mintAddress) });
+      
+      if (nft) {
+        setNftMetadata(prev => new Map(prev.set(mintAddress, {
+          name: nft.name,
+          symbol: nft.symbol,
+          description: nft.json?.description || '',
+          image: nft.json?.image,
+          attributes: nft.json?.attributes || [],
+          uri: nft.uri
+        })));
+      }
+    } catch (error) {
+      console.error('Error fetching NFT metadata:', error);
+    }
+  };
 
   // Mock data for demo with buyer transparency
   useEffect(() => {
@@ -181,8 +204,11 @@ export default function Marketplace() {
       ], new PublicKey(pid));
       // For demo, dataset URI points to same Walrus CID space
       const demoCid = await WalrusIntegration.storeEncryptedData(`dataset:${category}:${Date.now()}`);
+      // Create a mock mint address for the demo
+      const mockMintAddress = Keypair.generate().publicKey;
+      
       const sig = await (program as any).methods
-        .mintDatasetNft(`walrus://${demoCid}`, category)
+        .mintDatasetNft(mockMintAddress, `walrus://${demoCid}`, category)
         .accounts({ user: publicKey, hnft: hnftPda })
         .rpc();
       console.log('Mint dataset NFT sig:', sig);

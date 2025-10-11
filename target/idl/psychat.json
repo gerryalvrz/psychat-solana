@@ -53,15 +53,30 @@
       "args": [
         {
           "name": "uri",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
         },
         {
           "name": "trait_id",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         },
         {
           "name": "_trait_data",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         }
       ]
     },
@@ -227,7 +242,12 @@
         },
         {
           "name": "description",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
         }
       ]
     },
@@ -235,7 +255,8 @@
       "name": "mint_dataset_nft",
       "docs": [
         "Mint a dataset NFT linked to the user's HNFT; stores dataset URI and category",
-        "This creates a tradeable asset separate from the soulbound HNFT"
+        "This creates a tradeable asset separate from the soulbound HNFT",
+        "nft_mint: The SPL token mint address of the actual NFT minted via Metaplex"
       ],
       "discriminator": [
         14,
@@ -305,12 +326,26 @@
       ],
       "args": [
         {
+          "name": "nft_mint",
+          "type": "pubkey"
+        },
+        {
           "name": "dataset_uri",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         },
         {
           "name": "category",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
         }
       ]
     },
@@ -366,11 +401,21 @@
       "args": [
         {
           "name": "encrypted_data",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
         },
         {
           "name": "zk_proof",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         },
         {
           "name": "category",
@@ -783,7 +828,12 @@
           },
           {
             "name": "description",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
           },
           {
             "name": "created_at",
@@ -814,12 +864,26 @@
             "type": "pubkey"
           },
           {
+            "name": "nft_mint",
+            "type": "pubkey"
+          },
+          {
             "name": "dataset_uri",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
           {
             "name": "category",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
           },
           {
             "name": "created_at",
@@ -851,7 +915,12 @@
           },
           {
             "name": "category",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
           },
           {
             "name": "timestamp",
@@ -871,11 +940,21 @@
           },
           {
             "name": "encrypted_data",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
           },
           {
             "name": "zk_proof",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
           {
             "name": "category",

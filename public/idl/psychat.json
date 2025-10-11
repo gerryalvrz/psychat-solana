@@ -305,6 +305,10 @@
       ],
       "args": [
         {
+          "name": "nft_mint",
+          "type": "pubkey"
+        },
+        {
           "name": "dataset_uri",
           "type": "string"
         },
@@ -609,6 +613,10 @@
           },
           {
             "name": "hnft",
+            "type": "pubkey"
+          },
+          {
+            "name": "nft_mint",
             "type": "pubkey"
           },
           {
@@ -960,6 +968,10 @@
           },
           {
             "name": "hnft",
+            "type": "pubkey"
+          },
+          {
+            "name": "nft_mint",
             "type": "pubkey"
           },
           {
