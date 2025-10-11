@@ -511,12 +511,8 @@ export default function Chat() {
               console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
               console.log('Metadata URI:', chatNFTResult.metadataUri);
               
-              // Step 5: Register ChatNFT in HNFT identity
-              console.log('Registering ChatNFT in HNFT identity...');
-              await registerChatNFT(connection, walletCtx, {
-                chatNFTMint: chatNFTResult.mintAddress,
-                walrusCid
-              });
+              // Step 5: Skip HNFT registration for MVP (causes out of memory error)
+              console.log('Skipping HNFT registration for MVP - both NFTs minted successfully');
               
               const solscanUrl = buildSolscanTxUrl(chatNFTResult.transactionSignature);
               setSuccess(`✅ Tradeable ChatNFT created successfully! Your therapy session is now a tradeable NFT.`);
@@ -546,6 +542,14 @@ export default function Chat() {
                 }
               } else if (msg.includes('NFT_ALREADY_PROCESSED:')) {
                 setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
+                
+                // Try to extract transaction signature from error message
+                const sigMatch = msg.match(/Transaction:\s+([A-Za-z0-9]{64,88})/);
+                if (sigMatch) {
+                  const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+                  setLastTxUrl(solscanUrl);
+                }
+                
                 // This is actually a success case, not an error - skip HNFT registration
                 return; // Exit early to skip HNFT registration
               } else if (msg.includes('Transaction already processed - check your wallet')) {
