@@ -96,6 +96,9 @@ async function performMinting(
   wallet: WalletContextState,
   sessionData: ChatSessionData
 ): Promise<ChatNFTResult> {
+  // Store the public key after we know it's not null
+  const publicKey = wallet.publicKey!;
+  
   // Initialize Metaplex with wallet adapter
   const metaplex = Metaplex.make(connection)
     .use(walletAdapterIdentity(wallet));
@@ -155,7 +158,7 @@ async function performMinting(
       
       // Try to find the recent transaction signature
       try {
-        const recentTransactions = await connection.getSignaturesForAddress(wallet.publicKey, { limit: 5 });
+        const recentTransactions = await connection.getSignaturesForAddress(publicKey, { limit: 5 });
         const recentTx = recentTransactions.find(tx => tx.err === null && tx.signature);
         
         if (recentTx?.signature) {
