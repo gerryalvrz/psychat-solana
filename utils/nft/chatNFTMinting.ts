@@ -127,7 +127,7 @@ async function performMinting(
       sellerFeeBasisPoints: 500, // 5% royalty
       creators: [
         {
-          address: wallet.publicKey,
+          address: wallet.publicKey!,
           share: 100,
         },
       ]
