@@ -99,7 +99,7 @@ export default function Dashboard() {
       },
       {
         id: 'motusdao-psy',
-        name: '$PSY Token Staking',
+        name: '$PSYC Token Staking',
         apy: 18.5,
         tvl: 950000,
         protocol: 'MotusDAO Treasury',

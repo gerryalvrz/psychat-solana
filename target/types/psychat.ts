@@ -59,15 +59,30 @@ export type Psychat = {
       "args": [
         {
           "name": "uri",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
         },
         {
           "name": "traitId",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         },
         {
           "name": "traitData",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         }
       ]
     },
@@ -233,7 +248,12 @@ export type Psychat = {
         },
         {
           "name": "description",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
         }
       ]
     },
@@ -241,7 +261,8 @@ export type Psychat = {
       "name": "mintDatasetNft",
       "docs": [
         "Mint a dataset NFT linked to the user's HNFT; stores dataset URI and category",
-        "This creates a tradeable asset separate from the soulbound HNFT"
+        "This creates a tradeable asset separate from the soulbound HNFT",
+        "nft_mint: The SPL token mint address of the actual NFT minted via Metaplex"
       ],
       "discriminator": [
         14,
@@ -311,12 +332,26 @@ export type Psychat = {
       ],
       "args": [
         {
+          "name": "nftMint",
+          "type": "pubkey"
+        },
+        {
           "name": "datasetUri",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         },
         {
           "name": "category",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
         }
       ]
     },
@@ -372,11 +407,21 @@ export type Psychat = {
       "args": [
         {
           "name": "encryptedData",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
         },
         {
           "name": "zkProof",
-          "type": "string"
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         },
         {
           "name": "category",
@@ -789,7 +834,12 @@ export type Psychat = {
           },
           {
             "name": "description",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
           },
           {
             "name": "createdAt",
@@ -820,12 +870,26 @@ export type Psychat = {
             "type": "pubkey"
           },
           {
+            "name": "nftMint",
+            "type": "pubkey"
+          },
+          {
             "name": "datasetUri",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
           {
             "name": "category",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
           },
           {
             "name": "createdAt",
@@ -857,7 +921,12 @@ export type Psychat = {
           },
           {
             "name": "category",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
           },
           {
             "name": "timestamp",
@@ -877,11 +946,21 @@ export type Psychat = {
           },
           {
             "name": "encryptedData",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
           },
           {
             "name": "zkProof",
-            "type": "string"
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
           {
             "name": "category",

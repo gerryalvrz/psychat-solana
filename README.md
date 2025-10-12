@@ -26,8 +26,32 @@ PsyChat is a privacy-first mental health platform that empowers users to own the
 
 ### 💰 Sustainable UBI Streams
 - **Auto-Compound Earnings:** DeFi yields from data sales (5-15% APY)
-- **Multiple Yield Options:** Raydium pools, Forward Industries treasury, MotusDAO $PSY staking
+- **Multiple Yield Options:** Raydium pools, Forward Industries treasury, MotusDAO $PSYC staking
 - **Mobile-First UX:** Solana Mobile SDK + Dialect Blinks for viral sharing
+
+## 🪙 PSYC Token Information
+
+<!-- Quickdraw achievement test - safe to remove -->
+### Token Details
+- **Name:** Psychat token
+- **Symbol:** PSYC
+- **Mint Address:** `FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray`
+- **Total Supply:** 1,000,000,000 PSYC tokens
+- **Decimals:** 6
+- **Network:** Solana Mainnet
+- **Program:** SPL Token Program
+- **Created via:** Raydium Token Creator
+
+### Transaction History
+- **Creation Transaction:** `36CutuGDEZ1wPW7pSP93zq8MuEySRwK7cXR5J6PWSYuRSoVMjprEcYqFFmWn`
+- **Block:** 372,776,198
+- **Created:** Oct 12, 2025 at 01:10:50 UTC
+
+### How to Use PSYC Token
+1. **Add to Phantom Wallet:** Use mint address `FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray`
+2. **View on Explorer:** Check transactions on [Solana Explorer](https://explorer.solana.com/address/FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray)
+3. **Trade on Raydium:** Available for trading on Raydium DEX
+4. **Integrate:** Use the mint address in your PsyChat application
 
 ## 🏗️ Architecture
 
@@ -36,22 +60,33 @@ PsyChat is a privacy-first mental health platform that empowers users to own the
 pages/
 ├── index.tsx              # Main app with wallet integration
 ├── _app.tsx              # Wallet adapter setup
+├── api/chat.ts           # AI chat API endpoint
 components/
-├── Chat.tsx              # Therapy notes interface
+├── Chat.tsx              # Therapy notes interface with ZK encryption
 ├── Marketplace.tsx       # Data trading marketplace
-└── Dashboard.tsx         # Earnings & yield farming
+├── Dashboard.tsx         # Earnings & yield farming
+└── ClientWalletButton.tsx # Wallet connection component
 ```
 
-### Backend (Anchor)
+### Backend (Anchor Program)
 ```
 programs/psychat/src/
 └── lib.rs                # HNFT minting, marketplace, auto-compound
 ```
 
+**Deployed Program:**
+- **Program ID:** `DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6`
+- **Network:** Solana Devnet
+- **Features:** Soulbound HNFTs, Marketplace, Auto-compound yields
+
 ### Sponsor Integrations
 ```
 utils/
-└── sponsorIntegrations.ts # Phantom, Arcium, Raydium, Reflect, Dialect Blinks, Walrus
+├── sponsorIntegrations.ts # Phantom, Arcium, Raydium, Reflect, Dialect Blinks, Walrus
+├── identity/hnftOperations.ts # HNFT minting and management
+├── nft/chatNFTMinting.ts     # NFT creation utilities
+├── nft/metadataStorage.ts    # Metadata handling
+└── tokenCreation.ts          # Token creation utilities
 ```
 
 ## 🚀 Quick Start
@@ -103,6 +138,11 @@ cd programs/psychat
 anchor build
 anchor deploy
 ```
+
+**Deployed Program Details:**
+- **Program ID:** `DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6`
+- **Network:** Solana Devnet
+- **Status:** ✅ Live and operational
 
 6. **Start the development server**
 ```bash
@@ -274,11 +314,15 @@ psychat/
 
 ### Key Files
 - `pages/index.tsx` - Main application interface
+- `pages/api/chat.ts` - AI chat API endpoint
 - `components/Chat.tsx` - Therapy notes with ZK encryption
 - `components/Marketplace.tsx` - Raydium-powered data trading
 - `components/Dashboard.tsx` - Earnings and yield farming
-- `programs/psychat/src/lib.rs` - Anchor program logic
+- `components/ClientWalletButton.tsx` - Wallet connection component
+- `programs/psychat/src/lib.rs` - Anchor program logic (Program ID: `DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6`)
 - `utils/sponsorIntegrations.ts` - Sponsor SDK integrations
+- `utils/identity/hnftOperations.ts` - HNFT minting operations
+- `utils/nft/chatNFTMinting.ts` - NFT creation utilities
 
 ### Testing
 ```bash
@@ -351,6 +395,11 @@ Built by the MotusDAO community for the Cypherpunk Colosseum hackathon.
 - **Demo:** [psychat.app](https://psychat.app)
 - **MotusDAO:** [motusdao.org](https://motusdao.org)
 - **Cypherpunk Colosseum:** [cypherpunkcolosseum.com](https://cypherpunkcolosseum.com)
+
+### Program & Token Links
+- **Deployed Program:** [Solana Explorer](https://explorer.solana.com/address/DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6?cluster=devnet)
+- **PSYC Token:** [Solana Explorer](https://explorer.solana.com/address/FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray)
+- **Add PSYC to Phantom:** Use mint address `FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray`
 
 ---
 
