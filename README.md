@@ -31,6 +31,7 @@ PsyChat is a privacy-first mental health platform that empowers users to own the
 
 ## 🪙 PSYC Token Information
 
+<!-- Quickdraw achievement test - safe to remove -->
 ### Token Details
 - **Name:** Psychat token
 - **Symbol:** PSYC
