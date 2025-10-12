@@ -26,28 +26,30 @@ PsyChat is a privacy-first mental health platform that empowers users to own the
 
 ### 💰 Sustainable UBI Streams
 - **Auto-Compound Earnings:** DeFi yields from data sales (5-15% APY)
-- **Multiple Yield Options:** Raydium pools, Forward Industries treasury, MotusDAO $PSY staking
+- **Multiple Yield Options:** Raydium pools, Forward Industries treasury, MotusDAO $PSYC staking
 - **Mobile-First UX:** Solana Mobile SDK + Dialect Blinks for viral sharing
 
-## 🪙 PSY Token Information
+## 🪙 PSYC Token Information
 
 ### Token Details
-- **Name:** PsyChat Token
-- **Symbol:** PSY
-- **Mint Address:** `p4x4z3jk1nstQioLUwWgHDYi6NFKhEkm3b7RjuCkW5r`
-- **Total Supply:** 1,000,000,000 PSY tokens
-- **Decimals:** 9
-- **Network:** Solana Devnet
+- **Name:** Psychat token
+- **Symbol:** PSYC
+- **Mint Address:** `FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray`
+- **Total Supply:** 1,000,000,000 PSYC tokens
+- **Decimals:** 6
+- **Network:** Solana Mainnet
 - **Program:** SPL Token Program
+- **Created via:** Raydium Token Creator
 
-### Wallet Integration
-- **Public Key:** `8wjLmhBkmpAoRyhzqQ9kqeV3BPxrqQsPPgzBecdAi8JR`
-- **Token Account:** `85VSrt3xmAWzfk8jJeaxRshwbijzyJfVTmyRUMXjwhxL`
+### Transaction History
+- **Creation Transaction:** `36CutuGDEZ1wPW7pSP93zq8MuEySRwK7cXR5J6PWSYuRSoVMjprEcYqFFmWn`
+- **Block:** 372,776,198
+- **Created:** Oct 12, 2025 at 01:10:50 UTC
 
-### How to Use PSY Token
-1. **Add to Phantom Wallet:** Use mint address `p4x4z3jk1nstQioLUwWgHDYi6NFKhEkm3b7RjuCkW5r`
-2. **View on Explorer:** Check transactions on [Solana Explorer](https://explorer.solana.com/address/p4x4z3jk1nstQioLUwWgHDYi6NFKhEkm3b7RjuCkW5r?cluster=devnet)
-3. **Test Transfers:** Send PSY tokens between wallets
+### How to Use PSYC Token
+1. **Add to Phantom Wallet:** Use mint address `FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray`
+2. **View on Explorer:** Check transactions on [Solana Explorer](https://explorer.solana.com/address/FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray)
+3. **Trade on Raydium:** Available for trading on Raydium DEX
 4. **Integrate:** Use the mint address in your PsyChat application
 
 ## 🏗️ Architecture
@@ -395,8 +397,8 @@ Built by the MotusDAO community for the Cypherpunk Colosseum hackathon.
 
 ### Program & Token Links
 - **Deployed Program:** [Solana Explorer](https://explorer.solana.com/address/DK9t6EFKWMZr1FwQxuuXwRe2GJ75MuqQ7qdeqKYiqCA6?cluster=devnet)
-- **PSY Token:** [Solana Explorer](https://explorer.solana.com/address/p4x4z3jk1nstQioLUwWgHDYi6NFKhEkm3b7RjuCkW5r?cluster=devnet)
-- **Add PSY to Phantom:** Use mint address `p4x4z3jk1nstQioLUwWgHDYi6NFKhEkm3b7RjuCkW5r`
+- **PSYC Token:** [Solana Explorer](https://explorer.solana.com/address/FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray)
+- **Add PSYC to Phantom:** Use mint address `FofnaEsprV4MiHZDWJ1hDyWt5DG9WrKWD3inpuPemray`
 
 ---
 

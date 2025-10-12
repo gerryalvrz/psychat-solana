@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "create-token": "node scripts/createPSYTokenFixed.js"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",
