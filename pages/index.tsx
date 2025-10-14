@@ -4,6 +4,9 @@ import Chat from '../components/Chat';
 import Dashboard from '../components/Dashboard';
 import Marketplace from '../components/Marketplace';
 import ClientWalletButton from '../components/ClientWalletButton';
+import LetterGlitch from '../components/backgrounds/LetterGlitch';
+import SpotlightCard from '../components/SpotlightCard';
+import Carousel from '../components/Carousel';
 
 export default function Home() {
   const { connected } = useWallet();
@@ -16,20 +19,43 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen psychat-gradient flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🧠</div>
-          <h1 className="text-3xl font-bold text-white mb-4">PsyChat</h1>
-          <p className="text-white/80">Loading...</p>
+      <div className="relative min-h-screen">
+        <div className="fixed inset-0 z-0">
+          <LetterGlitch 
+            glitchColors={['#2b4539', '#61dca3', '#61b3dc']}
+            glitchSpeed={50}
+            centerVignette={false}
+            outerVignette={true}
+            smooth={true}
+            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+          />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="text-6xl mb-4">🧠</div>
+            <h1 className="text-3xl font-bold text-white mb-4">PsyChat</h1>
+            <p className="text-white/80">Loading...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen psychat-gradient">
-      {/* Header */}
-      <header className="p-4 border-b border-white/20">
+    <div className="relative min-h-screen">
+      <div className="fixed inset-0 z-0">
+        <LetterGlitch 
+          glitchColors={['#2b4539', '#61dca3', '#61b3dc']}
+          glitchSpeed={50}
+          centerVignette={false}
+          outerVignette={true}
+          smooth={true}
+          characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+        />
+      </div>
+      <div className="relative z-10">
+        {/* Header */}
+        <header className="p-4 border-b border-white/20">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <button 
             onClick={() => setActiveTab('home')}
@@ -48,27 +74,29 @@ export default function Home() {
       {/* Navigation */}
       <nav className="p-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex space-x-1 bg-black/20 rounded-lg p-1">
-            {[
-              { id: 'home', label: '🏠 Home', desc: 'About PsyChat' },
-              { id: 'chat', label: '💬 Chat', desc: 'Therapy Notes' },
-              { id: 'marketplace', label: '🏪 Marketplace', desc: 'Data Trading' },
-              { id: 'dashboard', label: '📊 Dashboard', desc: 'Earnings & Yield' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex-1 psychat-mobile px-4 py-3 rounded-md transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-white text-psy-purple font-semibold'
-                    : 'text-white/70 hover:text-white hover:bg-black/30'
-                }`}
-              >
-                <div className="text-sm font-medium">{tab.label}</div>
-                <div className="text-xs opacity-75">{tab.desc}</div>
-              </button>
-            ))}
-          </div>
+          <SpotlightCard className="p-1" spotlightColor="rgba(97, 179, 220, 0.2)">
+            <div className="flex space-x-1">
+              {[
+                { id: 'home', label: '🏠 Home', desc: 'About PsyChat' },
+                { id: 'chat', label: '💬 Chat', desc: 'Therapy Notes' },
+                { id: 'marketplace', label: '🏪 Marketplace', desc: 'Data Trading' },
+                { id: 'dashboard', label: '📊 Dashboard', desc: 'Earnings & Yield' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex-1 psychat-mobile px-4 py-3 rounded-md transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? 'bg-white text-psy-purple font-semibold'
+                      : 'text-white/70 hover:text-white hover:bg-black/30'
+                  }`}
+                >
+                  <div className="text-sm font-medium">{tab.label}</div>
+                  <div className="text-xs opacity-75">{tab.desc}</div>
+                </button>
+              ))}
+            </div>
+          </SpotlightCard>
         </div>
       </nav>
 
@@ -76,7 +104,7 @@ export default function Home() {
       <main className="p-4">
         <div className="max-w-6xl mx-auto">
           {!connected ? (
-            <div className="psychat-card p-8 text-center">
+            <SpotlightCard className="p-8 text-center" spotlightColor="rgba(97, 220, 163, 0.2)">
               <div className="text-6xl mb-4">🧠</div>
               <h2 className="text-3xl font-bold text-white mb-4">
                 Welcome to PsyChat
@@ -95,13 +123,13 @@ export default function Home() {
                   🚀 Auto-compound earnings with Reflect $rUSD
                 </div>
               </div>
-            </div>
+            </SpotlightCard>
           ) : (
             <>
               {activeTab === 'home' && (
                 <div className="space-y-12">
                   {/* Hero Section */}
-                  <div className="psychat-card p-8 text-center">
+                  <SpotlightCard className="p-8 text-center" spotlightColor="rgba(97, 220, 163, 0.2)">
                     <div className="text-6xl mb-4">🧠</div>
                     <h2 className="text-4xl font-bold text-white mb-4">
                       Welcome to PsyChat
@@ -113,11 +141,11 @@ export default function Home() {
                     <div className="flex justify-center mb-8">
                       <ClientWalletButton />
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* Problem & Solution */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="psychat-card p-6">
+                    <SpotlightCard className="p-6" spotlightColor="rgba(248, 113, 113, 0.2)">
                       <div className="text-4xl mb-4">😔</div>
                       <h3 className="text-2xl font-bold text-red-400 mb-4">The Problem</h3>
                       <ul className="space-y-3 text-white/80">
@@ -138,9 +166,9 @@ export default function Home() {
                           No transparency in data usage
                         </li>
                       </ul>
-                    </div>
+                    </SpotlightCard>
 
-                    <div className="psychat-card p-6">
+                    <SpotlightCard className="p-6" spotlightColor="rgba(74, 222, 128, 0.2)">
                       <div className="text-4xl mb-4">✨</div>
                       <h3 className="text-2xl font-bold text-green-400 mb-4">Our Solution</h3>
                       <ul className="space-y-3 text-white/80">
@@ -161,11 +189,11 @@ export default function Home() {
                           Full transparency in data buyers
                         </li>
                       </ul>
-                    </div>
+                    </SpotlightCard>
                   </div>
 
                   {/* How It Works */}
-                  <div className="psychat-card p-8">
+                  <SpotlightCard className="p-8" spotlightColor="rgba(147, 51, 234, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">How PsyChat Works</h3>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                       <div className="text-center">
@@ -220,10 +248,10 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* Key Features */}
-                  <div className="psychat-card p-8">
+                  <SpotlightCard className="p-8" spotlightColor="rgba(97, 179, 220, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">Key Features</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="text-center">
@@ -253,10 +281,10 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* Data Buyers */}
-                  <div className="psychat-card p-8">
+                  <SpotlightCard className="p-8" spotlightColor="rgba(97, 220, 163, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">Who's Buying Your Data</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                       <div className="text-center">
@@ -287,42 +315,57 @@ export default function Home() {
                         Your mental health insights help advance AI empathy, academic research, and wellness innovation.
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* Technology Stack */}
-                  <div className="psychat-card p-8">
+                  <SpotlightCard className="p-8" spotlightColor="rgba(147, 51, 234, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">Powered by Web3</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-                      <div className="text-center">
-                        <div className="text-2xl mb-2">🔗</div>
-                        <div className="text-sm font-semibold text-white">Solana</div>
-                        <div className="text-xs text-white/60">Fast & Cheap</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl mb-2">👻</div>
-                        <div className="text-sm font-semibold text-white">Phantom</div>
-                        <div className="text-xs text-white/60">Wallet</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl mb-2">🔒</div>
-                        <div className="text-sm font-semibold text-white">Arcium</div>
-                        <div className="text-xs text-white/60">ZK Privacy</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl mb-2">🏪</div>
-                        <div className="text-sm font-semibold text-white">Raydium</div>
-                        <div className="text-xs text-white/60">AMM Trading</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl mb-2">💰</div>
-                        <div className="text-sm font-semibold text-white">Reflect</div>
-                        <div className="text-xs text-white/60">$rUSD Payments</div>
-                      </div>
+                    <div style={{ height: '600px', position: 'relative' }} className="flex justify-center">
+                      <Carousel
+                        baseWidth={300}
+                        autoplay={true}
+                        autoplayDelay={3000}
+                        pauseOnHover={true}
+                        loop={true}
+                        round={false}
+                        items={[
+                          {
+                            title: 'Solana',
+                            description: 'Fast & Cheap blockchain',
+                            id: 1,
+                            icon: <span className="text-2xl">🔗</span>
+                          },
+                          {
+                            title: 'Phantom',
+                            description: 'Wallet integration',
+                            id: 2,
+                            icon: <span className="text-2xl">👻</span>
+                          },
+                          {
+                            title: 'Arcium',
+                            description: 'ZK Privacy protection',
+                            id: 3,
+                            icon: <span className="text-2xl">🔒</span>
+                          },
+                          {
+                            title: 'Raydium',
+                            description: 'AMM Trading',
+                            id: 4,
+                            icon: <span className="text-2xl">🏪</span>
+                          },
+                          {
+                            title: 'Reflect',
+                            description: '$rUSD Payments',
+                            id: 5,
+                            icon: <span className="text-2xl">💰</span>
+                          }
+                        ]}
+                      />
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* MotusDAO Ecosystem */}
-                  <div className="psychat-card p-8">
+                  <SpotlightCard className="p-8" spotlightColor="rgba(97, 179, 220, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">MotusDAO Complete Ecosystem</h3>
                     
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -394,10 +437,10 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* Impact Metrics */}
-                  <div className="psychat-card p-8">
+                  <SpotlightCard className="p-8" spotlightColor="rgba(97, 220, 163, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">Impact & Vision</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="text-center">
@@ -424,10 +467,10 @@ export default function Home() {
                         democratizes access while maintaining professional standards and legal compliance.
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
 
                   {/* Call to Action */}
-                  <div className="psychat-card p-8 text-center">
+                  <SpotlightCard className="p-8 text-center" spotlightColor="rgba(147, 51, 234, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-4">Ready to Join the Dataconomy?</h3>
                     <p className="text-white/80 mb-6 max-w-2xl mx-auto">
                       Connect your wallet and start earning from your mental health data today. 
@@ -441,7 +484,7 @@ export default function Home() {
                       💰 Earn from data marketplace via Raydium AMM<br/>
                       🚀 Auto-compound earnings with Reflect $rUSD
                     </div>
-                  </div>
+                  </SpotlightCard>
                 </div>
               )}
               {activeTab === 'chat' && <Chat />}
@@ -464,6 +507,7 @@ export default function Home() {
           </p>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
