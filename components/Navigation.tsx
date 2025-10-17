@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import SpotlightCard from './SpotlightCard';
 
 interface Tab {
@@ -50,38 +50,35 @@ const Navigation: React.FC<NavigationProps> = ({
   }, [activeTab, isMobile]);
 
   // Animation variants
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0, y: -20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.6,
-        ease: [0.6, -0.05, 0.01, 0.99],
         staggerChildren: 0.1
       }
     }
   };
 
-  const tabVariants = {
+  const tabVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.4,
-        ease: "easeOut"
+        duration: 0.4
       }
     }
   };
 
-  const mobileMenuVariants = {
+  const mobileMenuVariants: Variants = {
     hidden: {
       opacity: 0,
       height: 0,
       transition: {
-        duration: 0.3,
-        ease: "easeInOut"
+        duration: 0.3
       }
     },
     visible: {
@@ -89,20 +86,18 @@ const Navigation: React.FC<NavigationProps> = ({
       height: 'auto',
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
         staggerChildren: 0.1
       }
     }
   };
 
-  const mobileTabVariants = {
+  const mobileTabVariants: Variants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
       x: 0,
       transition: {
-        duration: 0.3,
-        ease: "easeOut"
+        duration: 0.3
       }
     }
   };
@@ -162,8 +157,6 @@ const Navigation: React.FC<NavigationProps> = ({
       <SpotlightCard 
         className="p-1" 
         spotlightColor="rgba(97, 179, 220, 0.2)"
-        cyberpunkAccents={!isMobile}
-        shimmer={!isMobile}
       >
         {isMobile ? (
           <div className="relative">

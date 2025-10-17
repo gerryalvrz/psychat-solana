@@ -47,9 +47,7 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black animate-fadeIn">
-      {/* Terminal Container */}
       <div className="w-full max-w-4xl mx-4">
-        {/* Terminal Header */}
         <div className="bg-gray-800 rounded-t-lg px-4 py-2 flex items-center space-x-2">
           <div className="w-3 h-3 bg-red-500 rounded-full"></div>
           <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
@@ -59,16 +57,13 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
           </div>
         </div>
 
-        {/* Terminal Body */}
         <div className="bg-black border-2 border-gray-700 rounded-b-lg p-6 font-mono text-green-400 min-h-[400px]">
-          {/* Terminal Prompt */}
           <div className="flex items-center mb-4">
             <span className="text-green-400 mr-2">$</span>
             <span className="text-gray-400">psycat --init --lunarpunk</span>
             <div className="w-2 h-4 bg-green-400 ml-1 animate-pulse"></div>
           </div>
 
-          {/* Loading Animation */}
           <div className="mb-6">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-yellow-400">Loading PsyChat modules...</span>
@@ -87,7 +82,6 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
             </div>
           </div>
 
-          {/* Decrypted Text Lines */}
           <div className="space-y-3">
             {lines.map((line, index) => (
               <div
@@ -105,7 +99,6 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
                     maxIterations={15}
                     sequential={true}
                     revealDirection="start"
-                    characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?`~"
                     className="text-green-400"
                     encryptedClassName="text-gray-500"
                     animateOn="view"
@@ -115,7 +108,6 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
             ))}
           </div>
 
-          {/* Terminal Footer */}
           <div className="mt-8 pt-4 border-t border-gray-700">
             <div className="text-gray-500 text-sm">
               <div>Initializing Web3 connection...</div>
@@ -124,7 +116,6 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
             </div>
           </div>
 
-          {/* Cursor */}
           <div className="inline-block w-2 h-4 bg-green-400 ml-1 animate-pulse"></div>
         </div>
       </div>
