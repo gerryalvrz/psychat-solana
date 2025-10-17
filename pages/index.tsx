@@ -3,38 +3,195 @@ import { useState, useEffect } from 'react';
 import Chat from '../components/Chat';
 import Dashboard from '../components/Dashboard';
 import Marketplace from '../components/Marketplace';
+import VideoChat from '../components/VideoChat';
+import Profile from './profile';
 import ClientWalletButton from '../components/ClientWalletButton';
 import LetterGlitch from '../components/backgrounds/LetterGlitch';
 import SpotlightCard from '../components/SpotlightCard';
 import Carousel from '../components/Carousel';
+import Dock from '../components/Dock';
+import DecryptedText from '../components/DecryptedText';
+import FaultyTerminal from '../components/FaultyTerminal';
+// import TerminalLoader from '../components/TerminalLoader';
+import { 
+  HiHome, 
+  HiChat, 
+  HiVideoCamera, 
+  HiShoppingBag, 
+  HiChartBar,
+  HiUser
+} from 'react-icons/hi';
 
 export default function Home() {
   const { connected } = useWallet();
-  const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'marketplace' | 'dashboard'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'videochat' | 'marketplace' | 'dashboard' | 'profile'>('home');
   const [mounted, setMounted] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
+  useEffect(() => {
+    if (showLoader) {
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+      }, 12000);
+      return () => clearTimeout(timer);
+    }
+  }, [showLoader]);
+
+  const handleLoaderComplete = () => {
+    setShowLoader(false);
+  };
+
+  if (!mounted || showLoader) {
     return (
-      <div className="relative min-h-screen">
-        <div className="fixed inset-0 z-0">
-          <LetterGlitch 
-            glitchColors={['#2b4539', '#61dca3', '#61b3dc']}
-            glitchSpeed={50}
-            centerVignette={false}
-            outerVignette={true}
-            smooth={true}
-            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ 
+        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 50%, rgba(15, 15, 35, 0.95) 100%)',
+        backdropFilter: 'blur(2px)'
+      }}>
+        {/* FaultyTerminal Background */}
+        <div className="absolute inset-0 z-0">
+          <FaultyTerminal
+            scale={1.5}
+            gridMul={[2, 1]}
+            digitSize={1.2}
+            timeScale={1}
+            pause={false}
+            scanlineIntensity={0.3}
+            glitchAmount={0.5}
+            flickerAmount={0.3}
+            noiseAmp={0.8}
+            chromaticAberration={0}
+            dither={0}
+            curvature={0.1}
+            tint="#00ff00"
+            mouseReact={true}
+            mouseStrength={0.3}
+            pageLoadAnimation={false}
+            brightness={0.4}
           />
         </div>
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🧠</div>
-            <h1 className="text-3xl font-bold text-white mb-4">PsyChat</h1>
-            <p className="text-white/80">Loading...</p>
+        
+        {/* Terminal Container */}
+        <div className="w-full max-w-4xl mx-4 relative z-10">
+          {/* Terminal Header */}
+          <div className="bg-black border border-gray-500 px-4 py-2 flex items-center space-x-2">
+            <div className="w-2 h-2 bg-red-500"></div>
+            <div className="w-2 h-2 bg-yellow-500"></div>
+            <div className="w-2 h-2 bg-green-500"></div>
+            <div className="ml-4 text-gray-300 text-xs font-mono">
+              PsyChat Terminal v1.0.0
+            </div>
+          </div>
+
+          {/* Terminal Body */}
+          <div className="bg-black border border-gray-500 p-6 font-mono text-green-500 min-h-[400px]">
+            {/* Terminal Prompt */}
+            <div className="flex items-center mb-4">
+              <span className="text-green-500 mr-2">$</span>
+              <span className="text-gray-400">psycat --init --lunarpunk</span>
+              <div className="w-2 h-4 bg-green-500 ml-1 animate-pulse"></div>
+            </div>
+
+            {/* Welcome Message with Decrypted Animation */}
+            <div className="space-y-2 mb-6">
+              <DecryptedText
+                text="Welcome to the Lunarpunk world,"
+                speed={80}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                className="text-green-500"
+                encryptedClassName="text-gray-500"
+                animateOn="view"
+              />
+              <DecryptedText
+                text="A new kind of Liquid Public Goods."
+                speed={80}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                className="text-green-500"
+                encryptedClassName="text-gray-500"
+                animateOn="view"
+              />
+              <DecryptedText
+                text="An AI Dataconomy that empowers humans."
+                speed={80}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                className="text-green-500"
+                encryptedClassName="text-gray-500"
+                animateOn="view"
+              />
+              <DecryptedText
+                text="From Degen to Regen tokenomics."
+                speed={80}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                className="text-green-500"
+                encryptedClassName="text-gray-500"
+                animateOn="view"
+              />
+              <DecryptedText
+                text="Self-custody and sovereignty."
+                speed={80}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                className="text-green-500"
+                encryptedClassName="text-gray-500"
+                animateOn="view"
+              />
+              <DecryptedText
+                text="This is the future of mental health in Web3."
+                speed={80}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                className="text-green-500"
+                encryptedClassName="text-gray-500"
+                animateOn="view"
+              />
+            </div>
+
+            {/* Loading Animation */}
+            <div className="mb-6">
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-yellow-500">Loading PsyChat modules...</span>
+                <div className="flex space-x-1">
+                  <div className="w-1 h-1 bg-yellow-500 animate-bounce"></div>
+                  <div className="w-1 h-1 bg-yellow-500 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-1 h-1 bg-yellow-500 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              </div>
+              
+              <div className="w-full bg-gray-800 h-1 mb-4">
+                <div className="bg-green-500 h-1 animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Terminal Footer */}
+            <div className="mt-8 pt-4 border-t border-gray-500">
+              <div className="text-gray-400 text-sm">
+                <div>Initializing Web3 connection...</div>
+                <div>Loading AI models...</div>
+                <div>Setting up decentralized storage...</div>
+              </div>
+            </div>
+
+            {/* Cursor */}
+            <div className="inline-block w-2 h-4 bg-green-500 ml-1 animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -58,7 +215,7 @@ export default function Home() {
         <header className="p-4 border-b border-white/20">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <button 
-            onClick={() => setActiveTab('home')}
+            onClick={() => setShowLoader(true)}
             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
             <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
@@ -71,37 +228,25 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="p-4">
-        <div className="max-w-6xl mx-auto">
-          <SpotlightCard className="p-1" spotlightColor="rgba(97, 179, 220, 0.2)">
-            <div className="flex space-x-1">
-              {[
-                { id: 'home', label: '🏠 Home', desc: 'About PsyChat' },
-                { id: 'chat', label: '💬 Chat', desc: 'Therapy Notes' },
-                { id: 'marketplace', label: '🏪 Marketplace', desc: 'Data Trading' },
-                { id: 'dashboard', label: '📊 Dashboard', desc: 'Earnings & Yield' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex-1 psychat-mobile px-4 py-3 rounded-md transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? 'bg-white text-psy-purple font-semibold'
-                      : 'text-white/70 hover:text-white hover:bg-black/30'
-                  }`}
-                >
-                  <div className="text-sm font-medium">{tab.label}</div>
-                  <div className="text-xs opacity-75">{tab.desc}</div>
-                </button>
-              ))}
-            </div>
-          </SpotlightCard>
-        </div>
-      </nav>
+      {/* Dock Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <Dock 
+          items={[
+            { icon: <HiHome className="text-green-400" size={24} />, label: 'Home', onClick: () => setActiveTab('home') },
+            { icon: <HiChat className="text-green-400" size={24} />, label: 'Chat', onClick: () => setActiveTab('chat') },
+            { icon: <HiVideoCamera className="text-green-400" size={24} />, label: 'Video', onClick: () => setActiveTab('videochat') },
+            { icon: <HiShoppingBag className="text-green-400" size={24} />, label: 'Marketplace', onClick: () => setActiveTab('marketplace') },
+            { icon: <HiChartBar className="text-green-400" size={24} />, label: 'Dashboard', onClick: () => setActiveTab('dashboard') },
+            { icon: <HiUser className="text-green-400" size={24} />, label: 'Profile', onClick: () => setActiveTab('profile') },
+          ]}
+          panelHeight={68}
+          baseItemSize={50}
+          magnification={70}
+        />
+      </div>
 
       {/* Main Content */}
-      <main className="p-4">
+      <main className="p-4 pb-24">
         <div className="max-w-6xl mx-auto">
           {!connected ? (
             <SpotlightCard className="p-8 text-center" spotlightColor="rgba(97, 220, 163, 0.2)">
@@ -488,15 +633,17 @@ export default function Home() {
                 </div>
               )}
               {activeTab === 'chat' && <Chat />}
+              {activeTab === 'videochat' && <VideoChat />}
               {activeTab === 'marketplace' && <Marketplace />}
               {activeTab === 'dashboard' && <Dashboard />}
+              {activeTab === 'profile' && <Profile />}
             </>
           )}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="p-4 border-t border-white/20 mt-8">
+      <footer className="p-4 border-t border-white/20 mt-8 pb-24">
         <div className="max-w-6xl mx-auto text-center text-white/60 text-sm">
           <p>
             Built for Cypherpunk Colosseum • MotusDAO • 
