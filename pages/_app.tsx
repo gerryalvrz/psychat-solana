@@ -5,7 +5,6 @@ import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import type { AppProps } from 'next/app';
 import { useMemo, useEffect, useState } from 'react';
-import Head from 'next/head';
 import '../styles/globals.css';
 
 // Import wallet adapter CSS

@@ -770,7 +770,7 @@
 
 @keyframes moveGrid {
   from { background-position: 0 0; }
-  to { background-position: 200px 200px; }
+  to { background-position: 40px 40px; }
 }
 
 /* Crystal System - Sharp Geometric Design */

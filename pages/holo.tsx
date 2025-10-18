@@ -130,6 +130,7 @@ export default function HoloPage() {
           © 2025 MotusDAO — Crystal Interface v3.0
         </HoloText>
       </motion.div>
+
     </div>
   );
 }

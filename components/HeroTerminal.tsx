@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import DecryptedText from './DecryptedText';
+import { HoloText } from './ui/holo';
+import { ComplexMolecule, WaterMolecule } from './ui';
 
 type HeroTerminalProps = {
   onConnect: () => Promise<void> | void;
@@ -119,11 +122,141 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
   }, [runCommand]);
 
   return (
-    <div className="w-full flex justify-center">
-      <div className="w-full max-w-4xl mx-2 sm:mx-4 relative">
+    <div className="w-full flex justify-center relative overflow-hidden crystal-layer-system">
+      {/* Crystal Grid Background */}
+      <div className="absolute inset-0 crystal-grid-sparse -z-10" />
+      
+      {/* Multilayer Crystal Background */}
+      <motion.div
+        className="absolute inset-0 -z-10 crystal-layer-1"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 50%)",
+            "radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 50%)"
+          ]
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      {/* Crystal Geometric Overlays */}
+      <div className="absolute inset-0 geometric-overlay-dense -z-10" />
+      
+      {/* Floating Crystal Orbs */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-96 h-96 crystal-layer-2 -z-10"
+        animate={{
+          x: [0, 100, -50, 0],
+          y: [0, -50, 100, 0],
+          scale: [1, 1.2, 0.8, 1],
+          rotate: [0, 90, 180, 360]
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          background: 'linear-gradient(45deg, rgba(0,255,255,0.05), rgba(255,0,255,0.05))',
+          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-80 h-80 crystal-layer-2 -z-10"
+        animate={{
+          x: [0, -100, 50, 0],
+          y: [0, 50, -100, 0],
+          scale: [1, 0.8, 1.2, 1],
+          rotate: [360, 270, 180, 0]
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          background: 'linear-gradient(45deg, rgba(157,104,255,0.05), rgba(0,255,255,0.05))',
+          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
+        }}
+      />
+
+      {/* Atomic Structure Background Elements */}
+      <div className="absolute top-10 left-10 crystal-layer-3 z-20">
+        <ComplexMolecule className="opacity-60" />
+      </div>
+      
+      <div className="absolute bottom-10 right-10 crystal-layer-1 z-20">
+        <WaterMolecule className="opacity-50" />
+      </div>
+      
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 crystal-layer-2 z-20">
+        <ComplexMolecule className="opacity-40" />
+      </div>
+      
+      {/* Additional atomic elements around the terminal */}
+      <div className="absolute top-5 right-5 crystal-layer-1 z-20">
+        <WaterMolecule className="opacity-70" />
+      </div>
+      
+      <div className="absolute bottom-5 left-5 crystal-layer-2 z-20">
+        <ComplexMolecule className="opacity-50" />
+      </div>
+      
+      {/* More atomic elements for better coverage */}
+      <div className="absolute top-1/3 right-1/3 crystal-layer-3 z-20">
+        <WaterMolecule className="opacity-45" />
+      </div>
+      
+      <div className="absolute bottom-1/3 left-1/3 crystal-layer-1 z-20">
+        <ComplexMolecule className="opacity-55" />
+      </div>
+      
+      {/* Animated crystal particles */}
+      <motion.div
+        className="absolute top-1/4 right-1/4 w-4 h-4 crystal-layer-2 z-20"
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.3, 0.8, 0.3],
+          rotate: [0, 180, 360]
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          background: 'radial-gradient(circle, rgba(0,255,255,0.6), rgba(255,0,255,0.3))',
+          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-1/4 left-1/4 w-6 h-6 crystal-layer-3 z-20"
+        animate={{
+          scale: [1, 0.8, 1.2, 1],
+          opacity: [0.4, 0.9, 0.4],
+          rotate: [360, 180, 0]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          background: 'radial-gradient(circle, rgba(157,104,255,0.7), rgba(0,255,255,0.4))',
+          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
+        }}
+      />
+
+      <div className="w-full max-w-4xl mx-2 sm:mx-4 relative z-10">
         {/* Terminal Frame */}
         <div
-          className="bg-black border border-gray-600/60 rounded-md overflow-hidden shadow-2xl crt-curvature"
+          className="bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-md overflow-hidden shadow-2xl crt-curvature"
           role="region"
           aria-label="PsyChat interactive terminal hero"
           onClick={() => inputRef.current?.focus()}
@@ -142,7 +275,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
             <div className="absolute inset-0 pointer-events-none crt-scanlines"></div>
             <div className="absolute inset-0 pointer-events-none crt-vignette"></div>
 
-            <div className="relative p-4 sm:p-6 font-mono text-green-400 bg-black/100 leading-relaxed text-sm sm:text-base">
+            <div className="relative p-4 sm:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-sm sm:text-base">
               {/* Headline */}
               <div className="mb-4">
                 <DecryptedText
@@ -156,9 +289,9 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                   encryptedClassName="text-green-700"
                   animateOn="view"
                 />
-                <div className="text-green-500/80 text-xs sm:text-sm md:text-base">
+                <HoloText size="sm" className="text-green-500/80 text-xs sm:text-sm md:text-base">
                   Own your therapy data. Earn from anonymized insights. Privacy by design.
-                </div>
+                </HoloText>
               </div>
 
               {/* History */}
@@ -216,9 +349,9 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                 />
                 <div className="w-2 h-4 bg-green-500 animate-pulse" aria-hidden></div>
               </form>
-              <div id="terminal-prompt-hint" className="mt-2 text-xs text-green-700">
+              <HoloText size="xs" id="terminal-prompt-hint" className="mt-2 text-xs text-green-700">
                 Try: help · connect · chat · learn · clear
-              </div>
+              </HoloText>
 
               {/* Mobile quick commands */}
               <div className="mt-3 flex flex-wrap gap-2 md:hidden" aria-label="Quick commands">
