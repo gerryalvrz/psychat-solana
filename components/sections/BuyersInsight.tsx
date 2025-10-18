@@ -92,12 +92,8 @@ const BuyersInsightSection: React.FC = () => {
                   <HoloPanel
                     variant="floating"
                     size="md"
-                    className={`text-center group hover:border-cyan-400/30 transition-all duration-300 bg-gradient-to-br ${buyer.bgColor}`}
+                    className={`text-center group hover:border-cyan-400/30 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 bg-gradient-to-br ${buyer.bgColor}`}
                     interactive={true}
-                    whileHover={{ 
-                      scale: 1.05,
-                      boxShadow: "0 0 20px rgba(0,255,255,0.2)"
-                    }}
                   >
                     <motion.div 
                       className={`text-3xl font-bold ${buyer.color} mb-2`}

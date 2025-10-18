@@ -222,12 +222,8 @@ const EcosystemImpactSection: React.FC = () => {
                 <HoloPanel
                   variant="floating"
                   size="lg"
-                  className="text-center group hover:border-cyan-400/30 transition-all duration-300"
+                  className="text-center group hover:border-cyan-400/30 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300"
                   interactive={true}
-                  whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: "0 0 20px rgba(0,255,255,0.2)"
-                  }}
                 >
                   <motion.div 
                     className={`text-4xl font-bold ${metric.color} mb-2`}

@@ -54,9 +54,7 @@ const JoinCTASection: React.FC = () => {
               className="flex justify-center mb-6"
             >
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative"
+                className="relative hover:scale-105 active:scale-95 transition-transform duration-200"
               >
                 {/* Shimmer effect */}
                 <motion.div

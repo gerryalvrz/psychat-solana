@@ -71,8 +71,7 @@ const FeaturesShowcaseSection: React.FC = () => {
                   <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                   <div className="relative z-10 text-center">
                     <motion.div 
-                      className="flex items-center justify-center mb-4 text-emerald-400"
-                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="flex items-center justify-center mb-4 text-emerald-400 hover:scale-110 hover:rotate-[5deg] transition-transform duration-300"
                     >
                       {feature.icon}
                     </motion.div>
@@ -93,11 +92,10 @@ const FeaturesShowcaseSection: React.FC = () => {
               {features.map((_, index) => (
                 <motion.button
                   key={index}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  className={`w-3 h-3 rounded-full transition-all duration-300 hover:scale-120 ${
                     currentIndex === index ? 'bg-cyan-400' : 'bg-white/30'
                   }`}
                   onClick={() => setCurrentIndex(index)}
-                  whileHover={{ scale: 1.2 }}
                 />
               ))}
             </div>
