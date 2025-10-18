@@ -21,6 +21,7 @@
     "autoprefixer": "^10.4.16",
     "chart.js": "^4.4.1",
     "framer-motion": "^12.23.24",
+    "gsap": "^3.13.0",
     "js-sha3": "^0.9.3",
     "motion": "^12.23.24",
     "next": "14.0.0",

@@ -6,13 +6,17 @@ import Marketplace from '../components/Marketplace';
 import VideoChat from '../components/VideoChat';
 import Profile from './profile';
 import ClientWalletButton from '../components/ClientWalletButton';
-import LetterGlitch from '../components/backgrounds/LetterGlitch';
+// import LetterGlitch from '../components/backgrounds/LetterGlitch';
 import SpotlightCard from '../components/SpotlightCard';
 import Carousel from '../components/Carousel';
 import Dock from '../components/Dock';
 import DecryptedText from '../components/DecryptedText';
 import FaultyTerminal from '../components/FaultyTerminal';
 // import TerminalLoader from '../components/TerminalLoader';
+import HeroTerminal from '../components/HeroTerminal';
+import ScrollCommandOrchestrator from '../components/ScrollCommandOrchestrator';
+import StickyStepper from '../components/StickyStepper';
+import { HiOutlineTicket, HiOutlineChatBubbleOvalLeft, HiOutlineBanknotes, HiOutlineRocketLaunch, HiOutlineXCircle, HiOutlineShieldCheck, HiOutlineLockClosed, HiOutlineEye } from 'react-icons/hi2';
 import { 
   HiHome, 
   HiChat, 
@@ -23,7 +27,7 @@ import {
 } from 'react-icons/hi';
 
 export default function Home() {
-  const { connected } = useWallet();
+  const { connected, connect } = useWallet();
   const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'videochat' | 'marketplace' | 'dashboard' | 'profile'>('home');
   const [mounted, setMounted] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
@@ -199,15 +203,27 @@ export default function Home() {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-black">
+      {/* Fullscreen FaultyTerminal background */}
       <div className="fixed inset-0 z-0">
-        <LetterGlitch 
-          glitchColors={['#2b4539', '#61dca3', '#61b3dc']}
-          glitchSpeed={50}
-          centerVignette={false}
-          outerVignette={true}
-          smooth={true}
-          characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+        <FaultyTerminal
+          scale={1.5}
+          gridMul={[2, 1]}
+          digitSize={1.2}
+          timeScale={1}
+          pause={false}
+          scanlineIntensity={0.3}
+          glitchAmount={0.5}
+          flickerAmount={0.3}
+          noiseAmp={0.8}
+          chromaticAberration={0}
+          dither={0}
+          curvature={0.1}
+          tint="#00ff00"
+          mouseReact={true}
+          mouseStrength={0.3}
+          pageLoadAnimation={false}
+          brightness={0.4}
         />
       </div>
       <div className="relative z-10">
@@ -218,10 +234,7 @@ export default function Home() {
             onClick={() => setShowLoader(true)}
             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">🧠</span>
-            </div>
-            <h1 className="text-2xl font-bold text-white">PsyChat</h1>
+            <h1 className="text-2xl font-bold text-white font-futuristic tracking-wider">PsyChat</h1>
             <span className="text-white/60 text-sm">by MotusDAO</span>
           </button>
           <ClientWalletButton />
@@ -229,7 +242,7 @@ export default function Home() {
       </header>
 
       {/* Dock Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50">
+      <div className="fixed inset-y-0 left-0 z-50">
         <Dock 
           items={[
             { icon: <HiHome className="text-green-400" size={24} />, label: 'Home', onClick: () => setActiveTab('home') },
@@ -246,183 +259,161 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <main className="p-4 pb-24">
+      <main className="p-4 pl-24 pb-24">
         <div className="max-w-6xl mx-auto">
           {!connected ? (
-            <SpotlightCard className="p-8 text-center" spotlightColor="rgba(97, 220, 163, 0.2)">
-              <div className="text-6xl mb-4">🧠</div>
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Welcome to PsyChat
-              </h2>
-              <p className="text-white/80 mb-6 max-w-2xl mx-auto">
-                The future of mental health is here. Own your therapy data, earn from anonymized insights, 
-                and build sustainable wealth through the dataconomy. Your privacy is protected, your data is valuable.
-              </p>
-              <div className="space-y-4">
-                <div className="flex justify-center">
-                  <ClientWalletButton />
+            <div className="max-w-4xl mx-auto">
+              {/* Terminal Header */}
+              <div className="bg-gray-800 rounded-t-lg px-4 py-2 flex items-center space-x-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full" />
+                <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+                <div className="w-3 h-3 bg-green-500 rounded-full" />
+                <div className="ml-4 text-gray-300 text-sm font-mono">PsyChat Terminal v1.0.0</div>
+              </div>
+              {/* Terminal Body */}
+              <div className="bg-black border-2 border-gray-700 rounded-b-lg p-6 font-mono text-green-400">
+                {/* Prompt */}
+                <div className="flex items-center mb-4">
+                  <span className="text-green-400 mr-2">$</span>
+                  <span className="text-gray-400">psycat --welcome --connect</span>
+                  <div className="w-2 h-4 bg-green-400 ml-1 animate-pulse" />
                 </div>
-                <div className="text-white/60 text-sm">
-                  🔒 Your data is encrypted with Arcium ZK proofs<br/>
-                  💰 Earn from data marketplace via Raydium AMM<br/>
-                  🚀 Auto-compound earnings with Reflect $rUSD
+                {/* Content */}
+                <div className="text-center">
+                  <div className="text-6xl mb-4">ᴪ</div>
+                  <h2 className="text-3xl font-bold text-green-400 mb-4">Welcome to PsyChat</h2>
+                  <p className="text-green-300/80 mb-6 max-w-2xl mx-auto">
+                    The future of mental health is here. Own your therapy data, earn from anonymized insights, and build sustainable wealth through the dataconomy. Your privacy is protected, your data is valuable.
+                  </p>
+                  <div className="space-y-4">
+                    <div className="flex justify-center">
+                      <ClientWalletButton />
+                    </div>
+                    <div className="text-green-300/70 text-sm">
+                      🔒 Your data is encrypted with Arcium ZK proofs<br/>
+                      💰 Earn from data marketplace via Raydium AMM<br/>
+                      🚀 Auto-compound earnings with Reflect $rUSD
+                    </div>
+                  </div>
                 </div>
               </div>
-            </SpotlightCard>
+            </div>
           ) : (
             <>
               {activeTab === 'home' && (
                 <div className="space-y-12">
-                  {/* Hero Section */}
-                  <SpotlightCard className="p-8 text-center" spotlightColor="rgba(97, 220, 163, 0.2)">
-                    <div className="text-6xl mb-4">🧠</div>
-                    <h2 className="text-4xl font-bold text-white mb-4">
-                      Welcome to PsyChat
-                    </h2>
-                    <p className="text-xl text-white/80 mb-6 max-w-3xl mx-auto">
-                      The future of mental health is here. Own your therapy data, earn from anonymized insights, 
-                      and build sustainable wealth through the dataconomy. Your privacy is protected, your data is valuable.
-                    </p>
-                    <div className="flex justify-center mb-8">
-                      <ClientWalletButton />
-                    </div>
-                  </SpotlightCard>
+                  {/* Hero Section - CRT Terminal */}
+                  <HeroTerminal
+                    onConnect={async () => {
+                      try {
+                        await connect?.();
+                      } catch (e) {
+                        // swallow; component will print failure line
+                      }
+                    }}
+                    onNavigate={(tab) => {
+                      if (tab === 'chat') {
+                        setActiveTab('chat');
+                      }
+                      if (tab === 'learn') {
+                        const el = document.querySelector('[data-how-it-works]');
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }
+                    }}
+                  />
 
-                  {/* Problem & Solution */}
+                  {/* Scrollytelling Orchestrator */}
+                  <ScrollCommandOrchestrator threshold={0.6} />
+
+                  {/* How It Works - Sticky Stepper */}
+                  <div className="p-2" data-how-it-works>
+                    <h3 className="text-3xl font-bold text-white mb-8 text-center font-mono">How PsyChat Works</h3>
+                    <StickyStepper
+                      steps={[
+                        { title: 'Mint HNFT', cmd: 'mint hnft', icon: <HiOutlineTicket className="w-6 h-6" />, description: 'Create your soulbound digital identity.' },
+                        { title: 'Chat Privately', cmd: 'chat --private', icon: <HiOutlineChatBubbleOvalLeft className="w-6 h-6" />, description: 'ZK-encrypted sessions, privacy by default.' },
+                        { title: 'Earn from Data', cmd: 'earn --datasets', icon: <HiOutlineBanknotes className="w-6 h-6" />, description: 'Trade anonymized datasets with transparency.' },
+                        { title: 'Stake & Grow', cmd: 'stake --auto', icon: <HiOutlineRocketLaunch className="w-6 h-6" />, description: 'Auto-compound yields and claim UBI.' },
+                      ]}
+                    />
+                  </div>
+
+                  {/* Problem & Solution (darker, squared, mono, icons) */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <SpotlightCard className="p-6" spotlightColor="rgba(248, 113, 113, 0.2)">
-                      <div className="text-4xl mb-4">😔</div>
+                    <div className="p-6 bg-black/60 border border-white/10 rounded-sm font-mono">
                       <h3 className="text-2xl font-bold text-red-400 mb-4">The Problem</h3>
                       <ul className="space-y-3 text-white/80">
                         <li className="flex items-start">
-                          <span className="text-red-400 mr-2">❌</span>
+                          <HiOutlineXCircle className="text-red-400 w-5 h-5 mr-2 mt-0.5" />
                           Mental health data is exploited by Big Tech
                         </li>
                         <li className="flex items-start">
-                          <span className="text-red-400 mr-2">❌</span>
+                          <HiOutlineXCircle className="text-red-400 w-5 h-5 mr-2 mt-0.5" />
                           Users earn nothing from their valuable data
                         </li>
                         <li className="flex items-start">
-                          <span className="text-red-400 mr-2">❌</span>
+                          <HiOutlineXCircle className="text-red-400 w-5 h-5 mr-2 mt-0.5" />
                           Privacy is compromised for profit
                         </li>
                         <li className="flex items-start">
-                          <span className="text-red-400 mr-2">❌</span>
+                          <HiOutlineXCircle className="text-red-400 w-5 h-5 mr-2 mt-0.5" />
                           No transparency in data usage
                         </li>
                       </ul>
-                    </SpotlightCard>
+                    </div>
 
-                    <SpotlightCard className="p-6" spotlightColor="rgba(74, 222, 128, 0.2)">
-                      <div className="text-4xl mb-4">✨</div>
+                    <div className="p-6 bg-black/60 border border-white/10 rounded-sm font-mono">
                       <h3 className="text-2xl font-bold text-green-400 mb-4">Our Solution</h3>
                       <ul className="space-y-3 text-white/80">
                         <li className="flex items-start">
-                          <span className="text-green-400 mr-2">✅</span>
+                          <HiOutlineShieldCheck className="text-green-400 w-5 h-5 mr-2 mt-0.5" />
                           You own your therapy data completely
                         </li>
                         <li className="flex items-start">
-                          <span className="text-green-400 mr-2">✅</span>
+                          <HiOutlineShieldCheck className="text-green-400 w-5 h-5 mr-2 mt-0.5" />
                           Earn 70% from anonymized data sales
                         </li>
                         <li className="flex items-start">
-                          <span className="text-green-400 mr-2">✅</span>
+                          <HiOutlineShieldCheck className="text-green-400 w-5 h-5 mr-2 mt-0.5" />
                           ZK-encrypted privacy protection
                         </li>
                         <li className="flex items-start">
-                          <span className="text-green-400 mr-2">✅</span>
+                          <HiOutlineShieldCheck className="text-green-400 w-5 h-5 mr-2 mt-0.5" />
                           Full transparency in data buyers
                         </li>
                       </ul>
-                    </SpotlightCard>
+                    </div>
                   </div>
 
-                  {/* How It Works */}
-                  <SpotlightCard className="p-8" spotlightColor="rgba(147, 51, 234, 0.2)">
-                    <h3 className="text-3xl font-bold text-white mb-8 text-center">How PsyChat Works</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                      <div className="text-center">
-                        <div className="w-16 h-16 bg-psy-purple/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-3xl">🎫</span>
-                        </div>
-                        <h4 className="text-xl font-semibold text-white mb-3">1. Mint HNFT</h4>
-                        <p className="text-white/70 text-sm mb-3">
-                          Create your soulbound digital identity. This non-transferable token represents you in the dataconomy.
-                        </p>
-                        <div className="text-xs text-psy-purple bg-psy-purple/10 px-3 py-1 rounded-full">
-                          Soulbound Identity
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="w-16 h-16 bg-psy-blue/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-3xl">💬</span>
-                        </div>
-                        <h4 className="text-xl font-semibold text-white mb-3">2. Chat Privately</h4>
-                        <p className="text-white/70 text-sm mb-3">
-                          Engage with AI therapy using Grok. All conversations are ZK-encrypted and stored privately.
-                        </p>
-                        <div className="text-xs text-psy-blue bg-psy-blue/10 px-3 py-1 rounded-full">
-                          ZK-Encrypted
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="w-16 h-16 bg-psy-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-3xl">💰</span>
-                        </div>
-                        <h4 className="text-xl font-semibold text-white mb-3">3. Earn from Data</h4>
-                        <p className="text-white/70 text-sm mb-3">
-                          Your chat sessions become tradeable Dataset NFTs. See exactly who's buying and why.
-                        </p>
-                        <div className="text-xs text-psy-green bg-psy-green/10 px-3 py-1 rounded-full">
-                          70% Revenue Share
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="w-16 h-16 bg-psy-orange/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-3xl">🚀</span>
-                        </div>
-                        <h4 className="text-xl font-semibold text-white mb-3">4. Stake & Grow</h4>
-                        <p className="text-white/70 text-sm mb-3">
-                          Claim UBI and auto-compound earnings into DeFi yields. Build sustainable wealth.
-                        </p>
-                        <div className="text-xs text-psy-orange bg-psy-orange/10 px-3 py-1 rounded-full">
-                          Auto-Compound
-                        </div>
-                      </div>
-                    </div>
-                  </SpotlightCard>
+                  
 
-                  {/* Key Features */}
-                  <SpotlightCard className="p-8" spotlightColor="rgba(97, 179, 220, 0.2)">
+                  {/* Key Features (mono, icons) */}
+                  <SpotlightCard className="p-8 font-mono" spotlightColor="rgba(97, 179, 220, 0.2)">
                     <h3 className="text-3xl font-bold text-white mb-8 text-center">Key Features</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="text-center">
-                        <div className="text-4xl mb-4">🔒</div>
+                        <div className="flex items-center justify-center mb-4 text-emerald-400"><HiOutlineLockClosed className="w-8 h-8" /></div>
                         <h4 className="text-xl font-semibold text-white mb-3">Privacy First</h4>
                         <p className="text-white/70 text-sm">
-                          Arcium ZK proofs ensure your data is encrypted while proving integrity. 
-                          Only anonymized aggregates can be sold.
+                          Arcium ZK proofs ensure your data is encrypted while proving integrity.
                         </p>
                       </div>
                       
                       <div className="text-center">
-                        <div className="text-4xl mb-4">👁️</div>
+                        <div className="flex items-center justify-center mb-4 text-emerald-400"><HiOutlineEye className="w-8 h-8" /></div>
                         <h4 className="text-xl font-semibold text-white mb-3">Full Transparency</h4>
                         <p className="text-white/70 text-sm">
-                          See exactly who's buying your data and why. AI companies, research labs, 
-                          and wellness apps with verified ethics approval.
+                          See exactly who's buying your data and why.
                         </p>
                       </div>
                       
                       <div className="text-center">
-                        <div className="text-4xl mb-4">💎</div>
+                        <div className="flex items-center justify-center mb-4 text-emerald-400"><HiOutlineBanknotes className="w-8 h-8" /></div>
                         <h4 className="text-xl font-semibold text-white mb-3">Fair Economics</h4>
                         <p className="text-white/70 text-sm">
-                          70% of all revenue goes to you. The remaining 30% supports platform 
-                          development and infrastructure.
+                          70% of all revenue goes to you; 30% sustains the network.
                         </p>
                       </div>
                     </div>

@@ -20,10 +20,10 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
 
   const mouseDistance = useTransform(mouseX, (val: number) => {
     const rect = ref.current?.getBoundingClientRect() ?? {
-      x: 0,
-      width: baseItemSize
-    };
-    return val - rect.x - baseItemSize / 2;
+      y: 0,
+      height: baseItemSize
+    } as DOMRect;
+    return val - rect.y - baseItemSize / 2;
   });
 
   const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, magnification, baseItemSize]);
@@ -41,7 +41,7 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
-      className={`relative inline-flex items-center justify-center rounded-lg bg-gray-900 border border-green-500/30 shadow-lg cursor-pointer outline-none hover:bg-green-900/20 hover:border-green-400/50 transition-all duration-300 ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-lg bg-black/80 border border-gray-700 text-green-400 shadow-[0_0_20px_rgba(16,185,129,0.1)] cursor-pointer outline-none hover:bg-black hover:border-green-400/60 transition-colors duration-200 ${className}`}
       tabIndex={0}
       role="button"
       aria-haspopup="true"
@@ -79,7 +79,7 @@ function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
           animate={{ opacity: 1, y: -10 }}
           exit={{ opacity: 0, y: 0 }}
           transition={{ duration: 0.2 }}
-          className={`absolute top-[-1.5rem] left-1/2 w-fit whitespace-nowrap rounded-md border border-green-500/30 bg-gray-900 px-2 py-1 text-xs text-green-400 transform -translate-x-1/2 ${className}`}
+          className={`absolute top-[-1.5rem] left-1/2 w-fit whitespace-nowrap rounded-md border border-gray-700 bg-black/90 px-2 py-1 text-xs text-green-400 transform -translate-x-1/2 backdrop-blur-sm ${className}`}
           role="tooltip"
           style={{ x: '-50%' }}
         >
@@ -96,7 +96,7 @@ interface DockIconProps {
 }
 
 function DockIcon({ children, className = '' }: DockIconProps) {
-  return <div className={`flex items-center justify-center ${className}`}>{children}</div>;
+  return <div className={`flex items-center justify-center text-green-400 ${className}`}>{children}</div>;
 }
 
 interface DockItem {
@@ -138,18 +138,18 @@ export default function Dock({
   const height = useSpring(heightRow, spring);
 
   return (
-    <motion.div style={{ height, scrollbarWidth: 'none' }} className="mx-2 flex max-w-full items-center">
+    <motion.div style={{ scrollbarWidth: 'none' }} className="font-mono">
       <motion.div
-        onMouseMove={({ pageX }) => {
+        onMouseMove={({ pageY }) => {
           isHovered.set(1);
-          mouseX.set(pageX);
+          mouseX.set(pageY);
         }}
         onMouseLeave={() => {
           isHovered.set(0);
           mouseX.set(Infinity);
         }}
-        className={`absolute bottom-2 left-1/2 flex w-fit items-end gap-4 rounded-2xl bg-gray-900/95 border border-green-500/30 backdrop-blur-sm px-2 pb-2 transform -translate-x-1/2 ${className}`}
-        style={{ height: panelHeight }}
+        className={`fixed left-2 top-1/2 flex w-fit flex-col items-start gap-4 rounded-2xl bg-black/80 border border-gray-700 text-green-400 shadow-[0_0_30px_rgba(16,185,129,0.08)] backdrop-blur-sm py-2 pl-2 pr-3 transform -translate-y-1/2 ${className}`}
+        style={{ width: panelHeight }}
         role="toolbar"
         aria-label="Application dock"
       >

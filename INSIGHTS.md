@@ -120,3 +120,33 @@ This is **genius** because:
 - Consumer apps that generate income
 
 **This is the future of mental health in Web3.**
+
+🎯 Key Changes Made:
+1. Fixed Payment Structure
+Per Session Pricing: Now uses fixed rate from therapist data instead of time-based calculation
+Button Text: Changed from "End & Pay ($X)" to "Pay for Therapy"
+Pricing Display: Shows therapist's fixed rate (e.g., "$150 $rUSD") in calendar booking
+2. Automatic AI Notes Storage
+Seamless UX: AI notes are now automatically stored in Walrus after session ends
+No Manual Action: Users don't need to click "Store in Walrus" - it happens automatically
+Visual Confirmation: Shows "✅ Auto-stored in Walrus • CID: [hash]" when complete
+Account Abstraction Ready: This mock prepares for future seamless account abstraction integration
+3. Enhanced Payment Flow
+Clear Payment Button: "Pay for Therapy" button during active session
+User Pays Psychologist: Confirmation shows "You paid [Psychologist Name] $X in $rUSD"
+Fixed Pricing: Uses therapist's rate from their profile data
+Payment Preview: Calendar shows exact cost before booking
+4. Improved User Experience
+Automatic Storage: Session notes auto-save to Walrus (mocked)
+Clear Pricing: Users see exact cost upfront in calendar booking
+Seamless Flow: No manual storage steps required
+Payment Confirmation: Clear success message with transaction details
+🔄 Updated Flow:
+AI Analysis → Shows chat insights and recommendations
+Therapist Selection → Curated list with match scores and fixed rates
+Calendar Booking → Shows exact cost (e.g., "$150 $rUSD") before booking
+Video Session → "Pay for Therapy" button during session
+Auto-Storage → AI notes automatically saved to Walrus
+Payment Success → "You paid Dr. Sarah Chen $150 in $rUSD"
+The implementation now provides a much smoother user experience with automatic note storage and clear, fixed pricing that matches the therapist's profile data!
+

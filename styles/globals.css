@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -23,6 +25,75 @@
 
 .psychat-card {
   @apply bg-black/20 backdrop-blur-lg border border-white/10 rounded-xl shadow-xl;
+}
+
+/* CRT hero utilities */
+.crt-scanlines {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04) 0px,
+    rgba(255, 255, 255, 0.04) 1px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0) 3px
+  );
+  mix-blend-mode: soft-light;
+}
+
+.crt-vignette {
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.7);
+}
+
+.crt-glow {
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.6), 0 0 16px rgba(16, 185, 129, 0.4);
+}
+
+.crt-curvature {
+  transform: perspective(1200px) translateZ(0);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(34, 197, 94, 0.5);
+  border-radius: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Neon graph utilities */
+.neon-stroke {
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.5));
+}
+
+@keyframes neonPulse {
+  0%, 100% { r: 14; opacity: 0.9; }
+  50% { r: 18; opacity: 1; }
+}
+
+.neon-node-pulse {
+  animation: neonPulse 1.8s ease-in-out infinite;
+}
+
+/* Chat minimal gradient background */
+.chat-bg-simple {
+  background: radial-gradient(1200px 800px at 10% 10%, rgba(34,197,94,0.06), transparent 60%),
+              radial-gradient(900px 600px at 90% 20%, rgba(59,130,246,0.06), transparent 60%),
+              radial-gradient(1000px 700px at 50% 90%, rgba(168,85,247,0.06), transparent 60%),
+              #000;
+}
+
+/* Custom fonts */
+.font-futuristic {
+  font-family: 'Orbitron', monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.font-terminal {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
 }
 
 .psychat-button {
