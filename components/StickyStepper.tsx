@@ -54,7 +54,7 @@ export default function StickyStepper({ steps }: Props) {
         {steps.map((s, i) => (
           <section
             key={s.title}
-            ref={(el) => (panelRefs.current[i] = el)}
+            ref={(el) => { panelRefs.current[i] = el; }}
             data-section-command={s.cmd}
             className="bg-black/60 border border-white/10 rounded-sm p-6 font-mono"
             aria-describedby={`step-${i}-desc`}
