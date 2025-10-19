@@ -234,7 +234,7 @@ export default function Home() {
       
       <div className="relative" style={{ zIndex: 10 }}>
         {/* Header */}
-        <header className="p-4 border-b border-white/20">
+        <header className="p-4 border-b border-white/20 relative z-50">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <button 
             onClick={() => setShowLoader(true)}

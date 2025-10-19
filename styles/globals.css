@@ -21,6 +21,31 @@ body > div {
   box-sizing: border-box;
 }
 
+/* Prevent automatic scrolling when typing */
+.chat-section-container {
+  scroll-behavior: auto;
+  overflow: hidden;
+}
+
+.chat-section-container * {
+  scroll-behavior: auto;
+}
+
+/* Prevent automatic scrolling in chat messages */
+.messages-container {
+  scroll-behavior: auto;
+}
+
+.messages-container * {
+  scroll-behavior: auto;
+}
+
+/* Prevent page scrolling when typing */
+body {
+  scroll-behavior: auto;
+  overflow-x: hidden;
+}
+
 /* Smooth transitions for all elements */
 * {
   transition: opacity 0.2s ease-in-out;
@@ -657,14 +682,19 @@ canvas {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(34, 197, 94, 0.5);
-  border-radius: 6px;
+  background-color: rgba(0, 229, 255, 0.3);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 229, 255, 0.5);
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 
 /* Neon graph utilities */
@@ -701,8 +731,84 @@ canvas {
   font-weight: 500;
 }
 
-.psychat-button {
-  @apply bg-psy-purple hover:bg-psy-purple/80 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+/* Force wallet button styling with high specificity */
+.psychat-button,
+.wallet-adapter-button,
+.wallet-adapter-button-trigger,
+[data-testid="wallet-adapter-button"],
+.wallet-adapter-modal-button {
+  background: transparent !important;
+  border: 1px solid rgba(0, 255, 255, 0.3) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.psychat-button:hover,
+.wallet-adapter-button:hover,
+.wallet-adapter-button-trigger:hover,
+[data-testid="wallet-adapter-button"]:hover,
+.wallet-adapter-modal-button:hover {
+  background: rgba(0, 255, 255, 0.1) !important;
+  border-color: rgba(0, 255, 255, 0.5) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+
+/* Neon corner effects */
+.psychat-button::before,
+.wallet-adapter-button::before,
+.wallet-adapter-button-trigger::before,
+[data-testid="wallet-adapter-button"]::before,
+.wallet-adapter-modal-button::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+  pointer-events: none !important;
+}
+
+.psychat-button:hover::before,
+.wallet-adapter-button:hover::before,
+.wallet-adapter-button-trigger:hover::before,
+[data-testid="wallet-adapter-button"]:hover::before,
+.wallet-adapter-modal-button:hover::before {
+  opacity: 1 !important;
+}
+
+.psychat-button::after,
+.wallet-adapter-button::after,
+.wallet-adapter-button-trigger::after,
+[data-testid="wallet-adapter-button"]::after,
+.wallet-adapter-modal-button::after {
+  content: '' !important;
+  position: absolute !important;
+  top: -2px !important;
+  left: -2px !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), transparent, rgba(0, 255, 255, 0.3)) !important;
+  border-radius: inherit !important;
+  z-index: -1 !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.psychat-button:hover::after,
+.wallet-adapter-button:hover::after,
+.wallet-adapter-button-trigger:hover::after,
+[data-testid="wallet-adapter-button"]:hover::after,
+.wallet-adapter-modal-button:hover::after {
+  opacity: 1 !important;
 }
 
 .psychat-input {
@@ -1099,4 +1205,419 @@ canvas {
   box-shadow: 
     0 0 20px rgba(0,255,255,0.3),
     inset 0 0 2px rgba(255,255,255,0.2);
+}
+
+/* Chat Section HNFT Revamp Styles */
+
+/* Chat Section Container */
+.chat-section-container {
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+/* HNFT Section Styles */
+.hnft-section-expanded {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-section-expanded:not(.w-full) {
+  max-width: 20rem; /* w-80 equivalent */
+}
+
+.hnft-section-expanded.w-full {
+  max-width: 28rem; /* max-w-md equivalent */
+  margin: 0 auto;
+}
+
+/* HNFT Sidebar */
+.hnft-sidebar {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 40;
+}
+
+.hnft-sidebar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 229, 255, 0.15);
+}
+
+/* Chat Terminal Section */
+.chat-terminal-section {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: translateX(20px);
+  animation: slideInFromRight 0.6s ease-out forwards;
+  height: 100%;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+@keyframes slideInFromRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* HNFT Identity Card Animations */
+.hnft-identity-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-identity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.1);
+}
+
+/* HNFT Status Compact Animations */
+.hnft-status-compact {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-status-compact:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.15);
+}
+
+/* HNFT Minting Flow Animations */
+.hnft-minting-flow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-minting-flow .step-indicator {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-minting-flow .step-indicator.completed {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chat-section-container {
+    padding: 1rem;
+  }
+  
+  .hnft-section-expanded {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .hnft-sidebar {
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .chat-terminal-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .chat-section-container {
+    padding: 0.5rem;
+  }
+  
+  .hnft-section-expanded {
+    padding: 1rem;
+  }
+}
+
+/* Transition Classes for Framer Motion */
+.hnft-expand-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.hnft-expand-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-expand-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hnft-expand-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Chat Terminal Animations */
+.chat-terminal {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 70vh;
+}
+
+.chat-terminal:hover {
+  box-shadow: 0 10px 30px rgba(0, 229, 255, 0.1);
+}
+
+/* Message Animations */
+.message-enter {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+.message-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading States */
+.hnft-loading {
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Focus States */
+.hnft-identity-card:focus-within {
+  outline: 2px solid rgba(0, 229, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.hnft-status-compact:focus-within {
+  outline: 2px solid rgba(0, 229, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .hnft-identity-card,
+  .hnft-status-compact,
+  .chat-terminal,
+  .hnft-minting-flow {
+    transition: none;
+  }
+  
+  .hnft-identity-card:hover,
+  .hnft-status-compact:hover,
+  .chat-terminal:hover {
+    transform: none;
+  }
+}
+
+/* Message Bubble Styles */
+.message-bubble {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-bubble:hover {
+  transform: translateY(-1px);
+}
+
+/* User messages - Right aligned, cyan */
+.message-bubble.user {
+  margin-left: auto;
+  max-width: 85%;
+}
+
+.message-bubble.user .crystal-glass {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.10), rgba(0, 229, 255, 0.03));
+  border: 1px solid rgba(0, 229, 255, 0.20);
+  border-radius: 0.75rem;
+}
+
+/* AI messages - Left aligned, magenta */
+.message-bubble.ai {
+  margin-right: auto;
+  max-width: 85%;
+}
+
+.message-bubble.ai .crystal-glass {
+  background: linear-gradient(135deg, rgba(225, 68, 255, 0.10), rgba(225, 68, 255, 0.03));
+  border: 1px solid rgba(225, 68, 255, 0.20);
+  border-radius: 0.75rem;
+}
+
+/* Typing Indicator Animation */
+.typing-indicator {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.typing-bubble {
+  background: linear-gradient(135deg, rgba(225, 68, 255, 0.10), rgba(225, 68, 255, 0.03));
+  border: 1px solid rgba(225, 68, 255, 0.20);
+  border-radius: 0.75rem;
+}
+
+/* Session Header Styles */
+.session-header {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.session-header:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.1);
+}
+
+/* Message Input Styles */
+.message-input-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-input-container:focus-within {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 20px rgba(0, 229, 255, 0.10);
+}
+
+/* Responsive Message Bubbles */
+@media (max-width: 768px) {
+  .message-bubble.user,
+  .message-bubble.ai {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 640px) {
+  .message-bubble.user,
+  .message-bubble.ai {
+    max-width: 95%;
+  }
+  
+  .typing-bubble {
+    padding: 0.75rem;
+  }
+  
+  .message-input-container .crystal-glass {
+    padding: 0.75rem;
+  }
+}
+
+/* Keyboard shortcuts styling */
+kbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* HNFT Identity Card Button Styles */
+.hnft-identity-card button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.hnft-identity-card button:hover {
+  transform: scale(1.05);
+}
+
+.hnft-identity-card button:active {
+  transform: scale(0.95);
+}
+
+/* HNFT Card Header Buttons */
+.hnft-identity-card .header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hnft-identity-card .expand-button {
+  color: rgba(0, 229, 255, 0.8);
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.hnft-identity-card .expand-button:hover {
+  color: rgba(0, 229, 255, 1);
+  background: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+.hnft-identity-card .close-button {
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hnft-identity-card .close-button:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* HNFT Card Collapse Animation */
+.hnft-identity-card .collapsible-content {
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-identity-card .collapsible-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.hnft-identity-card .collapsible-content.expanded {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+/* HNFT Card Collapsed State */
+.hnft-identity-card .collapsed-state {
+  padding: 0.75rem;
+  background: rgba(0, 229, 255, 0.05);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hnft-identity-card .collapsed-state:hover {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.15);
+}
+
+/* HNFT Sidebar Positioning */
+.hnft-sidebar {
+  position: relative;
+  z-index: 50;
+  width: 16rem;
+  max-width: 16rem;
+}
+
+.hnft-sidebar .hnft-status-compact {
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+
+/* Ensure buttons are clickable */
+.hnft-sidebar button {
+  pointer-events: auto;
+  z-index: 51;
+  position: relative;
 }
