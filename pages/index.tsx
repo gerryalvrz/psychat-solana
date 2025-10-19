@@ -219,7 +219,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden cursor-crosshair">
+    <div className="min-h-screen relative overflow-hidden cursor-crosshair" style={{ backgroundColor: '#0B101A' }}>
       {/* GridDistortion Background - Single source of truth */}
       <BackgroundLayer layer="deep">
         <GridDistortion

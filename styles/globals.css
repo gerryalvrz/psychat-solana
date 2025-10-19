@@ -6,13 +6,31 @@
 
 /* Prevent white flash during development */
 html, body {
-  background-color: transparent;
+  background-color: #0B101A;
   color: #ffffff;
+  overflow-x: hidden;
 }
 
-/* Ensure no white background during component re-renders, but preserve grid */
+/* Ensure no white background during component re-renders */
 body > div {
-  background-color: transparent;
+  background-color: #0B101A;
+}
+
+/* Prevent layout shifts and white flashing */
+* {
+  box-sizing: border-box;
+}
+
+/* Smooth transitions for all elements */
+* {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* WebGL canvas optimization */
+canvas {
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* PsyChat Futuristic Design System */

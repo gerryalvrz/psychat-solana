@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 
 // Elegant scroll grid effect - version 3.0 - progressive grid expansion
@@ -116,6 +116,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
   const imageAspectRef = useRef<number>(1);
   const animationIdRef = useRef<number | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -339,6 +340,11 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
 
     // Start animation
     startAnimation();
+    
+    // Mark as initialized after a short delay to ensure WebGL is ready
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
 
     return () => {
       if (animationIdRef.current) {
@@ -390,7 +396,11 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
         left: 0,
         zIndex: -20,
         pointerEvents: 'auto', // Enable mouse interactions for hover effects
-        background: 'linear-gradient(45deg, rgba(0,255,255,0.1), rgba(255,0,255,0.1))' // Fallback background
+        background: isInitialized 
+          ? 'transparent' 
+          : 'linear-gradient(135deg, rgba(5, 5, 8, 0.95) 0%, rgba(15, 15, 35, 0.95) 50%, rgba(5, 5, 8, 0.95) 100%)', // Dark fallback
+        opacity: isInitialized ? 1 : 0.8,
+        transition: 'opacity 0.3s ease-in-out'
       }}
     />
   );
