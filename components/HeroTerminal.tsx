@@ -395,7 +395,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                   <HoloButton
                     onClick={handleStartChat}
                     variant="primary"
-                    size="md"
+                    size="lg"
                     className="w-full sm:w-auto font-futuristic tracking-wider"
                   >
                     Enter the Chat

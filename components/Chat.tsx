@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ArciumIntegration, WalrusIntegration } from '../utils/sponsorIntegrations';
 import { getAnchorProgram } from '../lib/anchor';
 import { ensureHNFTExists, registerChatNFT } from '../utils/identity/hnftOperations';
@@ -9,6 +10,14 @@ import { cleanupOldTransactions } from '../utils/cleanupTransactions';
 import { keccak256 } from 'js-sha3';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { HoloPanel, HoloButton, HoloText } from '../components/ui/holo';
+import { ComplexMolecule, WaterMolecule } from '../components/ui';
+
+// New chat components
+import HNFTIdentityCard from './chat/HNFTIdentityCard';
+import HNFTStatusCompact from './chat/HNFTStatusCompact';
+import ChatTerminal from './chat/ChatTerminal';
+import ChatNFTList from './chat/ChatNFTList';
+import ChatNFTStatusCompact from './chat/ChatNFTStatusCompact';
 
 interface Message {
   id: string;
@@ -17,6 +26,13 @@ interface Message {
   timestamp: Date;
   encrypted?: boolean;
   hnftMinted?: boolean;
+}
+
+interface ChatNFT {
+  transactionSignature: string;
+  sessionId: string;
+  timestamp: Date;
+  messageCount?: number;
 }
 
 export default function Chat() {
@@ -34,13 +50,29 @@ export default function Chat() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const inProgressRef = useRef(false);
+  
+  // New state for HNFT section expansion
+  const [isHNFTExpanded, setIsHNFTExpanded] = useState(true);
+  
+  // State for HNFT section visibility
+  const [isHNFTVisible, setIsHNFTVisible] = useState(true);
+  
+  // AI thinking state for typing indicator
+  const [isAIThinking, setIsAIThinking] = useState(false);
+
+  // ChatNFT state management
+  const [chatNFTs, setChatNFTs] = useState<ChatNFT[]>([]);
+  const [isChatNFTListExpanded, setIsChatNFTListExpanded] = useState(false);
+  const [isChatNFTVisible, setIsChatNFTVisible] = useState(true);
 
   const clearMockData = () => {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem('psychat_hnft_pda');
       window.localStorage.removeItem('psychat_hnft_sig');
+      window.localStorage.removeItem('psychat_chat_nfts');
       setHnftPda(null);
       setHnftSig(null);
+      setChatNFTs([]);
       console.log('Mock data cleared');
     }
   };
@@ -50,8 +82,6 @@ export default function Chat() {
     const isDev = ep ? ep.includes('devnet') : (process.env.NEXT_PUBLIC_SOLANA_RPC || '').includes('devnet');
     return `https://solscan.io/tx/${sig}${isDev ? '?cluster=devnet' : ''}`;
   };
-  const [provider, setProvider] = useState<'openai' | 'xai'>((process.env.NEXT_PUBLIC_DEFAULT_PROVIDER as 'openai' | 'xai') || 'openai');
-  const [model, setModel] = useState<string>(process.env.NEXT_PUBLIC_DEFAULT_MODEL || (provider === 'xai' ? 'grok-4-latest' : 'gpt-4o-mini'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -62,10 +92,54 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
+  // Handle escape key to close chat
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        window.history.back();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  // Auto-hide HNFT section on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      if (window.innerWidth < 768) { // md breakpoint
+        setIsHNFTVisible(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     // Clean up old transaction data on component mount
     cleanupOldTransactions();
   }, []);
+
+  // Set initial HNFT expansion state
+  useEffect(() => {
+    // When HNFT is minted, automatically collapse to show compact sidebar
+    if (hnftPda) {
+      // Small delay to allow user to see the success state before collapsing
+      const timer = setTimeout(() => {
+        setIsHNFTExpanded(false);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [hnftPda]);
+
+  // Handle HNFT card close - collapse but keep available
+  const handleHNFTClose = () => {
+    console.log('Closing HNFT card, setting isHNFTExpanded to false');
+    setIsHNFTExpanded(false);
+  };
 
   useEffect(() => {
     // Clear any existing mock data to force fresh minting
@@ -84,12 +158,29 @@ export default function Chat() {
         setHnftPda(saved);
         setHnftSig(savedSig);
       }
+
+      // Load ChatNFTs from localStorage
+      const savedChatNFTs = window.localStorage.getItem('psychat_chat_nfts');
+      if (savedChatNFTs) {
+        try {
+          const parsedChatNFTs = JSON.parse(savedChatNFTs);
+          // Convert timestamp strings back to Date objects
+          const chatNFTsWithDates = parsedChatNFTs.map((nft: any) => ({
+            ...nft,
+            timestamp: new Date(nft.timestamp)
+          }));
+          setChatNFTs(chatNFTsWithDates);
+        } catch (error) {
+          console.error('Error parsing saved ChatNFTs:', error);
+        }
+      }
     }
   }, []);
 
   // Check for existing HNFT when wallet connects
   useEffect(() => {
     const checkExistingHNFT = async () => {
+      console.log('checkExistingHNFT - publicKey:', publicKey, 'connection:', !!connection);
       if (!publicKey || !connection) return;
       
       // Clear any cached HNFT data when wallet changes
@@ -259,11 +350,14 @@ export default function Chat() {
     setMessages(prev => [...prev, userMsg]);
 
     try {
-      // Call Grok API
+      // Set AI thinking state
+      setIsAIThinking(true);
+      
+      // Call Psychat API (using Grok)
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [{ role: 'user', content: userText }], provider, model }),
+        body: JSON.stringify({ messages: [{ role: 'user', content: userText }], provider: 'xai', model: 'grok-4-latest' }),
       });
       const data = await res.json();
       const aiText: string = data?.response || 'Sorry, there was an issue generating a response.';
@@ -281,6 +375,8 @@ export default function Chat() {
       // Keep chatting fluid; minting occurs only on "End Session"
     } catch (e) {
       console.error('Error processing chat:', e);
+    } finally {
+      setIsAIThinking(false);
     }
   };
 
@@ -288,348 +384,325 @@ export default function Chat() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const renderContent = () => (
-    <>
-      {!hnftPda && (
-        <div className="mb-4 p-4 bg-psy-purple/10 border border-psy-purple/30 rounded">
-          <div className="text-white/80 mb-2">Before chatting, mint your soulbound PsyChat identity HNFT to enable secure, private sessions.</div>
-          <button
-            className="psychat-button disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={async () => {
-              if (!publicKey || !signTransaction) {
-                alert('Connect wallet');
-                return;
-              }
-              if (isMinting) {
-                console.log('Minting already in progress, ignoring click');
-                return;
-              }
-              setIsMinting(true);
-              try {
-                setError(null);
-                setSuccess(null);
-                const solscanUrl = await mintHNFT(); // Identity container only
-                setLastTxUrl(solscanUrl);
-                setSuccess('Identity HNFT minted successfully! You can now start chatting.');
-              } catch (e: any) {
-                console.error('HNFT mint failed:', e);
-                let errorMessage = e?.message || String(e);
-                
-                // Handle specific transaction errors
-                if (errorMessage.includes('This transaction has already been processed')) {
-                  errorMessage = 'Transaction already processed. Please wait a moment and try again.';
-                } else if (errorMessage.includes('HNFT already exists')) {
-                  errorMessage = 'You already have an HNFT. Please refresh the page to see it.';
-                } else if (errorMessage.includes('already in use')) {
-                  errorMessage = 'HNFT already exists for this wallet. Please refresh the page to see your existing HNFT.';
-                }
-                
-                setError('HNFT mint failed: ' + errorMessage);
-              } finally {
-                setIsMinting(false);
-              }
-            }}
-            disabled={isMinting}
-          >
-            {isMinting ? 'Minting HNFT…' : 'Mint Identity HNFT'}
-          </button>
-        </div>
-      )}
+  // Handle HNFT minting with error handling
+  const handleMintHNFT = async (): Promise<string> => {
+    if (!publicKey || !signTransaction) {
+      alert('Connect wallet');
+      return '';
+    }
+    if (isMinting) {
+      console.log('Minting already in progress, ignoring click');
+      return '';
+    }
+    setIsMinting(true);
+    try {
+      setError(null);
+      setSuccess(null);
+      const solscanUrl = await mintHNFT(); // Identity container only
+      setLastTxUrl(solscanUrl);
+      setSuccess('Identity HNFT minted successfully! You can now start chatting.');
+      return solscanUrl;
+    } catch (e: any) {
+      console.error('HNFT mint failed:', e);
+      let errorMessage = e?.message || String(e);
+      
+      // Handle specific transaction errors
+      if (errorMessage.includes('This transaction has already been processed')) {
+        errorMessage = 'Transaction already processed. Please wait a moment and try again.';
+      } else if (errorMessage.includes('HNFT already exists')) {
+        errorMessage = 'You already have an HNFT. Please refresh the page to see it.';
+      } else if (errorMessage.includes('already in use')) {
+        errorMessage = 'HNFT already exists for this wallet. Please refresh the page to see your existing HNFT.';
+      }
+      
+      setError('HNFT mint failed: ' + errorMessage);
+      return '';
+    } finally {
+      setIsMinting(false);
+    }
+  };
 
-      {hnftPda && (
-        <div className="mb-4 p-3 bg-white/5 rounded border border-white/10">
-          <div className="text-white/80 text-sm">Identity HNFT:
-            <span className="ml-2 text-white/60">{hnftPda}</span>
-            {hnftSig && (
-              <a
-                className="ml-3 underline text-psy-blue"
-                href={`https://solscan.io/tx/${hnftSig}${process.env.NEXT_PUBLIC_SOLANA_RPC?.includes('devnet') ? '?cluster=devnet' : ''}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                View on Solscan
-              </a>
-            )}
-          </div>
-          {hnftPda.startsWith('mock_') && (
-            <div className="mt-2">
-              <button 
-                onClick={clearMockData}
-                className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded hover:bg-red-500/30"
-              >
-                Clear Mock Data & Retry
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+  // Handle end session with ChatNFT minting
+  const handleEndSession = async () => {
+    if (inProgressRef.current || isEncrypting || isMinting) return;
+    if (!publicKey) {
+      alert('Connect wallet');
+      return;
+    }
+    try {
+      inProgressRef.current = true;
+      setError(null);
+      setSuccess(null);
+      setLastTxUrl(null);
+      // Step 1: Encrypt chat data with Arcium
+      const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
+      const { encrypted, proof: chatProof } = await ArciumIntegration.encryptData(conversationBlob);
+      
+      // Step 2: Store encrypted chat on Walrus
+      const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
+      
+      // Step 3: Ensure user has HNFT identity
+      console.log('Ensuring HNFT identity exists...');
+      const hnftResult = await ensureHNFTExists(connection, walletCtx, encrypted, chatProof, 'therapy_session');
+      console.log('HNFT identity:', hnftResult.hnftAddress.toBase58());
+      
+      // Step 4: Create tradeable ChatNFT with Metaplex
+      console.log('Creating tradeable ChatNFT with Metaplex...');
+      const sessionStartTime = messages.length > 0 ? messages[0].timestamp : new Date();
+      const sessionEndTime = new Date();
+      const sessionId = Date.now().toString();
+      
+      const chatNFTResult = await mintChatNFT(connection, walletCtx, {
+        sessionId,
+        startTime: sessionStartTime,
+        endTime: sessionEndTime,
+        messageCount: messages.length
+      });
+      
+      console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
+      console.log('Metadata URI:', chatNFTResult.metadataUri);
+      
+      // Step 5: Skip HNFT registration for MVP (causes out of memory error)
+      console.log('Skipping HNFT registration for MVP - both NFTs minted successfully');
+      
+      const solscanUrl = buildSolscanTxUrl(chatNFTResult.transactionSignature);
+      
+      // Store ChatNFT data
+      const newChatNFT = {
+        transactionSignature: chatNFTResult.transactionSignature,
+        sessionId,
+        timestamp: new Date(),
+        messageCount: messages.length
+      };
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded">
-          <div className="text-red-300 text-sm">
-            ❌ {error}
-          </div>
-        </div>
-      )}
+      // Update state and localStorage
+      setChatNFTs(prev => {
+        const updated = [...prev, newChatNFT];
+        localStorage.setItem('psychat_chat_nfts', JSON.stringify(updated));
+        return updated;
+      });
 
-      {success && (
-        <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded">
-          <div className="text-green-300 text-sm">
-            ✅ {success}
-            {lastTxUrl && (
-              <div className="mt-2">
-                <a 
-                  className="inline-flex items-center text-psy-blue hover:text-psy-blue/80 underline text-sm" 
-                  href={lastTxUrl} 
-                  target="_blank" 
-                  rel="noreferrer"
-                >
-                  View on Solscan →
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      // Show confirmation in sidebar by expanding ChatNFT list
+      setIsChatNFTListExpanded(true);
+      
+      setSuccess(`✅ ChatNFT minted successfully! View it in the sidebar panel.`);
+      setLastTxUrl(solscanUrl);
+    } catch (e: any) {
+      console.error('End session mint failed:', e);
+      const msg = e?.message || String(e);
+      
+      // Handle specific error cases with improved messaging
+      if (msg.includes('already been processed') || msg.includes('already processed')) {
+        setSuccess('✅ ChatNFT already minted for this session. Please check your wallet.');
+        // Try to extract transaction signature from error message if available
+        const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
+        if (sigMatch) {
+          const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+          setLastTxUrl(solscanUrl);
+          
+          // Store ChatNFT data even for duplicate errors
+          const newChatNFT = {
+            transactionSignature: sigMatch[1],
+            sessionId: Date.now().toString(),
+            timestamp: new Date(),
+            messageCount: messages.length
+          };
+          setChatNFTs(prev => {
+            const updated = [...prev, newChatNFT];
+            localStorage.setItem('psychat_chat_nfts', JSON.stringify(updated));
+            return updated;
+          });
+          setIsChatNFTListExpanded(true);
+        }
+      } else if (msg.includes('Transaction already in progress')) {
+        setSuccess('⏳ Transaction in progress. Please wait for completion.');
+      } else if (msg.includes('This session has already been minted')) {
+        setSuccess('✅ This session has already been minted as an NFT. Please check your wallet.');
+        // Try to extract transaction signature from error message if available
+        const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
+        if (sigMatch) {
+          const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+          setLastTxUrl(solscanUrl);
+          
+          // Store ChatNFT data even for duplicate errors
+          const newChatNFT = {
+            transactionSignature: sigMatch[1],
+            sessionId: Date.now().toString(),
+            timestamp: new Date(),
+            messageCount: messages.length
+          };
+          setChatNFTs(prev => {
+            const updated = [...prev, newChatNFT];
+            localStorage.setItem('psychat_chat_nfts', JSON.stringify(updated));
+            return updated;
+          });
+          setIsChatNFTListExpanded(true);
+        }
+      } else if (msg.includes('NFT_ALREADY_PROCESSED:')) {
+        setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
+        
+        // Try to extract transaction signature from error message
+        const sigMatch = msg.match(/Transaction:\s+([A-Za-z0-9]{64,88})/);
+        if (sigMatch) {
+          const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+          setLastTxUrl(solscanUrl);
+          
+          // Store ChatNFT data even for duplicate errors
+          const newChatNFT = {
+            transactionSignature: sigMatch[1],
+            sessionId: Date.now().toString(),
+            timestamp: new Date(),
+            messageCount: messages.length
+          };
+          setChatNFTs(prev => {
+            const updated = [...prev, newChatNFT];
+            localStorage.setItem('psychat_chat_nfts', JSON.stringify(updated));
+            return updated;
+          });
+          setIsChatNFTListExpanded(true);
+        }
+        
+        // This is actually a success case, not an error - skip HNFT registration
+        return; // Exit early to skip HNFT registration
+      } else if (msg.includes('Transaction already processed - check your wallet')) {
+        setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
+        // This is actually a success case, not an error
+      } else if (msg.includes('Transaction simulation failed')) {
+        setError('Transaction simulation failed. Please try again or check your wallet connection.');
+      } else if (msg.includes('out of memory') || msg.includes('memory allocation failed')) {
+        setError('Transaction too complex. Please try with a shorter conversation.');
+      } else if (msg.includes('insufficient funds') || msg.includes('Insufficient SOL')) {
+        setError('Insufficient SOL for transaction fees. Please add more SOL to your wallet.');
+      } else if (msg.includes('Wallet not connected')) {
+        setError('Please connect your wallet first.');
+      } else {
+        setError('ChatNFT mint failed: ' + msg);
+      }
+    }
+    finally {
+      inProgressRef.current = false;
+    }
+  };
 
-      {/* Messages */}
-      <div className="h-96 overflow-y-auto mb-4 space-y-3">
-        {messages.length === 0 ? (
-          <div className="text-center py-8 text-white/60">
-            <div className="text-4xl mb-2">💭</div>
-            <p>Start a conversation with Grok...</p>
-            <p className="text-sm mt-2">
-              Each exchange can be encrypted and minted as a soulbound HNFT
-            </p>
-          </div>
-        ) : (
-          messages.map((message) => (
-            <div key={message.id} className="bg-black/20 rounded-lg p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div className="text-white/80 text-sm">
-                  {formatTime(message.timestamp)}
-                </div>
-                <div className="flex space-x-2">
-                  {message.encrypted && (
-                    <span className="text-xs bg-psy-blue/20 text-psy-blue px-2 py-1 rounded">
-                      🔒 Encrypted
-                    </span>
-                  )}
-                  {message.hnftMinted && (
-                    <span className="text-xs bg-psy-green/20 text-psy-green px-2 py-1 rounded">
-                      🎫 HNFT Minted
-                    </span>
-                  )}
-                </div>
-              </div>
-              <p className={`text-white ${message.role === 'assistant' ? 'opacity-90' : ''}`}>
-                <span className="text-xs mr-2 text-white/60">{message.role === 'user' ? 'You' : 'Grok'}</span>
-                {message.text}
-              </p>
-              {/* Status banners shown only during explicit End Session */}
-              {isEncrypting && (
-                <div className="mt-2 text-psy-blue text-sm">
-                  🔄 Encrypting with Arcium ZK proofs...
-                </div>
-              )}
-              {isMinting && (
-                <div className="mt-2 text-psy-green text-sm">
-                  🎫 Minting soulbound HNFT...
-                </div>
-              )}
-            </div>
-          ))
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="flex space-x-3">
-        <textarea
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
-          placeholder="Share your thoughts, feelings, or therapy insights..."
-          className="flex-1 psychat-input resize-none h-20"
-          disabled={isEncrypting || isMinting}
-        />
-        <button
-          onClick={handleSendMessage}
-          disabled={!inputText.trim() || isEncrypting || isMinting}
-          className="psychat-button px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isEncrypting ? '🔒' : isMinting ? '🎫' : 'Send'}
-        </button>
-        <button
-            onClick={async () => {
-              if (inProgressRef.current || isEncrypting || isMinting) return;
-              if (!publicKey) {
-                alert('Connect wallet');
-                return;
-              }
-              try {
-                inProgressRef.current = true;
-                setError(null);
-                setSuccess(null);
-                setLastTxUrl(null);
-                // Step 1: Encrypt chat data with Arcium
-                const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
-                const { encrypted, proof: chatProof } = await ArciumIntegration.encryptData(conversationBlob);
-                
-                // Step 2: Store encrypted chat on Walrus
-                const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
-                
-                // Step 3: Ensure user has HNFT identity
-                console.log('Ensuring HNFT identity exists...');
-                const hnftResult = await ensureHNFTExists(connection, walletCtx, encrypted, chatProof, 'therapy_session');
-                console.log('HNFT identity:', hnftResult.hnftAddress.toBase58());
-                
-                // Step 4: Create tradeable ChatNFT with Metaplex
-                console.log('Creating tradeable ChatNFT with Metaplex...');
-                const sessionStartTime = messages.length > 0 ? messages[0].timestamp : new Date();
-                const sessionEndTime = new Date();
-                const sessionId = Date.now().toString();
-                
-                const chatNFTResult = await mintChatNFT(connection, walletCtx, {
-                  sessionId,
-                  startTime: sessionStartTime,
-                  endTime: sessionEndTime,
-                  messageCount: messages.length
-                });
-                
-                console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
-                console.log('Metadata URI:', chatNFTResult.metadataUri);
-                
-                // Step 5: Skip HNFT registration for MVP (causes out of memory error)
-                console.log('Skipping HNFT registration for MVP - both NFTs minted successfully');
-                
-                const solscanUrl = buildSolscanTxUrl(chatNFTResult.transactionSignature);
-                setSuccess(`✅ Tradeable ChatNFT created successfully! Your therapy session is now a tradeable NFT.`);
-                setLastTxUrl(solscanUrl);
-              } catch (e: any) {
-                console.error('End session mint failed:', e);
-                const msg = e?.message || String(e);
-                
-                // Handle specific error cases with improved messaging
-                if (msg.includes('already been processed') || msg.includes('already processed')) {
-                  setSuccess('✅ ChatNFT already minted for this session. Please check your wallet.');
-                  // Try to extract transaction signature from error message if available
-                  const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
-                  if (sigMatch) {
-                    const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
-                    setLastTxUrl(solscanUrl);
-                  }
-                } else if (msg.includes('Transaction already in progress')) {
-                  setSuccess('⏳ Transaction in progress. Please wait for completion.');
-                } else if (msg.includes('This session has already been minted')) {
-                  setSuccess('✅ This session has already been minted as an NFT. Please check your wallet.');
-                  // Try to extract transaction signature from error message if available
-                  const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
-                  if (sigMatch) {
-                    const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
-                    setLastTxUrl(solscanUrl);
-                  }
-                } else if (msg.includes('NFT_ALREADY_PROCESSED:')) {
-                  setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
-                  
-                  // Try to extract transaction signature from error message
-                  const sigMatch = msg.match(/Transaction:\s+([A-Za-z0-9]{64,88})/);
-                  if (sigMatch) {
-                    const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
-                    setLastTxUrl(solscanUrl);
-                  }
-                  
-                  // This is actually a success case, not an error - skip HNFT registration
-                  return; // Exit early to skip HNFT registration
-                } else if (msg.includes('Transaction already processed - check your wallet')) {
-                  setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
-                  // This is actually a success case, not an error
-                } else if (msg.includes('Transaction simulation failed')) {
-                  setError('Transaction simulation failed. Please try again or check your wallet connection.');
-                } else if (msg.includes('out of memory') || msg.includes('memory allocation failed')) {
-                  setError('Transaction too complex. Please try with a shorter conversation.');
-                } else if (msg.includes('insufficient funds') || msg.includes('Insufficient SOL')) {
-                  setError('Insufficient SOL for transaction fees. Please add more SOL to your wallet.');
-                } else if (msg.includes('Wallet not connected')) {
-                  setError('Please connect your wallet first.');
-                } else {
-                  setError('ChatNFT mint failed: ' + msg);
-                }
-              }
-              finally {
-                inProgressRef.current = false;
-              }
-            }}
-            disabled={isEncrypting || isMinting || messages.length === 0}
-            className="px-6 py-3"
-          >
-            End Session & Create Tradeable NFT
-          </button>
-      </div>
-
-      {/* Provider/Model selectors */}
-      <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="bg-white/5 rounded-lg p-3">
-          <label className="block text-xs text-white/60 mb-1">AI Provider</label>
-          <select
-            value={provider}
-            onChange={(e) => {
-              const p = e.target.value as 'openai' | 'xai';
-              setProvider(p);
-              setModel(p === 'openai' ? 'gpt-4o-mini' : 'grok-4');
-            }}
-            className="w-full psychat-input"
-          >
-            <option value="openai">OpenAI</option>
-            <option value="xai">xAI Grok</option>
-          </select>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 md:col-span-2">
-          <label className="block text-xs text-white/60 mb-1">Model</label>
-          <input
-            type="text"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-            className="w-full psychat-input"
-          />
-          <div className="text-xs text-white/50 mt-1">
-            Examples: gpt-4o-mini, gpt-4o, grok-4
-          </div>
-        </div>
-      </div>
-
-      {/* Opt-in toggle */}
-      <div className="mt-3 flex items-center space-x-2 text-white/80">
-        <input id="optin" type="checkbox" className="accent-psy-purple" checked={optInMint} onChange={(e) => setOptInMint(e.target.checked)} />
-        <label htmlFor="optin" className="text-sm">Opt-in: Encrypt & mint as soulbound HNFT for anonymized insights</label>
-      </div>
-
-      {/* Privacy Notice */}
-      <div className="mt-4 p-3 bg-psy-blue/10 border border-psy-blue/20 rounded-lg">
-        <div className="flex items-start space-x-2">
-          <span className="text-psy-blue">🔒</span>
-          <div className="text-sm text-white/80">
-            <strong>Privacy First:</strong> Your chat is ZK-encrypted (Arcium) and stored on Walrus. Minting creates a non-transferable HNFT. Only anonymized aggregates can be listed.
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  // Debug log
+  console.log('Current state:', { hnftPda, isHNFTExpanded });
 
   return (
-    <div className="psychat-card p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">Therapy Chat</h2>
-        <div className="text-sm text-white/60">
-          {messages.length} msgs • {messages.filter(m => m.hnftMinted).length} minted as HNFTs
+    <div className="chat-section-container relative fixed inset-0 z-40 bg-black/95 backdrop-blur-sm overflow-hidden">
+      
+      {/* Layout wrapper */}
+      <div className="flex gap-4 h-full p-4">
+        {/* HNFT Section - Conditional rendering */}
+        {isHNFTVisible && (
+          <>
+            {!hnftPda ? (
+              /* Show full HNFT card when no HNFT exists */
+              <div className="hnft-section-expanded w-full max-w-md mx-auto">
+                <HNFTIdentityCard
+                  hnftPda={hnftPda}
+                  hnftSig={hnftSig || ''}
+                  onMint={handleMintHNFT}
+                  isMinting={isMinting}
+                  error={error}
+                  success={success}
+                  isExpanded={true}
+                  onToggle={() => setIsHNFTExpanded(!isHNFTExpanded)}
+                  onClose={handleHNFTClose}
+                  publicKey={publicKey}
+                />
+              </div>
+            ) : isHNFTExpanded ? (
+              /* Show expanded HNFT card when HNFT exists and expanded */
+              <div className="hnft-section-expanded w-80">
+                <HNFTIdentityCard
+                  hnftPda={hnftPda}
+                  hnftSig={hnftSig || ''}
+                  onMint={handleMintHNFT}
+                  isMinting={isMinting}
+                  error={error}
+                  success={success}
+                  isExpanded={isHNFTExpanded}
+                  onToggle={() => setIsHNFTExpanded(!isHNFTExpanded)}
+                  onClose={handleHNFTClose}
+                  publicKey={publicKey}
+                />
+              </div>
+            ) : isChatNFTListExpanded ? (
+              /* Show expanded ChatNFT list when ChatNFT is expanded */
+              <div className="hnft-section-expanded w-80">
+                <ChatNFTList
+                  chatNFTs={chatNFTs}
+                  isExpanded={isChatNFTListExpanded}
+                  onToggle={() => setIsChatNFTListExpanded(!isChatNFTListExpanded)}
+                />
+              </div>
+            ) : (
+              /* Show compact sidebar when HNFT exists but collapsed */
+              <div className="hnft-sidebar relative z-50 space-y-4">
+                <HNFTStatusCompact
+                  hnftPda={hnftPda}
+                  hnftSig={hnftSig || ''}
+                  onExpand={() => {
+                    console.log('Expanding HNFT card, setting isHNFTExpanded to true');
+                    setIsHNFTExpanded(true);
+                    // Collapse ChatNFT when expanding HNFT
+                    setIsChatNFTListExpanded(false);
+                  }}
+                  onHide={() => setIsHNFTVisible(false)}
+                />
+                
+                {/* Add ChatNFT Status Compact */}
+                <ChatNFTStatusCompact
+                  chatNFTCount={chatNFTs.length}
+                  onExpand={() => {
+                    console.log('Expanding ChatNFT list and main sidebar');
+                    setIsHNFTExpanded(true);
+                    setIsChatNFTListExpanded(true);
+                    // Collapse HNFT when expanding ChatNFT
+                    setIsHNFTExpanded(false);
+                  }}
+                  onHide={() => {
+                    console.log('Hiding ChatNFT section');
+                    setIsChatNFTVisible(false);
+                  }}
+                />
+              </div>
+            )}
+          </>
+        )}
+        
+        {/* Chat Terminal - Always show, but with different states */}
+        <div className="chat-terminal-section flex-1 h-full w-full overflow-hidden">
+          <ChatTerminal
+            messages={messages}
+            inputText={inputText}
+            setInputText={setInputText}
+            handleSendMessage={handleSendMessage}
+            isEncrypting={isEncrypting}
+            isMinting={isMinting}
+            isAIThinking={isAIThinking}
+            onEndSession={handleEndSession}
+            onToggleHNFT={() => setIsHNFTVisible(!isHNFTVisible)}
+            isHNFTVisible={isHNFTVisible}
+            hasHNFT={!!hnftPda}
+          />
         </div>
+
+        {/* Floating HNFT Toggle Button - Only show when HNFT is hidden */}
+        {hnftPda && !isHNFTVisible && (
+          <button
+            onClick={() => setIsHNFTVisible(true)}
+            className="fixed bottom-4 left-4 z-50 w-12 h-12 rounded-full bg-electric-cyan/20 hover:bg-electric-cyan/30 border border-electric-cyan/30 hover:border-electric-cyan/50 flex items-center justify-center text-electric-cyan hover:text-electric-cyan/80 transition-all duration-200 hover:scale-105 shadow-lg"
+            title="Show Panel"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        )}
+
       </div>
-      {renderContent()}
     </div>
   );
 }
