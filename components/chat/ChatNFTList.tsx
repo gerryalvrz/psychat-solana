@@ -43,7 +43,7 @@ export default function ChatNFTList({
       <HoloPanel className="crystal-glass alive-glass rounded-2xl border border-cyan-400/20 p-4 relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
-          <HoloText size="md" weight="bold" className="text-cyan-400">
+          <HoloText size="lg" weight="bold" className="text-cyan-400">
             ChatNFTs ({chatNFTs.length})
           </HoloText>
           <button
