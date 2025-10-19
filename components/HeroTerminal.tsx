@@ -1,255 +1,208 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import DecryptedText from './DecryptedText';
-import { HoloText } from './ui/holo';
+import { HoloText, HoloButton } from './ui/holo';
 import { ComplexMolecule, WaterMolecule } from './ui';
+import DecryptedText from './DecryptedText';
 
 type HeroTerminalProps = {
   onConnect: () => Promise<void> | void;
   onNavigate: (tab: 'home' | 'chat' | 'learn') => void;
 };
 
-type HistoryLine = {
-  id: string;
-  text: string;
-  tone?: 'success' | 'error' | 'info';
-};
-
 export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProps) {
-  const [history, setHistory] = useState<HistoryLine[]>(() => [
-    { id: 'h1', text: 'psychat> type `help` to list commands', tone: 'info' }
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const [historyIndex, setHistoryIndex] = useState<number | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const isAutoTriggerRef = useRef<boolean>(false);
+  const [showCommand, setShowCommand] = useState(false);
+  const [showCheckmarks, setShowCheckmarks] = useState(false);
+  const [showBullets, setShowBullets] = useState(false);
+  const [showLine1, setShowLine1] = useState(false);
+  const [showLine2, setShowLine2] = useState(false);
+  const [showLine3, setShowLine3] = useState(false);
+  const [showLine4, setShowLine4] = useState(false);
+  const [showLine5, setShowLine5] = useState(false);
+  const [showBullet1, setShowBullet1] = useState(false);
+  const [showBullet2, setShowBullet2] = useState(false);
+  const [showBullet3, setShowBullet3] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
+  const [terminalHeight, setTerminalHeight] = useState<number | null>(null);
+  const [animationKey, setAnimationKey] = useState(0);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const loopCleanupRef = useRef<(() => void) | null>(null);
+  const initialCleanupRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  const resetAnimation = () => {
+    // Don't reset showCommand - command line should always be visible
+    setShowCheckmarks(false);
+    setShowBullets(false);
+    setShowLine1(false);
+    setShowLine2(false);
+    setShowLine3(false);
+    setShowLine4(false);
+    setShowLine5(false);
+    setShowBullet1(false);
+    setShowBullet2(false);
+    setShowBullet3(false);
+    // Increment animation key to force re-mounting of DecryptedText components
+    setAnimationKey(prev => prev + 1);
+  };
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [history]);
-
-  const print = useCallback((lines: Array<string | HistoryLine>) => {
-    setHistory(prev => [
-      ...prev,
-      ...lines.map((l, idx) => typeof l === 'string' ? ({ id: `${Date.now()}-${idx}` , text: l }) : l)
-    ]);
-  }, []);
-
-  const commands = useMemo(() => ({
-    help: async () => {
-      print([
-        { text: 'Available commands:', id: 'c-help-0', tone: 'info' },
-        '  help    - show this help',
-        '  connect - connect your wallet',
-        '  chat    - open chat',
-        '  learn   - view how it works',
-        '  clear   - clear terminal'
-      ]);
-    },
-    connect: async () => {
-      try {
-        setIsProcessing(true);
-        await onConnect();
-        print([{ id: 'c-conn-ok', text: 'Wallet connected.', tone: 'success' }]);
-      } catch (e) {
-        print([{ id: 'c-conn-err', text: 'Connection failed. Try again or open the wallet.', tone: 'error' }]);
-      } finally {
-        setIsProcessing(false);
+  const startAnimation = () => {
+    const timer1 = setTimeout(() => setShowCommand(true), 500);
+    const timer2 = setTimeout(() => setShowCheckmarks(true), 1200);
+    const timer3 = setTimeout(() => setShowBullets(true), 3000);
+    
+    // Staggered delays for checkmark lines (2 seconds between each)
+    const lineTimer1 = setTimeout(() => setShowLine1(true), 2000);
+    const lineTimer2 = setTimeout(() => setShowLine2(true), 4000);
+    const lineTimer3 = setTimeout(() => setShowLine3(true), 6000);
+    const lineTimer4 = setTimeout(() => setShowLine4(true), 8000);
+    const lineTimer5 = setTimeout(() => setShowLine5(true), 10000);
+    
+    // Staggered delays for bullet points (2 seconds between each)
+    const bulletTimer1 = setTimeout(() => setShowBullet1(true), 12000);
+    const bulletTimer2 = setTimeout(() => setShowBullet2(true), 14000);
+    const bulletTimer3 = setTimeout(() => setShowBullet3(true), 16000);
+    
+    // Mark animation as complete when all content is shown
+    const completeTimer = setTimeout(() => {
+      setAnimationComplete(true);
+      // Capture terminal height after first animation
+      if (terminalRef.current && !terminalHeight) {
+        setTerminalHeight(terminalRef.current.offsetHeight);
       }
-    },
-    chat: async () => {
-      if (!isAutoTriggerRef.current) {
-        onNavigate('chat');
-        print([{ id: 'c-chat', text: 'Opening chat...', tone: 'info' }]);
-      } else {
-        // In auto (scroll) mode, do not navigate away; only simulate output
-        print([{ id: 'c-chat-auto', text: 'Chat module ready. (scroll-triggered)', tone: 'info' }]);
-      }
-    },
-    learn: async () => {
-      onNavigate('learn');
-      print([{ id: 'c-learn', text: 'Scrolling to How it Works...', tone: 'info' }]);
-    },
-    clear: async () => {
-      setHistory([]);
-    }
-  }), [onConnect, onNavigate, print]);
-
-  const runCommand = useCallback(async (raw: string) => {
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    setCommandHistory(prev => [...prev, trimmed]);
-    setHistoryIndex(null);
-    const [cmd] = trimmed.split(/\s+/);
-    setHistory(prev => ([...prev, { id: `${Date.now()}-cmd`, text: `> ${trimmed}` }]));
-    setInputValue('');
-    const fn = (commands as Record<string, () => Promise<void>>)[cmd.toLowerCase()];
-    if (fn) {
-      await fn();
-    } else {
-      print([{ id: 'c-unknown', text: `Unknown command: ${cmd}. Type 'help'.`, tone: 'error' }]);
-    }
-  }, [commands, print]);
-
-  const onSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    const raw = inputValue.trim();
-    if (!raw) return;
-    await runCommand(raw);
-  }, [inputValue, runCommand]);
-
-  useEffect(() => {
-    const handler = (e: any) => {
-      if (!e.detail?.cmd) return;
-      // Insert into input briefly for visual continuity
-      setInputValue(e.detail.cmd);
-      setTimeout(() => {
-        isAutoTriggerRef.current = true;
-        void runCommand(e.detail.cmd).finally(() => {
-          isAutoTriggerRef.current = false;
-        });
-      }, 50);
+    }, 17000); // After all content is shown
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(lineTimer1);
+      clearTimeout(lineTimer2);
+      clearTimeout(lineTimer3);
+      clearTimeout(lineTimer4);
+      clearTimeout(lineTimer5);
+      clearTimeout(bulletTimer1);
+      clearTimeout(bulletTimer2);
+      clearTimeout(bulletTimer3);
+      clearTimeout(completeTimer);
     };
-    window.addEventListener('hero:run', handler);
-    return () => window.removeEventListener('hero:run', handler);
-  }, [runCommand]);
+  };
+
+  useEffect(() => {
+    const cleanup = startAnimation();
+    initialCleanupRef.current = cleanup;
+    
+    return () => {
+      if (initialCleanupRef.current) {
+        initialCleanupRef.current();
+        initialCleanupRef.current = null;
+      }
+    };
+  }, []);
+
+  // Set up looping after first animation completes
+  useEffect(() => {
+    if (animationComplete) {
+      const interval = setInterval(() => {
+        // Clean up any existing loop animation
+        if (loopCleanupRef.current) {
+          loopCleanupRef.current();
+          loopCleanupRef.current = null;
+        }
+        
+        resetAnimation();
+        setTimeout(() => {
+          const cleanup = startLoopAnimation();
+          loopCleanupRef.current = cleanup;
+        }, 100);
+      }, 18000); // Loop every 18 seconds (16s animation + 2s pause)
+
+      return () => {
+        clearInterval(interval);
+        // Clean up any pending loop animation
+        if (loopCleanupRef.current) {
+          loopCleanupRef.current();
+          loopCleanupRef.current = null;
+        }
+      };
+    }
+  }, [animationComplete]);
+
+  // Loop animation function with same timing as initial animation
+  const startLoopAnimation = () => {
+    // Start with checkmarks section
+    const timer2 = setTimeout(() => setShowCheckmarks(true), 1200);
+    
+    // Staggered delays for checkmark lines (2 seconds between each)
+    const lineTimer1 = setTimeout(() => setShowLine1(true), 2000);
+    const lineTimer2 = setTimeout(() => setShowLine2(true), 4000);
+    const lineTimer3 = setTimeout(() => setShowLine3(true), 6000);
+    const lineTimer4 = setTimeout(() => setShowLine4(true), 8000);
+    const lineTimer5 = setTimeout(() => setShowLine5(true), 10000);
+    
+    // Start bullets section after checkmarks are done
+    const timer3 = setTimeout(() => setShowBullets(true), 12000);
+    
+    // Staggered delays for bullet points (2 seconds between each)
+    const bulletTimer1 = setTimeout(() => setShowBullet1(true), 12000);
+    const bulletTimer2 = setTimeout(() => setShowBullet2(true), 14000);
+    const bulletTimer3 = setTimeout(() => setShowBullet3(true), 16000);
+    
+    return () => {
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(lineTimer1);
+      clearTimeout(lineTimer2);
+      clearTimeout(lineTimer3);
+      clearTimeout(lineTimer4);
+      clearTimeout(lineTimer5);
+      clearTimeout(bulletTimer1);
+      clearTimeout(bulletTimer2);
+      clearTimeout(bulletTimer3);
+    };
+  };
+
+  const handleStartChat = async () => {
+    // Check if wallet connected, if not connect first
+    await onConnect();
+    onNavigate('chat');
+  };
 
   return (
-    <div className="w-full flex justify-center relative overflow-hidden crystal-layer-system">
-      {/* Crystal Grid Background */}
-      <div className="absolute inset-0 crystal-grid-sparse -z-10" />
+    <div className="w-full flex justify-center relative overflow-hidden">
+      {/* Terminal background overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/5 to-purple-900/5" />
       
-      {/* Multilayer Crystal Background */}
+      {/* Subtle floating elements */}
       <motion.div
-        className="absolute inset-0 -z-10 crystal-layer-1"
+        className="absolute top-1/4 left-1/4 w-32 h-32 -z-10"
         animate={{
-          background: [
-            "radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 50%)",
-            "radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 50%)",
-            "radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 50%)"
-          ]
+          x: [0, 20, -10, 0],
+          y: [0, -10, 20, 0],
+          scale: [1, 1.1, 0.9, 1],
         }}
         transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-
-      {/* Crystal Geometric Overlays */}
-      <div className="absolute inset-0 geometric-overlay-dense -z-10" />
-      
-      {/* Floating Crystal Orbs */}
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-96 h-96 crystal-layer-2 -z-10"
-        animate={{
-          x: [0, 100, -50, 0],
-          y: [0, -50, 100, 0],
-          scale: [1, 1.2, 0.8, 1],
-          rotate: [0, 90, 180, 360]
-        }}
-        transition={{
-          duration: 15,
+          duration: 8,
           repeat: Infinity,
           ease: "easeInOut"
         }}
         style={{
-          background: 'linear-gradient(45deg, rgba(0,255,255,0.05), rgba(255,0,255,0.05))',
-          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+          background: 'radial-gradient(circle, rgba(0,255,255,0.1), transparent)',
         }}
       />
       
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 crystal-layer-2 -z-10"
+        className="absolute bottom-1/4 right-1/4 w-24 h-24 -z-10"
         animate={{
-          x: [0, -100, 50, 0],
-          y: [0, 50, -100, 0],
-          scale: [1, 0.8, 1.2, 1],
-          rotate: [360, 270, 180, 0]
+          x: [0, -15, 10, 0],
+          y: [0, 15, -20, 0],
+          scale: [1, 0.9, 1.1, 1],
         }}
         transition={{
-          duration: 18,
+          duration: 10,
           repeat: Infinity,
           ease: "easeInOut"
         }}
         style={{
-          background: 'linear-gradient(45deg, rgba(157,104,255,0.05), rgba(0,255,255,0.05))',
-          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
-        }}
-      />
-
-      {/* Atomic Structure Background Elements */}
-      <div className="absolute top-10 left-10 crystal-layer-3 z-20">
-        <ComplexMolecule className="opacity-60" />
-      </div>
-      
-      <div className="absolute bottom-10 right-10 crystal-layer-1 z-20">
-        <WaterMolecule className="opacity-50" />
-      </div>
-      
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 crystal-layer-2 z-20">
-        <ComplexMolecule className="opacity-40" />
-      </div>
-      
-      {/* Additional atomic elements around the terminal */}
-      <div className="absolute top-5 right-5 crystal-layer-1 z-20">
-        <WaterMolecule className="opacity-70" />
-      </div>
-      
-      <div className="absolute bottom-5 left-5 crystal-layer-2 z-20">
-        <ComplexMolecule className="opacity-50" />
-      </div>
-      
-      {/* More atomic elements for better coverage */}
-      <div className="absolute top-1/3 right-1/3 crystal-layer-3 z-20">
-        <WaterMolecule className="opacity-45" />
-      </div>
-      
-      <div className="absolute bottom-1/3 left-1/3 crystal-layer-1 z-20">
-        <ComplexMolecule className="opacity-55" />
-      </div>
-      
-      {/* Animated crystal particles */}
-      <motion.div
-        className="absolute top-1/4 right-1/4 w-4 h-4 crystal-layer-2 z-20"
-        animate={{
-          scale: [1, 1.5, 1],
-          opacity: [0.3, 0.8, 0.3],
-          rotate: [0, 180, 360]
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        style={{
-          background: 'radial-gradient(circle, rgba(0,255,255,0.6), rgba(255,0,255,0.3))',
-          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-1/4 left-1/4 w-6 h-6 crystal-layer-3 z-20"
-        animate={{
-          scale: [1, 0.8, 1.2, 1],
-          opacity: [0.4, 0.9, 0.4],
-          rotate: [360, 180, 0]
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        style={{
-          background: 'radial-gradient(circle, rgba(157,104,255,0.7), rgba(0,255,255,0.4))',
-          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
+          background: 'radial-gradient(circle, rgba(255,0,255,0.1), transparent)',
         }}
       />
 
@@ -259,7 +212,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
           className="bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-md overflow-hidden shadow-2xl crt-curvature"
           role="region"
           aria-label="PsyChat interactive terminal hero"
-          onClick={() => inputRef.current?.focus()}
+          onClick={() => {}}
         >
           {/* Header */}
           <div className="bg-black/90 border-b border-gray-600/60 px-4 py-2 flex items-center space-x-2">
@@ -275,98 +228,180 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
             <div className="absolute inset-0 pointer-events-none crt-scanlines"></div>
             <div className="absolute inset-0 pointer-events-none crt-vignette"></div>
 
-            <div className="relative p-4 sm:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-sm sm:text-base">
-              {/* Headline */}
-              <div className="mb-4">
-                <DecryptedText
-                  text="Welcome to PsyChat"
-                  speed={60}
-                  maxIterations={12}
-                  sequential={true}
-                  revealDirection="start"
-                  characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-                  className="text-green-400 text-2xl md:text-4xl crt-glow"
-                  encryptedClassName="text-green-700"
-                  animateOn="view"
-                />
-                <HoloText size="sm" className="text-green-500/80 text-xs sm:text-sm md:text-base">
-                  Own your therapy data. Earn from anonymized insights. Privacy by design.
-                </HoloText>
+            <div 
+              ref={terminalRef}
+              className="relative p-4 sm:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-sm sm:text-base"
+              style={terminalHeight ? { height: `${terminalHeight}px` } : {}}
+            >
+              {/* Command line - Always visible and fixed at top */}
+              <div className="text-green-500 mb-4">
+                $ psychat --public-goods --lunarpunks
               </div>
 
-              {/* History */}
-              <div
-                ref={scrollRef}
-                className="h-40 sm:h-48 md:h-56 overflow-y-auto pr-2 custom-scrollbar focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
-                role="log"
-                aria-live="polite"
-                aria-relevant="additions"
-                tabIndex={0}
-              >
-                {history.map(line => (
-                  <div key={line.id} className={
-                    line.tone === 'success' ? 'text-emerald-400' : line.tone === 'error' ? 'text-red-400' : 'text-green-400'
-                  }>
-                    {line.text}
-                  </div>
-                ))}
+              {/* Staged Terminal Content */}
+              <div className={`${animationComplete ? 'mb-20' : 'mb-6'}`}>
+                <div className="space-y-2">
+                  
+                  {/* Checkmarks - appear gradually with DecryptedText */}
+                  {showCheckmarks && (
+                    <div className="space-y-3 mt-4">
+                      {showLine1 && (
+                        <div>
+                          <DecryptedText
+                            key={`line1-${animationKey}`}
+                            text="✓ Decentralized privacy infrastructure"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-emerald-400"
+                            encryptedClassName="text-emerald-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                      {showLine2 && (
+                        <div>
+                          <DecryptedText
+                            key={`line2-${animationKey}`}
+                            text="✓ Censorship-resistant communication"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-emerald-400"
+                            encryptedClassName="text-emerald-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                      {showLine3 && (
+                        <div>
+                          <DecryptedText
+                            key={`line3-${animationKey}`}
+                            text="✓ Data sovereignty: 100% user-owned"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-emerald-400"
+                            encryptedClassName="text-emerald-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                      {showLine4 && (
+                        <div>
+                          <DecryptedText
+                            key={`line4-${animationKey}`}
+                            text="✓ Open source privacy tools"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-emerald-400"
+                            encryptedClassName="text-emerald-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                      {showLine5 && (
+                        <div>
+                          <DecryptedText
+                            key={`line5-${animationKey}`}
+                            text="✓ Arcium ZK encryption active"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-emerald-400"
+                            encryptedClassName="text-emerald-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Bullet points - appear last with DecryptedText */}
+                  {showBullets && (
+                    <div className="space-y-3 mt-4">
+                      {showBullet1 && (
+                        <div>
+                          <DecryptedText
+                            key={`bullet1-${animationKey}`}
+                            text="- Data marketplace + AMM + RWAs"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-cyan-400"
+                            encryptedClassName="text-cyan-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                      {showBullet2 && (
+                        <div>
+                          <DecryptedText
+                            key={`bullet2-${animationKey}`}
+                            text="- Built for everyone"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-cyan-400"
+                            encryptedClassName="text-cyan-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                      {showBullet3 && (
+                        <div>
+                          <DecryptedText
+                            key={`bullet3-${animationKey}`}
+                            text="- Own your data"
+                            speed={80}
+                            maxIterations={15}
+                            sequential={true}
+                            revealDirection="start"
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            className="text-cyan-400"
+                            encryptedClassName="text-cyan-700"
+                            animateOn="view"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Prompt */}
-              <form onSubmit={onSubmit} className="mt-4 flex items-center gap-2" aria-labelledby="terminal-prompt-label" aria-describedby="terminal-prompt-hint">
-                <span id="terminal-prompt-label" className="sr-only">Terminal command prompt</span>
-                <span className="text-green-500" aria-hidden>$</span>
-                <input
-                  ref={inputRef}
-                  aria-label="Terminal prompt"
-                  className="flex-1 bg-transparent outline-none text-green-400 placeholder-green-700 min-h-[40px] sm:min-h-0"
-                  placeholder={isProcessing ? 'processing…' : 'type a command and press enter'}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') setInputValue('');
-                    if (e.key === 'ArrowUp') {
-                      e.preventDefault();
-                      if (commandHistory.length === 0) return;
-                      setHistoryIndex(prev => {
-                        const next = prev === null ? commandHistory.length - 1 : Math.max(0, prev - 1);
-                        setInputValue(commandHistory[next] ?? '');
-                        return next;
-                      });
-                    }
-                    if (e.key === 'ArrowDown') {
-                      e.preventDefault();
-                      if (commandHistory.length === 0) return;
-                      setHistoryIndex(prev => {
-                        if (prev === null) return null;
-                        const next = Math.min(commandHistory.length - 1, prev + 1);
-                        setInputValue(commandHistory[next] ?? '');
-                        return next;
-                      });
-                    }
-                  }}
-                  disabled={isProcessing}
-                />
-                <div className="w-2 h-4 bg-green-500 animate-pulse" aria-hidden></div>
-              </form>
-              <HoloText size="xs" id="terminal-prompt-hint" className="mt-2 text-xs text-green-700">
-                Try: help · connect · chat · learn · clear
-              </HoloText>
-
-              {/* Mobile quick commands */}
-              <div className="mt-3 flex flex-wrap gap-2 md:hidden" aria-label="Quick commands">
-                {['help','connect','chat','learn','clear'].map(cmd => (
-                  <button
-                    key={cmd}
-                    type="button"
-                    onClick={() => setInputValue(cmd)}
-                    className="px-3 py-2 rounded-md bg-emerald-900/40 text-emerald-300 text-xs border border-emerald-700/40 active:scale-[0.98]"
-                    aria-label={`Insert ${cmd} command`}
+              {/* Action Button - Only appears after first animation completes */}
+              {animationComplete && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute bottom-4 left-4 right-4 flex justify-center items-center"
+                >
+                  <HoloButton
+                    onClick={handleStartChat}
+                    variant="primary"
+                    size="md"
+                    className="w-full sm:w-auto font-futuristic tracking-wider"
                   >
-                    {cmd}
-                  </button>
-                ))}
-              </div>
+                    Enter the Chat
+                  </HoloButton>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>
