@@ -239,6 +239,7 @@ pub mod psychat {
         
         Ok(())
     }
+
 }
 
 /// Helper function to verify Arcium ZK proofs (fixed-size version)
@@ -366,6 +367,7 @@ pub struct MintDatasetNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
+
 #[account]
 pub struct HNFT {
     pub owner: Pubkey,
@@ -418,6 +420,7 @@ pub struct Dataset {
     pub is_tradeable: bool,   // 1 byte
 }
 
+
 #[event]
 pub struct HNFTMinted {
     pub owner: Pubkey,
@@ -459,6 +462,7 @@ pub struct DatasetNFTMinted {
     pub category: [u8; 16],
     pub timestamp: i64,
 }
+
 
 #[error_code]
 pub enum ErrorCode {

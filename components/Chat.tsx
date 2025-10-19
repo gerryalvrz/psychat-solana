@@ -8,6 +8,7 @@ import { mintChatNFT } from '../utils/nft/chatNFTMinting';
 import { cleanupOldTransactions } from '../utils/cleanupTransactions';
 import { keccak256 } from 'js-sha3';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
+import { HoloPanel, HoloButton, HoloText } from '../components/ui/holo';
 
 interface Message {
   id: string;
@@ -287,15 +288,8 @@ export default function Chat() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  return (
-    <div className="psychat-card p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">Therapy Chat</h2>
-        <div className="text-sm text-white/60">
-          {messages.length} msgs • {messages.filter(m => m.hnftMinted).length} minted as HNFTs
-        </div>
-      </div>
-
+  const renderContent = () => (
+    <>
       {!hnftPda && (
         <div className="mb-4 p-4 bg-psy-purple/10 border border-psy-purple/30 rounded">
           <div className="text-white/80 mb-2">Before chatting, mint your soulbound PsyChat identity HNFT to enable secure, private sessions.</div>
@@ -314,7 +308,7 @@ export default function Chat() {
               try {
                 setError(null);
                 setSuccess(null);
-              const solscanUrl = await mintHNFT(); // Identity container only
+                const solscanUrl = await mintHNFT(); // Identity container only
                 setLastTxUrl(solscanUrl);
                 setSuccess('Identity HNFT minted successfully! You can now start chatting.');
               } catch (e: any) {
@@ -472,110 +466,110 @@ export default function Chat() {
           {isEncrypting ? '🔒' : isMinting ? '🎫' : 'Send'}
         </button>
         <button
-          onClick={async () => {
-            if (inProgressRef.current || isEncrypting || isMinting) return;
-            if (!publicKey) {
-              alert('Connect wallet');
-              return;
-            }
-            try {
-              inProgressRef.current = true;
-              setError(null);
-              setSuccess(null);
-              setLastTxUrl(null);
-              // Step 1: Encrypt chat data with Arcium
-              const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
-              const { encrypted, proof: chatProof } = await ArciumIntegration.encryptData(conversationBlob);
-              
-              // Step 2: Store encrypted chat on Walrus
-              const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
-              
-              // Step 3: Ensure user has HNFT identity
-              console.log('Ensuring HNFT identity exists...');
-              const hnftResult = await ensureHNFTExists(connection, walletCtx, encrypted, chatProof, 'therapy_session');
-              console.log('HNFT identity:', hnftResult.hnftAddress.toBase58());
-              
-              // Step 4: Create tradeable ChatNFT with Metaplex
-              console.log('Creating tradeable ChatNFT with Metaplex...');
-              const sessionStartTime = messages.length > 0 ? messages[0].timestamp : new Date();
-              const sessionEndTime = new Date();
-              const sessionId = Date.now().toString();
-              
-              const chatNFTResult = await mintChatNFT(connection, walletCtx, {
-                sessionId,
-                startTime: sessionStartTime,
-                endTime: sessionEndTime,
-                messageCount: messages.length
-              });
-              
-              console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
-              console.log('Metadata URI:', chatNFTResult.metadataUri);
-              
-              // Step 5: Skip HNFT registration for MVP (causes out of memory error)
-              console.log('Skipping HNFT registration for MVP - both NFTs minted successfully');
-              
-              const solscanUrl = buildSolscanTxUrl(chatNFTResult.transactionSignature);
-              setSuccess(`✅ Tradeable ChatNFT created successfully! Your therapy session is now a tradeable NFT.`);
-              setLastTxUrl(solscanUrl);
-            } catch (e: any) {
-              console.error('End session mint failed:', e);
-              const msg = e?.message || String(e);
-              
-              // Handle specific error cases with improved messaging
-              if (msg.includes('already been processed') || msg.includes('already processed')) {
-                setSuccess('✅ ChatNFT already minted for this session. Please check your wallet.');
-                // Try to extract transaction signature from error message if available
-                const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
-                if (sigMatch) {
-                  const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
-                  setLastTxUrl(solscanUrl);
-                }
-              } else if (msg.includes('Transaction already in progress')) {
-                setSuccess('⏳ Transaction in progress. Please wait for completion.');
-              } else if (msg.includes('This session has already been minted')) {
-                setSuccess('✅ This session has already been minted as an NFT. Please check your wallet.');
-                // Try to extract transaction signature from error message if available
-                const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
-                if (sigMatch) {
-                  const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
-                  setLastTxUrl(solscanUrl);
-                }
-              } else if (msg.includes('NFT_ALREADY_PROCESSED:')) {
-                setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
-                
-                // Try to extract transaction signature from error message
-                const sigMatch = msg.match(/Transaction:\s+([A-Za-z0-9]{64,88})/);
-                if (sigMatch) {
-                  const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
-                  setLastTxUrl(solscanUrl);
-                }
-                
-                // This is actually a success case, not an error - skip HNFT registration
-                return; // Exit early to skip HNFT registration
-              } else if (msg.includes('Transaction already processed - check your wallet')) {
-                setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
-                // This is actually a success case, not an error
-              } else if (msg.includes('Transaction simulation failed')) {
-                setError('Transaction simulation failed. Please try again or check your wallet connection.');
-              } else if (msg.includes('out of memory') || msg.includes('memory allocation failed')) {
-                setError('Transaction too complex. Please try with a shorter conversation.');
-              } else if (msg.includes('insufficient funds') || msg.includes('Insufficient SOL')) {
-                setError('Insufficient SOL for transaction fees. Please add more SOL to your wallet.');
-              } else if (msg.includes('Wallet not connected')) {
-                setError('Please connect your wallet first.');
-              } else {
-                setError('ChatNFT mint failed: ' + msg);
+            onClick={async () => {
+              if (inProgressRef.current || isEncrypting || isMinting) return;
+              if (!publicKey) {
+                alert('Connect wallet');
+                return;
               }
-            }
-            finally {
-              inProgressRef.current = false;
-            }
-          }}
-          disabled={isEncrypting || isMinting || messages.length === 0}
-          className="psychat-button px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          End Session & Create Tradeable NFT
-        </button>
+              try {
+                inProgressRef.current = true;
+                setError(null);
+                setSuccess(null);
+                setLastTxUrl(null);
+                // Step 1: Encrypt chat data with Arcium
+                const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
+                const { encrypted, proof: chatProof } = await ArciumIntegration.encryptData(conversationBlob);
+                
+                // Step 2: Store encrypted chat on Walrus
+                const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
+                
+                // Step 3: Ensure user has HNFT identity
+                console.log('Ensuring HNFT identity exists...');
+                const hnftResult = await ensureHNFTExists(connection, walletCtx, encrypted, chatProof, 'therapy_session');
+                console.log('HNFT identity:', hnftResult.hnftAddress.toBase58());
+                
+                // Step 4: Create tradeable ChatNFT with Metaplex
+                console.log('Creating tradeable ChatNFT with Metaplex...');
+                const sessionStartTime = messages.length > 0 ? messages[0].timestamp : new Date();
+                const sessionEndTime = new Date();
+                const sessionId = Date.now().toString();
+                
+                const chatNFTResult = await mintChatNFT(connection, walletCtx, {
+                  sessionId,
+                  startTime: sessionStartTime,
+                  endTime: sessionEndTime,
+                  messageCount: messages.length
+                });
+                
+                console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
+                console.log('Metadata URI:', chatNFTResult.metadataUri);
+                
+                // Step 5: Skip HNFT registration for MVP (causes out of memory error)
+                console.log('Skipping HNFT registration for MVP - both NFTs minted successfully');
+                
+                const solscanUrl = buildSolscanTxUrl(chatNFTResult.transactionSignature);
+                setSuccess(`✅ Tradeable ChatNFT created successfully! Your therapy session is now a tradeable NFT.`);
+                setLastTxUrl(solscanUrl);
+              } catch (e: any) {
+                console.error('End session mint failed:', e);
+                const msg = e?.message || String(e);
+                
+                // Handle specific error cases with improved messaging
+                if (msg.includes('already been processed') || msg.includes('already processed')) {
+                  setSuccess('✅ ChatNFT already minted for this session. Please check your wallet.');
+                  // Try to extract transaction signature from error message if available
+                  const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
+                  if (sigMatch) {
+                    const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+                    setLastTxUrl(solscanUrl);
+                  }
+                } else if (msg.includes('Transaction already in progress')) {
+                  setSuccess('⏳ Transaction in progress. Please wait for completion.');
+                } else if (msg.includes('This session has already been minted')) {
+                  setSuccess('✅ This session has already been minted as an NFT. Please check your wallet.');
+                  // Try to extract transaction signature from error message if available
+                  const sigMatch = msg.match(/signature[:\s]+([A-Za-z0-9]{64,88})/i);
+                  if (sigMatch) {
+                    const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+                    setLastTxUrl(solscanUrl);
+                  }
+                } else if (msg.includes('NFT_ALREADY_PROCESSED:')) {
+                  setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
+                  
+                  // Try to extract transaction signature from error message
+                  const sigMatch = msg.match(/Transaction:\s+([A-Za-z0-9]{64,88})/);
+                  if (sigMatch) {
+                    const solscanUrl = buildSolscanTxUrl(sigMatch[1]);
+                    setLastTxUrl(solscanUrl);
+                  }
+                  
+                  // This is actually a success case, not an error - skip HNFT registration
+                  return; // Exit early to skip HNFT registration
+                } else if (msg.includes('Transaction already processed - check your wallet')) {
+                  setSuccess('✅ ChatNFT minted successfully! The transaction was already processed. Please check your wallet.');
+                  // This is actually a success case, not an error
+                } else if (msg.includes('Transaction simulation failed')) {
+                  setError('Transaction simulation failed. Please try again or check your wallet connection.');
+                } else if (msg.includes('out of memory') || msg.includes('memory allocation failed')) {
+                  setError('Transaction too complex. Please try with a shorter conversation.');
+                } else if (msg.includes('insufficient funds') || msg.includes('Insufficient SOL')) {
+                  setError('Insufficient SOL for transaction fees. Please add more SOL to your wallet.');
+                } else if (msg.includes('Wallet not connected')) {
+                  setError('Please connect your wallet first.');
+                } else {
+                  setError('ChatNFT mint failed: ' + msg);
+                }
+              }
+              finally {
+                inProgressRef.current = false;
+              }
+            }}
+            disabled={isEncrypting || isMinting || messages.length === 0}
+            className="px-6 py-3"
+          >
+            End Session & Create Tradeable NFT
+          </button>
       </div>
 
       {/* Provider/Model selectors */}
@@ -624,6 +618,18 @@ export default function Chat() {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <div className="psychat-card p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-white">Therapy Chat</h2>
+        <div className="text-sm text-white/60">
+          {messages.length} msgs • {messages.filter(m => m.hnftMinted).length} minted as HNFTs
+        </div>
+      </div>
+      {renderContent()}
     </div>
   );
 }
