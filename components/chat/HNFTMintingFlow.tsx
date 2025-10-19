@@ -39,7 +39,7 @@ export default function HNFTMintingFlow({
     <div className="hnft-minting-flow space-y-6">
       {/* Header */}
       <div className="text-center">
-        <HoloText size="md" weight="bold" className="neon-solid-cyan mb-2">
+        <HoloText size="lg" weight="bold" className="neon-solid-cyan mb-2">
           Create Your PsyChat Identity
         </HoloText>
         <p className="text-white/80 text-sm">

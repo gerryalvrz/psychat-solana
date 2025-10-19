@@ -86,7 +86,7 @@ export const NetworkStatus: React.FC<NetworkStatusProps> = ({
       transition={{ duration: 0.4, ease: "easeOut" }}
       className={`motion-crystal-hover ${className}`}
     >
-      <HoloPanel variant="default" size="md">
+      <HoloPanel variant="default" size="lg">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">

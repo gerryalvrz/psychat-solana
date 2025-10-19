@@ -91,7 +91,7 @@ const BuyersInsightSection: React.FC = () => {
                 >
                   <HoloPanel
                     variant="floating"
-                    size="md"
+                    size="lg"
                     className={`text-center group hover:border-cyan-400/30 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 bg-gradient-to-br ${buyer.bgColor}`}
                     interactive={true}
                   >
@@ -115,7 +115,7 @@ const BuyersInsightSection: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <HoloPanel variant="default" size="md" className="bg-cyan-400/10 border-cyan-400/20">
+              <HoloPanel variant="default" size="lg" className="bg-cyan-400/10 border-cyan-400/20">
                 <HoloText size="sm" className="text-white/80">
                   <span className="text-cyan-400 font-bold">Verified & Ethics-Approved:</span> All data buyers are verified and ethics-approved. 
                   Your mental health insights help advance AI empathy, academic research, and wellness innovation.
