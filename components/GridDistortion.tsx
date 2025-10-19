@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import * as THREE from 'three';
+import { Scene, WebGLRenderer, OrthographicCamera, ShaderMaterial, PlaneGeometry, Mesh, DataTexture, Vector4, RGBAFormat, FloatType, DoubleSide } from 'three';
 
 // Elegant scroll grid effect - version 3.0 - progressive grid expansion
 
@@ -109,10 +109,10 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
   className = ''
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const planeRef = useRef<THREE.Mesh | null>(null);
+  const sceneRef = useRef<Scene | null>(null);
+  const rendererRef = useRef<WebGLRenderer | null>(null);
+  const cameraRef = useRef<OrthographicCamera | null>(null);
+  const planeRef = useRef<Mesh | null>(null);
   const imageAspectRef = useRef<number>(1);
   const animationIdRef = useRef<number | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -122,10 +122,10 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
 
     const container = containerRef.current;
 
-    const scene = new THREE.Scene();
+    const scene = new Scene();
     sceneRef.current = scene;
 
-    const renderer = new THREE.WebGLRenderer({
+    const renderer = new WebGLRenderer({
       antialias: true,
       alpha: true,
       powerPreference: 'high-performance'
@@ -137,14 +137,14 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    const camera = new THREE.OrthographicCamera(0, 0, 0, 0, -1000, 1000);
+    const camera = new OrthographicCamera(0, 0, 0, 0, -1000, 1000);
     camera.position.z = 2;
     cameraRef.current = camera;
 
     const uniforms = {
       time: { value: 0 },
-      resolution: { value: new THREE.Vector4() },
-      uDataTexture: { value: null as THREE.DataTexture | null },
+      resolution: { value: new Vector4() },
+      uDataTexture: { value: null as DataTexture | null },
       scrollIntensity: { value: 0 }
     };
 
@@ -155,12 +155,12 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       data[i * 4 + 1] = Math.random() * 255 - 125;
     }
 
-    const dataTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat, THREE.FloatType);
+    const dataTexture = new DataTexture(data, size, size, RGBAFormat, FloatType);
     dataTexture.needsUpdate = true;
     uniforms.uDataTexture.value = dataTexture;
 
-    const material = new THREE.ShaderMaterial({
-      side: THREE.DoubleSide,
+    const material = new ShaderMaterial({
+      side: DoubleSide,
       uniforms,
       vertexShader,
       fragmentShader,
@@ -168,8 +168,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       depthWrite: false
     });
 
-    const geometry = new THREE.PlaneGeometry(1, 1, size - 1, size - 1);
-    const plane = new THREE.Mesh(geometry, material);
+    const geometry = new PlaneGeometry(1, 1, size - 1, size - 1);
+    const plane = new Mesh(geometry, material);
     planeRef.current = plane;
     scene.add(plane);
 
