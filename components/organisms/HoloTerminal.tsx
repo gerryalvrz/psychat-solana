@@ -48,7 +48,7 @@ export const HoloTerminal: React.FC<HoloTerminalProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`relative min-h-screen overflow-hidden crystal-layer-system ${className}`}
+      className={`relative min-h-screen overflow-hidden ${className}`}
     >
       {/* Animated Holographic Background */}
       <motion.div

@@ -37,10 +37,6 @@ const HeroTerminalSection: React.FC<HeroTerminalSectionProps> = ({ onConnect, on
           transition={{ delay: 0.5 }}
           className="mt-8 text-center"
         >
-          <HoloText size="base" className="text-white/80 mb-4">
-            Experience the future of mental health through our interactive terminal interface
-          </HoloText>
-          <HoloDivider variant="horizontal" thickness="thin" className="mx-auto w-32" />
         </motion.div>
       </motion.div>
 

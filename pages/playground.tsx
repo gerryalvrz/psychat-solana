@@ -5,6 +5,7 @@ import Link from "next/link";
 
 export default function Playground() {
   return (
+    // Experimental playground page - independent background system for testing components
     <main className="min-h-screen bg-deep-black text-text flex flex-col items-center justify-center p-10 relative overflow-hidden">
       {/* Enhanced background with depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-electric-cyan/5 via-transparent to-vibrant-magenta/5" />

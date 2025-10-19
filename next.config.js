@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false, // Disable to reduce double rendering in development
   swcMinify: true,
   webpack: (config) => {
     config.resolve.fallback = {

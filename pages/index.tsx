@@ -13,6 +13,9 @@ import DecryptedText from '../components/DecryptedText';
 import FaultyTerminal from '../components/FaultyTerminal';
 // import TerminalLoader from '../components/TerminalLoader';
 import { HoloPanel, HoloButton, HoloText, HoloDivider } from '../components/ui/holo';
+import { ComplexMolecule, WaterMolecule } from '../components/ui';
+import GridDistortion from '../components/GridDistortion';
+import BackgroundLayer from '../components/BackgroundLayer';
 import { 
   HiHome, 
   HiChat, 
@@ -26,6 +29,7 @@ import {
 import {
   HeroTerminalSection,
   HowItWorksSection,
+  DataconomySection,
   ProblemSolutionSection,
   FeaturesShowcaseSection,
   BuyersInsightSection,
@@ -58,9 +62,10 @@ export default function Home() {
 
   if (!mounted || showLoader) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ 
+      <div className="fixed inset-0 flex items-center justify-center" style={{ 
         background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 50%, rgba(15, 15, 35, 0.95) 100%)',
-        backdropFilter: 'blur(2px)'
+        backdropFilter: 'blur(2px)',
+        zIndex: 100
       }}>
         {/* FaultyTerminal Background */}
         <div className="absolute inset-0 z-0">
@@ -89,7 +94,11 @@ export default function Home() {
         <div className="w-full max-w-4xl mx-4 relative z-10">
           {/* Terminal Header */}
           <div className="bg-black border border-gray-500 px-4 py-2 flex items-center space-x-2">
-            <div className="w-2 h-2 bg-red-500"></div>
+            <button 
+              onClick={handleLoaderComplete}
+              className="w-2 h-2 bg-red-500 hover:bg-red-400 transition-colors cursor-pointer rounded-full"
+              title="Close loader"
+            ></button>
             <div className="w-2 h-2 bg-yellow-500"></div>
             <div className="w-2 h-2 bg-green-500"></div>
             <div className="ml-4 text-gray-300 text-xs font-mono">
@@ -210,27 +219,20 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen relative">
-      {/* Dark theme background */}
-      <div className="fixed inset-0 z-0" style={{ background: '#0A0A0A' }}>
-        <motion.div
-          className="absolute inset-0"
-          animate={{
-            background: [
-              "radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%)",
-              "radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.05) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%)",
-              "radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%)"
-            ]
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+    <div className="min-h-screen relative overflow-hidden cursor-crosshair">
+      {/* GridDistortion Background - Single source of truth */}
+      <BackgroundLayer layer="deep">
+        <GridDistortion
+          imageSrc=""
+          grid={12}
+          mouse={0.15}
+          strength={0.08}
+          relaxation={0.95}
+          className="w-full h-full"
         />
-      </div>
+      </BackgroundLayer>
       
-      <div className="relative z-10">
+      <div className="relative" style={{ zIndex: 10 }}>
         {/* Header */}
         <header className="p-4 border-b border-white/20">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -330,6 +332,13 @@ export default function Home() {
                       }
                     }}
                   />
+                  
+                  {/* Section Divider */}
+                  <div className="my-16">
+                    <HoloDivider variant="horizontal" thickness="medium" />
+                  </div>
+                  
+                  <DataconomySection />
                   
                   {/* Section Divider */}
                   <div className="my-16">

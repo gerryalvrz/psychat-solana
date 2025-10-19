@@ -82,7 +82,7 @@ export const AtomicStructure: React.FC<AtomicStructureProps> = ({
   className 
 }) => {
   return (
-    <div className={`relative crystal-layer-system ${className}`}>
+    <div className={`relative ${className}`}>
       {atoms.map((atom, index) => (
         <AtomComponent
           key={`${atom.element}-${index}`}

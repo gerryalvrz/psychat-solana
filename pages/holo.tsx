@@ -13,12 +13,23 @@ export default function HoloPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden crystal-layer-system">
+    // Experimental page for testing atomic/molecular designs - independent background system
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Enhanced background with depth */}
+      <div className="absolute inset-0 bg-gradient-to-br from-electric-cyan/5 via-transparent to-vibrant-magenta/5" />
+      <div className="absolute inset-0 bg-gradient-to-tl from-slate-500/3 via-transparent to-electric-cyan/3" />
+      
+      {/* Enhanced ambient lighting effects */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-electric-cyan/10 rounded-full blur-3xl opacity-30 depth-glow" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-vibrant-magenta/10 rounded-full blur-3xl opacity-30 depth-glow" />
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-400/5 rounded-full blur-3xl opacity-20 depth-glow" style={{ animationDelay: '2s' }} />
+      
+      {/* Additional depth layers */}
+      <div className="absolute inset-0 bg-gradient-to-r from-electric-cyan/2 via-transparent to-vibrant-magenta/2 blur-2xl" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-electric-cyan/1 to-transparent blur-xl" />
+      
       {/* Crystal Grid Background */}
       <div className="absolute inset-0 crystal-grid-sparse -z-10" />
-      
-      {/* Dark Base Background */}
-      <div className="absolute inset-0 bg-black -z-20" />
       
       {/* Multilayer Crystal Background */}
       <motion.div

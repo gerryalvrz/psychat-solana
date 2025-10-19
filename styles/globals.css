@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent white flash during development */
+html, body {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+/* Ensure no white background during component re-renders, but preserve grid */
+body > div {
+  background-color: transparent;
+}
+
 /* PsyChat Futuristic Design System */
 :root {
   --color-bg: #0B101A;
@@ -14,6 +25,15 @@
   --color-text: rgba(255,255,255,0.9);
   --blur: 20px;
   --radius: 12px;
+  
+  /* Z-Index System */
+  --z-background-deep: -20;
+  --z-background-mid: -10;
+  --z-background-overlay: -5;
+  --z-content: 0;
+  --z-content-elevated: 10;
+  --z-modal: 50;
+  --z-loader: 100;
   
   /* Holographic Glass System */
   --bg-dark: #05070D;
@@ -795,10 +815,16 @@
 }
 
 .geometric-overlay-dense {
+  background: 
+    linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0,255,255,0.05) 1px, transparent 1px);
   background-size: 10px 10px;
 }
 
 .geometric-overlay-sparse {
+  background: 
+    linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0,255,255,0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -866,6 +892,9 @@
 }
 
 .crystal-grid-sparse {
+  background-image: 
+    linear-gradient(90deg, rgba(0,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0,255,255,0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 

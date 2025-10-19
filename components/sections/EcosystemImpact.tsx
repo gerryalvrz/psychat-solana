@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Carousel from '../Carousel';
+import CrystalCarousel from '../CrystalCarousel';
 import { useScrollReveal } from '../../lib/hooks/useScrollReveal';
 import { HoloText, HoloPanel, HoloDivider } from '../ui/holo';
 
@@ -14,10 +14,11 @@ const EcosystemImpactSection: React.FC = () => {
       {/* Technology Stack */}
       <motion.div ref={techRef} {...techMotionProps}>
         <HoloPanel variant="elevated" size="xl" className="mb-12 relative overflow-hidden">
-          <HoloText size="xl" weight="bold" className="text-center mb-8">
+          
+          <HoloText size="xl" weight="bold" className="text-center mb-8 neon-solid-cyan">
             Powered by Web3
           </HoloText>
-          <div style={{ height: '600px', position: 'relative' }} className="flex justify-center">
+          <div className="relative w-full h-auto min-h-[400px] flex items-center justify-center">
             <motion.div
               animate={{ 
                 boxShadow: [
@@ -27,48 +28,50 @@ const EcosystemImpactSection: React.FC = () => {
                 ]
               }}
               transition={{ duration: 4, repeat: Infinity }}
-              className="rounded-2xl"
+              className="rounded-2xl w-full max-w-4xl"
             >
-              <Carousel
-                baseWidth={300}
-                autoplay={true}
-                autoplayDelay={3000}
-                pauseOnHover={true}
-                loop={true}
-                round={false}
-                items={[
-                  {
-                    title: 'Solana',
-                    description: 'Fast & Cheap blockchain',
-                    id: 1,
-                    icon: <span className="text-2xl">🔗</span>
-                  },
-                  {
-                    title: 'Phantom',
-                    description: 'Wallet integration',
-                    id: 2,
-                    icon: <span className="text-2xl">👻</span>
-                  },
-                  {
-                    title: 'Arcium',
-                    description: 'ZK Privacy protection',
-                    id: 3,
-                    icon: <span className="text-2xl">🔒</span>
-                  },
-                  {
-                    title: 'Raydium',
-                    description: 'AMM Trading',
-                    id: 4,
-                    icon: <span className="text-2xl">🏪</span>
-                  },
-                  {
-                    title: 'Reflect',
-                    description: '$rUSD Payments',
-                    id: 5,
-                    icon: <span className="text-2xl">💰</span>
-                  }
-                ]}
-              />
+              <div className="relative z-10">
+                <CrystalCarousel
+                  baseWidth={280}
+                  autoplay={true}
+                  autoplayDelay={3000}
+                  pauseOnHover={true}
+                  loop={true}
+                  items={[
+                    {
+                      title: 'Solana',
+                      description: 'Fast & Cheap blockchain',
+                      id: 1,
+                      icon: <span className="text-2xl">🔗</span>
+                    },
+                    {
+                      title: 'Phantom',
+                      description: 'Wallet integration',
+                      id: 2,
+                      icon: <span className="text-2xl">👻</span>
+                    },
+                    {
+                      title: 'Arcium',
+                      description: 'ZK Privacy protection',
+                      id: 3,
+                      icon: <span className="text-2xl">🔒</span>
+                    },
+                    {
+                      title: 'Raydium',
+                      description: 'AMM Trading',
+                      id: 4,
+                      icon: <span className="text-2xl">🏪</span>
+                    },
+                    {
+                      title: 'Reflect',
+                      description: '$rUSD Payments',
+                      id: 5,
+                      icon: <span className="text-2xl">💰</span>
+                    }
+                  ]}
+                />
+              </div>
+              
             </motion.div>
           </div>
         </HoloPanel>
