@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@arcium-hq/client": "^0.3.0",
+    "@arcium-hq/reader": "^0.3.0",
     "@coral-xyz/anchor": "^0.31.1",
     "@metaplex-foundation/js": "^0.20.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.8.0",

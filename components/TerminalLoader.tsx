@@ -60,7 +60,7 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
         <div className="bg-black border-2 border-gray-700 rounded-b-lg p-6 font-mono text-green-400 min-h-[400px]">
           <div className="flex items-center mb-4">
             <span className="text-green-400 mr-2">$</span>
-            <span className="text-gray-400">psycat --init --lunarpunk</span>
+            <span className="text-gray-400">psychat --init --lunarpunk</span>
             <div className="w-2 h-4 bg-green-400 ml-1 animate-pulse"></div>
           </div>
 

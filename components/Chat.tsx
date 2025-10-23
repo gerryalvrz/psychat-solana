@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArciumIntegration, WalrusIntegration } from '../utils/sponsorIntegrations';
 import { getAnchorProgram } from '../lib/anchor';
-import { ensureHNFTExists, registerChatNFT } from '../utils/identity/hnftOperations';
+import { registerChatNFT } from '../utils/identity/hnftOperations';
 import { mintChatNFT } from '../utils/nft/chatNFTMinting';
 import { cleanupOldTransactions } from '../utils/cleanupTransactions';
 import { keccak256 } from 'js-sha3';
@@ -400,6 +400,26 @@ export default function Chat() {
       setSuccess(null);
       const solscanUrl = await mintHNFT(); // Identity container only
       setLastTxUrl(solscanUrl);
+      
+      // Update HNFT state immediately after successful minting
+      const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+      if (pid) {
+        const [hnftPda] = PublicKey.findProgramAddressSync([
+          Buffer.from('hnft'),
+          publicKey.toBytes(),
+        ], new PublicKey(pid));
+        
+        // Update state immediately
+        setHnftPda(hnftPda.toBase58());
+        setHnftSig(solscanUrl.split('/').pop() || 'minted');
+        
+        // Store in localStorage
+        window.localStorage.setItem('psychat_hnft_pda', hnftPda.toBase58());
+        window.localStorage.setItem('psychat_hnft_sig', solscanUrl.split('/').pop() || 'minted');
+        
+        console.log('HNFT state updated immediately:', hnftPda.toBase58());
+      }
+      
       setSuccess('Identity HNFT minted successfully! You can now start chatting.');
       return solscanUrl;
     } catch (e: any) {
@@ -410,7 +430,29 @@ export default function Chat() {
       if (errorMessage.includes('This transaction has already been processed')) {
         errorMessage = 'Transaction already processed. Please wait a moment and try again.';
       } else if (errorMessage.includes('HNFT already exists')) {
-        errorMessage = 'You already have an HNFT. Please refresh the page to see it.';
+        // If HNFT already exists, check for it and update state
+        const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
+        if (pid) {
+          try {
+            const [hnftPda] = PublicKey.findProgramAddressSync([
+              Buffer.from('hnft'),
+              publicKey.toBytes(),
+            ], new PublicKey(pid));
+            
+            const existingHnft = await connection.getAccountInfo(hnftPda);
+            if (existingHnft) {
+              setHnftPda(hnftPda.toBase58());
+              setHnftSig('existing_hnft');
+              window.localStorage.setItem('psychat_hnft_pda', hnftPda.toBase58());
+              window.localStorage.setItem('psychat_hnft_sig', 'existing_hnft');
+              setSuccess('HNFT already exists! You can now start chatting.');
+              return '';
+            }
+          } catch (checkError) {
+            console.error('Error checking existing HNFT:', checkError);
+          }
+        }
+        errorMessage = 'HNFT already exists for this wallet. Please refresh the page to see your existing HNFT.';
       } else if (errorMessage.includes('already in use')) {
         errorMessage = 'HNFT already exists for this wallet. Please refresh the page to see your existing HNFT.';
       }
@@ -422,18 +464,26 @@ export default function Chat() {
     }
   };
 
-  // Handle end session with ChatNFT minting
+  // Handle end session with ChatNFT minting (HNFT must exist first)
   const handleEndSession = async () => {
     if (inProgressRef.current || isEncrypting || isMinting) return;
     if (!publicKey) {
       alert('Connect wallet');
       return;
     }
+    
+    // Check if user has HNFT - mandatory for chat
+    if (!hnftPda) {
+      setError('Please mint your HNFT identity first before ending the session.');
+      return;
+    }
+    
     try {
       inProgressRef.current = true;
       setError(null);
       setSuccess(null);
       setLastTxUrl(null);
+      
       // Step 1: Encrypt chat data with Arcium
       const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
       const { encrypted, proof: chatProof } = await ArciumIntegration.encryptData(conversationBlob);
@@ -441,12 +491,7 @@ export default function Chat() {
       // Step 2: Store encrypted chat on Walrus
       const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
       
-      // Step 3: Ensure user has HNFT identity
-      console.log('Ensuring HNFT identity exists...');
-      const hnftResult = await ensureHNFTExists(connection, walletCtx, encrypted, chatProof, 'therapy_session');
-      console.log('HNFT identity:', hnftResult.hnftAddress.toBase58());
-      
-      // Step 4: Create tradeable ChatNFT with Metaplex
+      // Step 3: Create tradeable ChatNFT with Metaplex (HNFT already exists)
       console.log('Creating tradeable ChatNFT with Metaplex...');
       const sessionStartTime = messages.length > 0 ? messages[0].timestamp : new Date();
       const sessionEndTime = new Date();
@@ -461,9 +506,6 @@ export default function Chat() {
       
       console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
       console.log('Metadata URI:', chatNFTResult.metadataUri);
-      
-      // Step 5: Skip HNFT registration for MVP (causes out of memory error)
-      console.log('Skipping HNFT registration for MVP - both NFTs minted successfully');
       
       const solscanUrl = buildSolscanTxUrl(chatNFTResult.transactionSignature);
       

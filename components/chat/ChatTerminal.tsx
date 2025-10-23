@@ -7,6 +7,7 @@ import SessionHeader from './SessionHeader';
 import MessageInput from './MessageInput';
 import GridDistortion from '../GridDistortion';
 import ChatHeader from './ChatHeader';
+import { arciumChatService, EncryptedMessage, ChatAnalysis } from '../../lib/arcium-chat';
 
 interface Message {
   id: string;
@@ -15,6 +16,8 @@ interface Message {
   timestamp: Date;
   encrypted?: boolean;
   hnftMinted?: boolean;
+  encryptedData?: EncryptedMessage;
+  arciumAnalysis?: ChatAnalysis;
 }
 
 interface ChatTerminalProps {
@@ -49,6 +52,15 @@ export default function ChatTerminal({
   const [sessionStart] = useState<Date>(new Date());
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [showScrollDown, setShowScrollDown] = useState(false);
+  
+  // Arcium state
+  const [arciumStatus, setArciumStatus] = useState<{
+    isConnected: boolean;
+    nodeCount: number;
+    lastUpdate: number;
+  }>({ isConnected: false, nodeCount: 0, lastUpdate: 0 });
+  const [isArciumInitialized, setIsArciumInitialized] = useState(false);
+  const [showEncryptionToggle, setShowEncryptionToggle] = useState(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,6 +90,38 @@ export default function ChatTerminal({
       return () => container.removeEventListener('scroll', handleScroll);
     }
   }, []);
+
+  // Initialize Arcium service
+  useEffect(() => {
+    const initializeArcium = async () => {
+      try {
+        await arciumChatService.initialize();
+        setIsArciumInitialized(true);
+        
+        // Get network status
+        const status = await arciumChatService.getNetworkStatus();
+        setArciumStatus(status);
+      } catch (error) {
+        console.error('Arcium initialization failed:', error);
+        setIsArciumInitialized(false);
+      }
+    };
+
+    initializeArcium();
+  }, []);
+
+  // Update Arcium status periodically
+  useEffect(() => {
+    if (!isArciumInitialized) return;
+
+    const updateStatus = async () => {
+      const status = await arciumChatService.getNetworkStatus();
+      setArciumStatus(status);
+    };
+
+    const interval = setInterval(updateStatus, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [isArciumInitialized]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -119,7 +163,7 @@ export default function ChatTerminal({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[80vh]">
+    <div className="flex flex-col h-full max-h-[90vh]">
       
       {/* Header - Separate component on top */}
       <ChatHeader 
@@ -158,12 +202,12 @@ export default function ChatTerminal({
         <div className="absolute inset-0 crystal-grid animate-[holographic-scan_6s_linear_infinite]" />
       
       {/* Content Area */}
-      <div className="flex-1 flex flex-col p-4 crystal-glass-hover relative z-10">
+      <div className="flex-1 flex flex-col p-4 crystal-glass-hover relative z-10 min-h-0">
 
         {/* Messages - Scrollable Container */}
         <div 
           ref={messagesContainerRef}
-          className="messages-container flex-1 overflow-y-auto mb-4 custom-scrollbar max-h-[60vh] min-h-[300px] relative"
+          className="messages-container flex-1 overflow-y-auto mb-4 custom-scrollbar max-h-[50vh] min-h-[200px] relative"
         >
           {/* Scroll fade indicators */}
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black/20 to-transparent pointer-events-none z-10" />
@@ -229,20 +273,49 @@ export default function ChatTerminal({
           </div>
         </div>
 
+        {/* Arcium Status Display */}
+        {hasHNFT && (
+          <div className="mb-4 p-3 rounded-lg bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-400/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-2 h-2 rounded-full ${arciumStatus.isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
+                <span className="text-sm text-white/80">
+                  Arcium MPC: {arciumStatus.isConnected ? 'Connected' : 'Disconnected'}
+                </span>
+                {arciumStatus.nodeCount > 0 && (
+                  <span className="text-xs text-white/60">
+                    ({arciumStatus.nodeCount} nodes)
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setShowEncryptionToggle(!showEncryptionToggle)}
+                  className="text-xs px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition-colors"
+                >
+                  {showEncryptionToggle ? '🔒 Encrypted' : '🔓 Plain'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Enhanced Input */}
         {hasHNFT && (
-          <MessageInput
-            value={inputText}
-            onChange={setInputText}
-            onSend={handleSendMessage}
-            disabled={isEncrypting || isMinting}
-            isAIThinking={isAIThinking}
-          />
+          <div className="mb-4">
+            <MessageInput
+              value={inputText}
+              onChange={setInputText}
+              onSend={handleSendMessage}
+              disabled={isEncrypting || isMinting}
+              isAIThinking={isAIThinking}
+            />
+          </div>
         )}
 
         {/* End Session Button */}
         {hasHNFT && (
-          <div className="mt-2 flex justify-end">
+          <div className="mb-4 flex justify-end">
             <button
               onClick={onEndSession}
               disabled={isEncrypting || isMinting || messages.length === 0}

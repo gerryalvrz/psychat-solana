@@ -26,7 +26,7 @@ const ProblemSolutionSection: React.FC = () => {
           <HoloPanel variant="floating" size="lg" className="relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent" />
             <div className="relative z-10">
-              <HoloText size="lg" weight="bold" className="text-red-400 mb-4 flex items-center">
+              <HoloText as="div" size="lg" weight="bold" className="text-red-400 mb-4 flex items-center">
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
@@ -52,7 +52,7 @@ const ProblemSolutionSection: React.FC = () => {
                     className="flex items-start"
                   >
                     <HiOutlineXCircle className="text-red-400 w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
-                    <HoloText size="sm" className="text-white/80">{item}</HoloText>
+                    <HoloText as="span" size="sm" className="text-white/80">{item}</HoloText>
                   </motion.li>
                 ))}
               </ul>
@@ -68,7 +68,7 @@ const ProblemSolutionSection: React.FC = () => {
           <HoloPanel variant="elevated" size="lg" className="relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent" />
             <div className="relative z-10">
-              <HoloText size="lg" weight="bold" className="text-green-400 mb-4 flex items-center">
+              <HoloText as="div" size="lg" weight="bold" className="text-green-400 mb-4 flex items-center">
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
@@ -94,7 +94,7 @@ const ProblemSolutionSection: React.FC = () => {
                     className="flex items-start"
                   >
                     <HiOutlineShieldCheck className="text-green-400 w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
-                    <HoloText size="sm" className="text-white/80">{item}</HoloText>
+                    <HoloText as="span" size="sm" className="text-white/80">{item}</HoloText>
                   </motion.li>
                 ))}
               </ul>

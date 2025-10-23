@@ -3,14 +3,10 @@ import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
+// Import chart configuration to ensure proper registration
+import '../lib/chartConfig';
+
 const Line = dynamic(() => import('react-chartjs-2').then(m => m.Line), { ssr: false });
-// Lazy register to avoid SSR issues
-const lazyRegister = async () => {
-  const chartMod = await import('chart.js');
-  const ChartJS = (chartMod as any).Chart;
-  const { LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip } = chartMod as any;
-  ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);
-};
 
 interface Earnings {
   totalEarned: number;
@@ -72,10 +68,11 @@ export default function Dashboard() {
   const [stakeAmount, setStakeAmount] = useState('');
   const [isStaking, setIsStaking] = useState(false);
   const [isClaimingUbi, setIsClaimingUbi] = useState(false);
+  const [chartReady, setChartReady] = useState(false);
 
   useEffect(() => {
-    // Register chart elements on client
-    lazyRegister();
+    // Set chart ready since registration is handled by import
+    setChartReady(true);
 
     // Mock yield farming options
     const mockYieldOptions: YieldOption[] = [
@@ -335,8 +332,9 @@ export default function Dashboard() {
       <div className="psychat-card p-6">
         <h3 className="text-xl font-bold text-white mb-4">Growth & UBI Projection</h3>
         <div className="bg-white/5 rounded-lg p-4">
-          {typeof window !== 'undefined' && (
-            <Line
+          <div className="h-64">
+            {typeof window !== 'undefined' && chartReady ? (
+              <Line
               data={{
                 labels: ['Month 1', 'Month 3', 'Month 6', 'Month 12'],
                 datasets: [
@@ -358,14 +356,33 @@ export default function Dashboard() {
               }}
               options={{
                 responsive: true,
-                plugins: { legend: { labels: { color: '#ffffff' } } },
+                maintainAspectRatio: false,
+                plugins: { 
+                  legend: { 
+                    labels: { color: '#ffffff' } 
+                  } 
+                },
                 scales: {
-                  x: { ticks: { color: '#cccccc' }, grid: { color: 'rgba(255,255,255,0.08)' } },
-                  y: { beginAtZero: true, ticks: { color: '#cccccc' }, grid: { color: 'rgba(255,255,255,0.08)' } },
+                  x: { 
+                    type: 'category',
+                    ticks: { color: '#cccccc' }, 
+                    grid: { color: 'rgba(255,255,255,0.08)' } 
+                  },
+                  y: { 
+                    type: 'linear',
+                    beginAtZero: true, 
+                    ticks: { color: '#cccccc' }, 
+                    grid: { color: 'rgba(255,255,255,0.08)' } 
+                  },
                 },
               }}
             />
-          )}
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-white/70">Loading chart...</div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

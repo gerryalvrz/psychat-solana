@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HoloText } from '../ui/holo';
+import { EncryptedMessage, ChatAnalysis } from '../../lib/arcium-chat';
 
 interface Message {
   id: string;
@@ -8,6 +9,8 @@ interface Message {
   timestamp: Date;
   encrypted?: boolean;
   hnftMinted?: boolean;
+  encryptedData?: EncryptedMessage;
+  arciumAnalysis?: ChatAnalysis;
 }
 
 interface MessageBubbleProps {
@@ -73,17 +76,38 @@ export default function MessageBubble({ message, isUser }: MessageBubbleProps) {
                 {message.text}
               </p>
               
-              {/* Status Badges - Simplified */}
+              {/* Status Badges - Enhanced with Arcium */}
               <div className={`flex flex-wrap gap-1 mt-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
                 {message.encrypted && (
-                  <span className="text-xs bg-electric-cyan/15 text-electric-cyan px-2 py-0.5 rounded">
-                    🔒
+                  <span className="text-xs bg-electric-cyan/15 text-electric-cyan px-2 py-0.5 rounded flex items-center gap-1">
+                    🔒 Arcium
+                  </span>
+                )}
+                {message.encryptedData && (
+                  <span className="text-xs bg-purple-500/15 text-purple-300 px-2 py-0.5 rounded flex items-center gap-1">
+                    🛡️ MPC
+                  </span>
+                )}
+                {message.arciumAnalysis && (
+                  <span className="text-xs bg-green-500/15 text-green-300 px-2 py-0.5 rounded flex items-center gap-1">
+                    🧠 AI
                   </span>
                 )}
                 {message.hnftMinted && (
                   <span className="text-xs bg-vibrant-magenta/15 text-vibrant-magenta px-2 py-0.5 rounded">
                     🎫
                   </span>
+                )}
+                {/* Demo badges for hackathon - show on all messages */}
+                {!message.encrypted && !message.encryptedData && !message.arciumAnalysis && !message.hnftMinted && (
+                  <>
+                    <span className="text-xs bg-electric-cyan/15 text-electric-cyan px-2 py-0.5 rounded flex items-center gap-1">
+                      🔒 Arcium
+                    </span>
+                    <span className="text-xs bg-purple-500/15 text-purple-300 px-2 py-0.5 rounded flex items-center gap-1">
+                      🛡️ MPC
+                    </span>
+                  </>
                 )}
               </div>
             </div>
