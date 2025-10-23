@@ -411,10 +411,14 @@ export class ArciumChatService {
         throw new Error(`Network not accessible: ${response.status}`);
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.warn('Arcium network connection timeout');
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.warn('Arcium network connection timeout');
+        } else {
+          console.warn('Arcium network not accessible via API:', error.message);
+        }
       } else {
-        console.warn('Arcium network not accessible via API:', error.message);
+        console.warn('Arcium network not accessible via API:', String(error));
       }
       return {
         isConnected: false,
