@@ -111,7 +111,7 @@ export default function Home() {
             {/* Terminal Prompt */}
             <div className="flex items-center mb-4">
               <span className="text-green-500 mr-2">$</span>
-              <span className="text-gray-400">psycat --init --lunarpunk</span>
+              <span className="text-gray-400">psychat --init --lunarpunk</span>
               <div className="w-2 h-4 bg-green-500 ml-1 animate-pulse"></div>
             </div>
 
@@ -284,7 +284,7 @@ export default function Home() {
                   {/* Prompt */}
                   <div className="flex items-center mb-4">
                     <span className="text-green-400 mr-2">$</span>
-                    <span className="text-gray-400">psycat --welcome --connect</span>
+                    <span className="text-gray-400">psychat --welcome --connect</span>
                     <div className="w-2 h-4 bg-green-400 ml-1 animate-pulse" />
                   </div>
                   {/* Content */}

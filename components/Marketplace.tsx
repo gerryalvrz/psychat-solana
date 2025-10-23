@@ -6,6 +6,7 @@ import { keccak256 } from 'js-sha3';
 import { WalrusIntegration } from '../utils/sponsorIntegrations';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { Metaplex, keypairIdentity } from '@metaplex-foundation/js';
+import TokenAMM from './TokenAMM';
 
 interface DataListing {
   id: string;
@@ -13,7 +14,7 @@ interface DataListing {
   description: string;
   category: 'anxiety' | 'depression' | 'stress' | 'relationships' | 'general';
   price: number;
-  currency: 'SOL' | 'rUSD';
+        currency: 'PSY' | 'rUSD';
   seller: string;
   buyer: string;
   buyerType: 'AI Training' | 'Academic Research' | 'Consumer Patterns' | 'Corporate Wellness';
@@ -41,6 +42,7 @@ export default function Marketplace() {
   const [isBidding, setIsBidding] = useState(false);
   const [filter, setFilter] = useState<'all' | 'anxiety' | 'depression' | 'stress' | 'relationships'>('all');
   const [nftMetadata, setNftMetadata] = useState<Map<string, any>>(new Map());
+  const [showTrading, setShowTrading] = useState(false);
 
   // Fetch NFT metadata from Metaplex
   const fetchNFTMetadata = async (mintAddress: string) => {
@@ -72,7 +74,7 @@ export default function Marketplace() {
         description: 'Aggregated insights from 1,200+ therapy sessions focusing on anxiety patterns, triggers, and coping mechanisms.',
         category: 'anxiety',
         price: 3.5,
-        currency: 'SOL',
+        currency: 'PSY',
         seller: 'PsyChat Community',
         buyer: 'OpenAI Research',
         buyerType: 'AI Training',
@@ -106,7 +108,7 @@ export default function Marketplace() {
         description: 'Professional stress patterns and productivity correlations from remote work data.',
         category: 'stress',
         price: 1.8,
-        currency: 'SOL',
+        currency: 'PSY',
         seller: 'PsyChat Community',
         buyer: 'Headspace Inc.',
         buyerType: 'Consumer Patterns',
@@ -180,44 +182,14 @@ export default function Marketplace() {
         .claimUbi(proof, category)
         .accounts({ user: publicKey })
         .rpc();
-      console.log('Claim $rUSD sig:', sig);
-      alert('Claimed $rUSD! Verify on Solscan.');
+      console.log('Claim $PSY sig:', sig);
+      alert('Claimed $PSY! Verify on Solscan.');
     } catch (e: any) {
       console.error('Claim failed', e);
       alert('Claim failed: ' + (e?.message || String(e)));
     }
   };
 
-  const handleMintDataset = async (category: string) => {
-    if (!publicKey) return;
-    const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
-    if (!pid) {
-      alert('Program not configured');
-      return;
-    }
-    try {
-      // Link to user's latest HNFT history (Walrus) by creating a derived dataset state
-      const program = await getAnchorProgram(connection, wallet, pid);
-      const [hnftPda] = PublicKey.findProgramAddressSync([
-        Buffer.from('hnft'),
-        publicKey.toBytes(),
-      ], new PublicKey(pid));
-      // For demo, dataset URI points to same Walrus CID space
-      const demoCid = await WalrusIntegration.storeEncryptedData(`dataset:${category}:${Date.now()}`);
-      // Create a mock mint address for the demo
-      const mockMintAddress = Keypair.generate().publicKey;
-      
-      const sig = await (program as any).methods
-        .mintDatasetNft(mockMintAddress, `walrus://${demoCid}`, category)
-        .accounts({ user: publicKey, hnft: hnftPda })
-        .rpc();
-      console.log('Mint dataset NFT sig:', sig);
-      alert('Dataset NFT minted and linked!');
-    } catch (e: any) {
-      console.error('Mint dataset failed', e);
-      alert('Mint dataset failed: ' + (e?.message || String(e)));
-    }
-  };
 
   const formatTimeRemaining = (endTime: Date) => {
     const now = new Date();
@@ -360,10 +332,7 @@ export default function Marketplace() {
                 View Details
               </button>
               <button className="w-full psychat-button bg-psy-green" onClick={() => handleClaim(listing.category)}>
-                Claim $rUSD
-              </button>
-              <button className="w-full psychat-button bg-psy-blue" onClick={() => handleMintDataset(listing.category)}>
-                Mint Dataset NFT
+                Claim $PSY
               </button>
             </div>
           </div>
@@ -445,7 +414,7 @@ export default function Marketplace() {
                   </button>
                 </div>
                 <div className="text-xs text-white/60">
-                  Payment via Reflect $rUSD • Auto-compound to DeFi yields
+                  Payment via $PSY tokens • Auto-compound to DeFi yields
                 </div>
               </div>
             </div>
@@ -490,6 +459,36 @@ export default function Marketplace() {
         </div>
       </div>
 
+      {/* Token Trading Section */}
+      <div className="psychat-card p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-white">Token Trading</h3>
+          <button
+            onClick={() => setShowTrading(!showTrading)}
+            className="psychat-button bg-psy-purple hover:bg-psy-purple/80 transition-colors"
+          >
+            {showTrading ? 'Hide Trading' : 'Show Trading'}
+          </button>
+        </div>
+        
+        {!showTrading && (
+          <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
+            <div className="text-sm text-white/80 mb-2">
+              <strong>AMM Trading Available:</strong> Trade $PSY and $rUSD tokens with instant liquidity through Raydium AMM.
+            </div>
+            <div className="text-xs text-white/60">
+              Click "Show Trading" to access the trading interface and participate in the PsyChat token economy.
+            </div>
+          </div>
+        )}
+        
+        {showTrading && (
+          <div className="mt-4">
+            <TokenAMM />
+          </div>
+        )}
+      </div>
+
       {/* Info Panel */}
       <div className="psychat-card p-6">
         <h3 className="text-lg font-semibold text-white mb-4">How It Works</h3>
@@ -510,9 +509,9 @@ export default function Marketplace() {
           </div>
           <div className="text-center">
             <div className="text-3xl mb-2">💰</div>
-            <h4 className="font-semibold text-white mb-2">Reflect Payments</h4>
+            <h4 className="font-semibold text-white mb-2">$PSY Token Payments</h4>
             <p className="text-sm text-white/70">
-              Secure payments with Reflect $rUSD and auto-compound earnings into DeFi yields.
+              Secure payments with $PSY tokens and auto-compound earnings into DeFi yields.
             </p>
           </div>
         </div>

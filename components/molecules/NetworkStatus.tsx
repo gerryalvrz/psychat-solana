@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { HoloPanel, HoloText } from "../ui";
-import { FaWifi, FaEthernet, FaSignal, FaGlobe, FaShieldAlt } from "react-icons/fa";
+import { FaWifi, FaEthernet, FaSignal, FaGlobe, FaShieldAlt, FaLock, FaNetworkWired } from "react-icons/fa";
+import { arciumChatService } from "../../lib/arcium-chat";
 
 interface NetworkInfo {
   status: "online" | "offline" | "connecting";
@@ -10,6 +11,13 @@ interface NetworkInfo {
   latency: number;
   speed: string;
   security: "secure" | "insecure" | "unknown";
+}
+
+interface ArciumNetworkInfo {
+  isConnected: boolean;
+  nodeCount: number;
+  lastUpdate: number;
+  status: "connected" | "disconnected" | "connecting";
 }
 
 interface NetworkStatusProps {
@@ -31,6 +39,12 @@ export const NetworkStatus: React.FC<NetworkStatusProps> = ({
   });
 
   const [isConnected, setIsConnected] = useState(true);
+  const [arciumNetwork, setArciumNetwork] = useState<ArciumNetworkInfo>({
+    isConnected: false,
+    nodeCount: 0,
+    lastUpdate: 0,
+    status: "disconnected"
+  });
 
   // Simulate network status changes
   useEffect(() => {
@@ -43,6 +57,44 @@ export const NetworkStatus: React.FC<NetworkStatusProps> = ({
     }, 3000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Initialize and monitor Arcium network
+  useEffect(() => {
+    const initializeArcium = async () => {
+      try {
+        await arciumChatService.initialize();
+        const status = await arciumChatService.getNetworkStatus();
+        setArciumNetwork({
+          isConnected: status.isConnected,
+          nodeCount: status.nodeCount,
+          lastUpdate: status.lastUpdate,
+          status: status.isConnected ? "connected" : "disconnected"
+        });
+      } catch (error) {
+        console.error('Arcium network initialization failed:', error);
+        setArciumNetwork(prev => ({ ...prev, status: "disconnected" }));
+      }
+    };
+
+    initializeArcium();
+
+    // Update Arcium status periodically
+    const arciumInterval = setInterval(async () => {
+      try {
+        const status = await arciumChatService.getNetworkStatus();
+        setArciumNetwork({
+          isConnected: status.isConnected,
+          nodeCount: status.nodeCount,
+          lastUpdate: status.lastUpdate,
+          status: status.isConnected ? "connected" : "disconnected"
+        });
+      } catch (error) {
+        console.error('Failed to update Arcium status:', error);
+      }
+    }, 10000); // Update every 10 seconds
+
+    return () => clearInterval(arciumInterval);
   }, []);
 
   const getStatusIcon = (type: NetworkInfo["type"]) => {
@@ -214,6 +266,52 @@ export const NetworkStatus: React.FC<NetworkStatusProps> = ({
               className="w-2 h-2 bg-cyan-400 rounded-full"
             />
           </div>
+        </div>
+
+        {/* Arcium MPC Network Status */}
+        <div className="mt-4 pt-3 border-t border-purple-400/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <FaLock className="text-purple-400 text-sm" />
+              <span className="text-sm text-white/80">Arcium MPC</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{ 
+                  duration: 1.5, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className={`w-2 h-2 rounded-full ${
+                  arciumNetwork.status === "connected" ? "bg-green-400" : 
+                  arciumNetwork.status === "connecting" ? "bg-yellow-400" : "bg-red-400"
+                }`}
+              />
+              <span className={`text-xs ${
+                arciumNetwork.status === "connected" ? "text-green-400" : 
+                arciumNetwork.status === "connecting" ? "text-yellow-400" : "text-red-400"
+              }`}>
+                {arciumNetwork.status === "connected" ? "Connected" : 
+                 arciumNetwork.status === "connecting" ? "Connecting" : "Disconnected"}
+              </span>
+            </div>
+          </div>
+          
+          {arciumNetwork.nodeCount > 0 && (
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FaNetworkWired className="text-purple-400 text-xs" />
+                <span className="text-xs text-white/60">MPC Nodes</span>
+              </div>
+              <span className="text-xs text-purple-400 font-medium">
+                {arciumNetwork.nodeCount}
+              </span>
+            </div>
+          )}
         </div>
       </HoloPanel>
     </motion.div>
