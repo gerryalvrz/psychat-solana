@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 // Import chart configuration to ensure proper registration
-import '/Users/main/PsyChat/lib/chartConfig';
+import '../lib/chartConfig';
 
 const Line = dynamic(() => import('react-chartjs-2').then(m => m.Line), { ssr: false });
 
