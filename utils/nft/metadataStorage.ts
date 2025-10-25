@@ -41,21 +41,46 @@ export function createDataUri(metadata: ChatNFTMetadata): string {
 }
 
 /**
- * Create metadata URI for ChatNFT
+ * Create metadata URI for ChatNFT with encrypted conversation
  * Uses data URI for simplicity and to avoid "URI too long" errors
  */
 export function createMetadataUri(
   sessionId: string,
   startTime: Date,
-  endTime: Date
+  endTime: Date,
+  encryptedConversation?: {
+    encryptedData: string;
+    decryptionKey: string;
+    timestamp: number;
+    mxeAddress: string;
+  },
+  walrusCid?: string
 ): string {
-  const metadata = createMinimalMetadata(sessionId, startTime, endTime);
+  // Create ultra-minimal metadata to stay under 200 character limit
+  const metadata = {
+    name: `PC#${sessionId.substring(0, 4)}`, // Very short session ID
+    symbol: 'PC',
+    description: 'S', // Single character
+    properties: {
+      // Store only essential data - use single character keys
+      e: encryptedConversation ? '1' : '0', // encrypted flag
+      k: encryptedConversation?.decryptionKey?.substring(0, 6) || '', // very short key
+      t: encryptedConversation?.timestamp || 0 // timestamp
+    }
+  };
+  
   const uri = createDataUri(metadata);
   
   // Debug logging
-  console.log('Generated metadata:', JSON.stringify(metadata));
+  console.log('Generated ultra-minimal metadata');
   console.log('Metadata URI length:', uri.length);
-  console.log('Metadata URI:', uri);
+  console.log('Encrypted data length:', encryptedConversation?.encryptedData?.length || 0);
+  
+  // Store the full encrypted data separately (not in URI)
+  if (encryptedConversation) {
+    console.log('Full encrypted data stored separately (not in URI)');
+    console.log('Full decryption key:', encryptedConversation.decryptionKey);
+  }
   
   return uri;
 }

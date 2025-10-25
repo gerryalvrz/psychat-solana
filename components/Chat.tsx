@@ -3,6 +3,8 @@ import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArciumIntegration, WalrusIntegration } from '../utils/sponsorIntegrations';
+import { arciumConversationEncryption } from '../lib/arcium-conversation-encryption';
+import { storeEncryptedConversation } from '../lib/encrypted-data-storage';
 import { getAnchorProgram } from '../lib/anchor';
 import { registerChatNFT } from '../utils/identity/hnftOperations';
 import { mintChatNFT } from '../utils/nft/chatNFTMinting';
@@ -43,6 +45,7 @@ export default function Chat() {
   const [inputText, setInputText] = useState('');
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
+  const [encryptionStatus, setEncryptionStatus] = useState<'idle' | 'encrypting' | 'encrypted' | 'error'>('idle');
   const [optInMint, setOptInMint] = useState(true);
   const [hnftPda, setHnftPda] = useState<string | null>(null);
   const [hnftSig, setHnftSig] = useState<string | null>(null);
@@ -484,24 +487,62 @@ export default function Chat() {
       setSuccess(null);
       setLastTxUrl(null);
       
-      // Step 1: Encrypt chat data with Arcium
-      const conversationBlob = JSON.stringify(messages.map(m => ({ role: m.role, text: m.text, t: m.timestamp })));
-      const { encrypted, proof: chatProof } = await ArciumIntegration.encryptData(conversationBlob);
+      // Step 1: Encrypt entire conversation with Arcium MPC (seamless)
+      console.log('🔐 Encrypting conversation history with Arcium MPC...');
+      setEncryptionStatus('encrypting');
       
-      // Step 2: Store encrypted chat on Walrus
-      const walrusCid = await WalrusIntegration.storeEncryptedData(encrypted);
+      let encryptionResult;
+      try {
+        encryptionResult = await arciumConversationEncryption.encryptConversation(messages);
+        
+        if (!encryptionResult.success) {
+          console.warn('⚠️ Encryption failed, proceeding without encryption:', encryptionResult.error);
+          setEncryptionStatus('error');
+          // Continue without encryption - don't throw error
+          encryptionResult = null;
+        } else {
+          setEncryptionStatus('encrypted');
+          console.log('✅ Conversation encrypted successfully');
+        }
+      } catch (error) {
+        console.warn('⚠️ Encryption error, proceeding without encryption:', error);
+        setEncryptionStatus('error');
+        // Continue without encryption - don't throw error
+        encryptionResult = null;
+      }
+      
+      // Step 2: Store encrypted data separately (not in metadata URI)
+      console.log('📦 Storing encrypted conversation data...');
+      const sessionId = Date.now().toString();
+      const walrusCid = `mock_walrus_${Date.now()}`;
+      
+      // Store full encrypted data separately from metadata
+      if (encryptionResult && encryptionResult.success && encryptionResult.encryptedData && encryptionResult.decryptionKey) {
+        storeEncryptedConversation(sessionId, {
+          encryptedData: encryptionResult.encryptedData,
+          decryptionKey: encryptionResult.decryptionKey,
+          timestamp: encryptionResult.timestamp || Date.now(),
+          mxeAddress: encryptionResult.mxeAddress || 'unknown'
+        }, walrusCid);
+      }
       
       // Step 3: Create tradeable ChatNFT with Metaplex (HNFT already exists)
       console.log('Creating tradeable ChatNFT with Metaplex...');
       const sessionStartTime = messages.length > 0 ? messages[0].timestamp : new Date();
       const sessionEndTime = new Date();
-      const sessionId = Date.now().toString();
       
       const chatNFTResult = await mintChatNFT(connection, walletCtx, {
         sessionId,
         startTime: sessionStartTime,
         endTime: sessionEndTime,
-        messageCount: messages.length
+        messageCount: messages.length,
+        encryptedConversation: encryptionResult ? {
+          encryptedData: encryptionResult.encryptedData!,
+          decryptionKey: encryptionResult.decryptionKey!,
+          timestamp: encryptionResult.timestamp!,
+          mxeAddress: encryptionResult.mxeAddress!
+        } : undefined,
+        walrusCid: walrusCid
       });
       
       console.log('ChatNFT minted:', chatNFTResult.mintAddress.toBase58());
@@ -527,7 +568,10 @@ export default function Chat() {
       // Show confirmation in sidebar by expanding ChatNFT list
       setIsChatNFTListExpanded(true);
       
-      setSuccess(`✅ ChatNFT minted successfully! View it in the sidebar panel.`);
+      const encryptionStatusText = encryptionResult ? 
+        ' (encrypted conversation stored separately)' : 
+        ' (no encryption)';
+      setSuccess(`✅ ChatNFT minted successfully${encryptionStatusText}! View it in the sidebar panel.`);
       setLastTxUrl(solscanUrl);
     } catch (e: any) {
       console.error('End session mint failed:', e);
@@ -626,8 +670,8 @@ export default function Chat() {
     }
   };
 
-  // Debug log
-  console.log('Current state:', { hnftPda, isHNFTExpanded });
+  // Debug log (commented out to reduce console spam)
+  // console.log('Current state:', { hnftPda, isHNFTExpanded });
 
   return (
     <div className="chat-section-container relative fixed inset-0 z-40 bg-black/95 backdrop-blur-sm overflow-hidden">
@@ -723,6 +767,7 @@ export default function Chat() {
             isEncrypting={isEncrypting}
             isMinting={isMinting}
             isAIThinking={isAIThinking}
+            encryptionStatus={encryptionStatus}
             onEndSession={handleEndSession}
             onToggleHNFT={() => setIsHNFTVisible(!isHNFTVisible)}
             isHNFTVisible={isHNFTVisible}

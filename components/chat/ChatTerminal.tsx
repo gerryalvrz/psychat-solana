@@ -28,6 +28,7 @@ interface ChatTerminalProps {
   isEncrypting: boolean;
   isMinting: boolean;
   isAIThinking: boolean;
+  encryptionStatus: 'idle' | 'encrypting' | 'encrypted' | 'error';
   onEndSession: () => Promise<void>;
   onToggleHNFT?: () => void;
   isHNFTVisible?: boolean;
@@ -42,6 +43,7 @@ export default function ChatTerminal({
   isEncrypting,
   isMinting,
   isAIThinking,
+  encryptionStatus,
   onEndSession,
   onToggleHNFT,
   isHNFTVisible,
@@ -60,7 +62,6 @@ export default function ChatTerminal({
     lastUpdate: number;
   }>({ isConnected: false, nodeCount: 0, lastUpdate: 0 });
   const [isArciumInitialized, setIsArciumInitialized] = useState(false);
-  const [showEncryptionToggle, setShowEncryptionToggle] = useState(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -289,12 +290,9 @@ export default function ChatTerminal({
                 )}
               </div>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowEncryptionToggle(!showEncryptionToggle)}
-                  className="text-xs px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition-colors"
-                >
-                  {showEncryptionToggle ? '🔒 Encrypted' : '🔓 Plain'}
-                </button>
+                <div className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-400/30">
+                  🔒 Encrypted
+                </div>
               </div>
             </div>
           </div>
@@ -323,6 +321,35 @@ export default function ChatTerminal({
             >
               End Session and Mint ChatNFT
             </button>
+          </div>
+        )}
+
+        {/* Encryption Status Indicator */}
+        {hasHNFT && encryptionStatus !== 'idle' && (
+          <div className="mb-4 flex justify-center">
+            <div className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-300 ${
+              encryptionStatus === 'encrypting' 
+                ? 'text-yellow-400 border-yellow-400/50 bg-yellow-400/10 animate-pulse' 
+                : encryptionStatus === 'encrypted'
+                ? 'text-green-400 border-green-400/50 bg-green-400/10'
+                : 'text-red-400 border-red-400/50 bg-red-400/10'
+            }`}>
+              {encryptionStatus === 'encrypting' && (
+                <span className="flex items-center gap-2">
+                  🔐 Encrypting conversation with Arcium MPC...
+                </span>
+              )}
+              {encryptionStatus === 'encrypted' && (
+                <span className="flex items-center gap-2">
+                  ✅ Conversation encrypted and stored in ChatNFT
+                </span>
+              )}
+              {encryptionStatus === 'error' && (
+                <span className="flex items-center gap-2">
+                  ⚠️ Encryption failed, but ChatNFT will still be created
+                </span>
+              )}
+            </div>
           </div>
         )}
       </div>

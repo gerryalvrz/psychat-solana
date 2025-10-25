@@ -1,0 +1,23 @@
+[workspace]
+members = [
+    "encrypted-ixs",
+]
+
+[package]
+name = "arcium-chat-mxe"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arcium-client = "0.3.0"
+arcium-macros = "0.3.0"
+arcium-anchor = "0.3.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+overflow-checks = true
+
+[patch.crates-io]
+proc-macro2 = { git = 'https://github.com/arcium-hq/proc-macro2.git' }

@@ -1,0 +1,22 @@
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+arcium_chat_mxe = "EFs8XpQ9QHy6ZiMr91ejUe8up9S9TuMuJsFDgfzhSjan"
+
+[programs.devnet]
+arcium_chat_mxe = "EFs8XpQ9QHy6ZiMr91ejUe8up9S9TuMuJsFDgfzhSjan"
+
+[programs.mainnet]
+arcium_chat_mxe = "EFs8XpQ9QHy6ZiMr91ejUe8up9S9TuMuJsFDgfzhSjan"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
