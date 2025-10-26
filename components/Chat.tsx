@@ -37,7 +37,11 @@ interface ChatNFT {
   messageCount?: number;
 }
 
-export default function Chat() {
+interface ChatProps {
+  onNavigateToVideo?: () => void;
+}
+
+export default function Chat({ onNavigateToVideo }: ChatProps) {
   const walletCtx = useWallet();
   const { publicKey, signTransaction, sendTransaction } = walletCtx;
   const { connection } = useConnection();
@@ -772,6 +776,7 @@ export default function Chat() {
             onToggleHNFT={() => setIsHNFTVisible(!isHNFTVisible)}
             isHNFTVisible={isHNFTVisible}
             hasHNFT={!!hnftPda}
+            onNavigateToVideo={onNavigateToVideo}
           />
         </div>
 

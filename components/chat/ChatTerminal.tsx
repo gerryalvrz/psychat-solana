@@ -33,6 +33,7 @@ interface ChatTerminalProps {
   onToggleHNFT?: () => void;
   isHNFTVisible?: boolean;
   hasHNFT?: boolean;
+  onNavigateToVideo?: () => void;
 }
 
 export default function ChatTerminal({
@@ -47,7 +48,8 @@ export default function ChatTerminal({
   onEndSession,
   onToggleHNFT,
   isHNFTVisible,
-  hasHNFT = false
+  hasHNFT = false,
+  onNavigateToVideo
 }: ChatTerminalProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -320,6 +322,19 @@ export default function ChatTerminal({
               className="text-sm text-white hover:text-white transition-all duration-300 px-4 py-2 rounded-lg border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] font-medium"
             >
               End Session and Mint ChatNFT
+            </button>
+          </div>
+        )}
+
+        {/* Talk to Human Therapist Button */}
+        {hasHNFT && onNavigateToVideo && (
+          <div className="mb-4 flex justify-center">
+            <button
+              onClick={onNavigateToVideo}
+              className="text-sm text-white hover:text-white transition-all duration-300 px-6 py-3 rounded-lg border border-cyan-400/50 hover:border-cyan-400/70 bg-cyan-500/10 hover:bg-cyan-500/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] font-medium flex items-center space-x-2"
+            >
+              <span>👨‍⚕️</span>
+              <span>Talk to a Human Therapist</span>
             </button>
           </div>
         )}

@@ -75,6 +75,7 @@
   - Multi-participant key management
   - Forward secrecy for group conversations
   - Message threading and organization
+  b) Full computation circuit (encrypt messages + run sentiment analysis or other AI processing within MPC)
 
 - **Advanced ZK Features**
   - Membership proofs without revealing participants

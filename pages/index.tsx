@@ -383,7 +383,7 @@ export default function Home() {
                   <JoinCTASection />
                 </main>
               )}
-              {activeTab === 'chat' && <Chat />}
+              {activeTab === 'chat' && <Chat onNavigateToVideo={() => setActiveTab('videochat')} />}
               {activeTab === 'videochat' && <VideoChat />}
               {activeTab === 'marketplace' && <Marketplace />}
               {activeTab === 'dashboard' && <Dashboard />}

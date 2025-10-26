@@ -35,7 +35,7 @@ export default function TokenAMM() {
   // Mock liquidity pool data
   const [poolData] = useState<LiquidityPool>({
     pair: 'PSY/rUSD',
-    liquidity: 125000,
+    liquidity: 525000,
     volume24h: 45000,
     price: 1.0,
     priceChange24h: 2.3,

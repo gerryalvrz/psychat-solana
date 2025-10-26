@@ -10,7 +10,7 @@ const Line = dynamic(() => import('react-chartjs-2').then(m => m.Line), { ssr: f
 
 interface Earnings {
   totalEarned: number;
-  currency: 'SOL' | 'rUSD';
+  currency: 'PSY' | 'rUSD';
   fromDataSales: number;
   fromYieldFarming: number;
   autoCompounded: number;
@@ -44,7 +44,7 @@ export default function Dashboard() {
   const { connection } = useConnection();
   const [earnings, setEarnings] = useState<Earnings>({
     totalEarned: 12.5,
-    currency: 'SOL',
+    currency: 'PSY',
     fromDataSales: 8.2,
     fromYieldFarming: 4.3,
     autoCompounded: 2.1,
@@ -135,7 +135,7 @@ export default function Dashboard() {
       setEarnings(prev => ({
         ...prev,
         totalEarned: prev.totalEarned + prev.ubiAvailable,
-        fromDataSales: prev.fromDataSales + prev.ubiAvailable,
+        fromYieldFarming: prev.fromYieldFarming + prev.ubiAvailable,
         ubiAvailable: 0, // Reset after claiming
       }));
 
@@ -214,25 +214,25 @@ export default function Dashboard() {
           <div className="bg-black/20 rounded-lg p-4">
             <div className="text-sm text-white/60 mb-1">Total Earned</div>
             <div className="text-2xl font-bold text-white">
-              {formatCurrency(earnings.totalEarned, earnings.currency)}
+              {formatCurrency(earnings.totalEarned, 'PSY')}
             </div>
           </div>
           <div className="bg-black/20 rounded-lg p-4">
             <div className="text-sm text-white/60 mb-1">From Data Sales</div>
             <div className="text-xl font-semibold text-psy-green">
-              {formatCurrency(earnings.fromDataSales, earnings.currency)}
+              {formatCurrency(earnings.fromDataSales, 'PSY')}
             </div>
           </div>
           <div className="bg-black/20 rounded-lg p-4">
             <div className="text-sm text-white/60 mb-1">From Yield Farming</div>
             <div className="text-xl font-semibold text-psy-blue">
-              {formatCurrency(earnings.fromYieldFarming, earnings.currency)}
+              {formatCurrency(earnings.fromYieldFarming, 'rUSD')}
             </div>
           </div>
           <div className="bg-black/20 rounded-lg p-4">
             <div className="text-sm text-white/60 mb-1">Auto-Compounded</div>
             <div className="text-xl font-semibold text-psy-purple">
-              {formatCurrency(earnings.autoCompounded, earnings.currency)}
+              {formatCurrency(earnings.autoCompounded, 'rUSD')}
             </div>
           </div>
         </div>
@@ -267,13 +267,13 @@ export default function Dashboard() {
               <div className="text-2xl font-bold text-psy-green mb-1">
                 {formatCurrency(earnings.revenueShare.userEarnings, 'rUSD')}
               </div>
-              <div className="text-sm text-white/60">Your Earnings (70%)</div>
+              <div className="text-sm text-white/60">Your Earnings (95%)</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-psy-blue mb-1">
                 {formatCurrency(earnings.revenueShare.platformFee, 'rUSD')}
               </div>
-              <div className="text-sm text-white/60">Platform Fee (30%)</div>
+              <div className="text-sm text-white/60">Platform Fee (5%)</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-white mb-1">
@@ -284,8 +284,8 @@ export default function Dashboard() {
           </div>
           <div className="mt-4 bg-white/5 rounded-lg p-3">
             <div className="text-sm text-white/80">
-              <strong>Transparent Economics:</strong> You keep 70% of all data sales revenue. 
-              The remaining 30% supports platform development, security, and infrastructure.
+              <strong>Transparent Economics:</strong> You keep 95% of all data sales revenue. 
+              The remaining 5% supports platform development, security, and infrastructure.
             </div>
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function Dashboard() {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-psy-purple">
-              {formatCurrency(hnftStats.averagePrice, 'SOL')}
+              {formatCurrency(hnftStats.averagePrice, 'PSY')}
             </div>
             <div className="text-sm text-white/60">Avg Price</div>
           </div>
@@ -423,7 +423,7 @@ export default function Dashboard() {
                   {option.risk} Risk
                 </span>
                 <span className="text-sm text-white/60">
-                  Min: {option.minStake} {earnings.currency}
+                  Min: {option.minStake} rUSD
                 </span>
               </div>
             </div>
