@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
+import { HoloText, HoloPanel } from './ui';
 
 export interface EarningCardProps {
   color?: string;
@@ -385,6 +386,15 @@ const EarningBento: React.FC<EarningBentoProps> = ({
           .card--border-glow::after { content:''; position:absolute; inset:0; padding:6px; background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y), rgba(${glowColor}, calc(var(--glow-intensity) * 0.8)) 0%, rgba(${glowColor}, calc(var(--glow-intensity) * 0.4)) 30%, transparent 60%); border-radius: inherit; mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: subtract; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; pointer-events:none; transition: opacity 0.3s ease; z-index:1; }
           .card--border-glow:hover::after { opacity:1; }
           .card--border-glow:hover { box-shadow: 0 4px 20px rgba(46,24,78,0.4), 0 0 30px rgba(${glowColor}, 0.2); }
+          .card::before { content:''; position:absolute; inset:0; background: linear-gradient(90deg, rgba(0,255,255,0.1) 1px, transparent 1px), linear-gradient(0deg, rgba(0,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity:0.3; pointer-events:none; z-index:1; }
+          .card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(0,255,255,0.6), transparent); pointer-events:none; z-index:2; }
+          .card:hover::after { background: linear-gradient(90deg, transparent, rgba(0,255,255,0.9), transparent); }
+          .card .crystal-corner-tl { position:absolute; top:0; left:0; width:20px; height:20px; background:linear-gradient(45deg, rgba(0,255,255,0.6), transparent); clip-path:polygon(0 0, 100% 0, 0 100%); }
+          .card .crystal-corner-tr { position:absolute; top:0; right:0; width:20px; height:20px; background:linear-gradient(45deg, rgba(255,0,255,0.6), transparent); clip-path:polygon(0 0, 100% 0, 100% 100%); }
+          .card .crystal-corner-bl { position:absolute; bottom:0; left:0; width:20px; height:20px; background:linear-gradient(45deg, transparent, rgba(0,255,255,0.6)); clip-path:polygon(0 0, 0 100%, 100% 100%); }
+          .card .crystal-corner-br { position:absolute; bottom:0; right:0; width:20px; height:20px; background:linear-gradient(45deg, transparent, rgba(255,0,255,0.6)); clip-path:polygon(0 100%, 100% 0, 100% 100%); }
+          .card .crystal-scan-line { position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(0,255,255,0.8), transparent); animation:crystal-scan 3s linear infinite; }
+          @keyframes crystal-scan { 0% { transform:translateY(0); opacity:0; } 50% { opacity:1; } 100% { transform:translateY(200px); opacity:0; } }
           .particle::before { content:''; position:absolute; top:-2px; left:-2px; right:-2px; bottom:-2px; background: rgba(${glowColor}, 0.2); border-radius:50%; z-index:-1; }
           .particle-container:hover { box-shadow: 0 4px 20px rgba(46,24,78,0.2), 0 0 30px rgba(${glowColor}, 0.2); }
           .text-clamp-1 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; line-clamp:1; overflow:hidden; text-overflow:ellipsis; }
@@ -401,10 +411,9 @@ const EarningBento: React.FC<EarningBentoProps> = ({
       <BentoCardGrid gridRef={gridRef}>
         <div className="card-responsive grid gap-2">
           {cardData.map((card, index) => {
-            const baseClassName = `card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[12px] border border-solid font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] ${enableBorderGlow ? 'card--border-glow' : ''}`;
+            const baseClassName = `card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[12px] font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 crystal-glass crystal-glass-hover crystal-panel crystal-layer-2 motion-crystal-hover ${enableBorderGlow ? 'card--border-glow' : ''}`;
             const cardStyle = { 
-              backgroundColor: card.color || 'var(--background-dark)', 
-              borderColor: 'var(--border-color)', 
+              backgroundColor: 'transparent', 
               color: 'var(--white)', 
               '--glow-x': '50%', 
               '--glow-y': '50%', 
@@ -427,52 +436,82 @@ const EarningBento: React.FC<EarningBentoProps> = ({
                   onClick={card.onClick}
                 >
                   <div className="card__header flex justify-between gap-3 relative text-white">
-                    <span className="card__label text-heading text-h6">{card.label}</span>
-                    <span className="text-2xl">{card.icon}</span>
+                    <HoloText size="sm" weight="semibold" className="card__label text-heading text-h6 neon-solid-cyan">
+                      {card.label}
+                    </HoloText>
+                    <span className="text-2xl neon-solid-magenta">{card.icon}</span>
                   </div>
                   <div className="card__content flex flex-col relative text-white">
-                    <h3 className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''}`}>
+                    <HoloText size="lg" weight="bold" className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''} neon-solid-cyan`}>
                       {card.title}
-                    </h3>
-                    <div className="earning-value text-mono text-h3 text-cyan-300" style={{ textShadow: '0 0 20px rgba(0, 255, 255, 0.8)' }}>
-                      {card.value}
+                    </HoloText>
+                    <div className="earning-value text-mono text-h3 neon-solid-cyan" style={{ textShadow: '0 0 20px rgba(0, 255, 255, 0.8)' }}>
+                      <HoloText size="xl" weight="bold" className="neon-solid-cyan">
+                        {card.value}
+                      </HoloText>
                     </div>
-                    <p className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''}`}>
+                    <HoloText size="sm" weight="normal" className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''} neon-solid-purple`}>
                       {card.description}
-                    </p>
+                    </HoloText>
                     {card.trend && (
                       <div className={`trend-indicator text-caption ${getTrendColor(card.trend)} mt-2`}>
-                        <span>{getTrendIcon(card.trend)}</span>
-                        <span>{card.trendValue}</span>
+                        <span className="neon-solid-cyan">{getTrendIcon(card.trend)}</span>
+                        <HoloText size="xs" weight="normal" className="neon-solid-cyan">
+                          {card.trendValue}
+                        </HoloText>
                       </div>
                     )}
                   </div>
+                  
+                  {/* Crystal corner accents */}
+                  <div className="crystal-corner-tl" />
+                  <div className="crystal-corner-tr" />
+                  <div className="crystal-corner-bl" />
+                  <div className="crystal-corner-br" />
+                  
+                  {/* Crystal scan line effect */}
+                  <div className="crystal-scan-line" />
                 </ParticleCard>
               );
             }
             return (
               <div key={index} className={baseClassName} style={cardStyle} onClick={card.onClick}>
                 <div className="card__header flex justify-between gap-3 relative text-white">
-                  <span className="card__label text-heading text-h6">{card.label}</span>
-                  <span className="text-2xl">{card.icon}</span>
+                  <HoloText size="sm" weight="semibold" className="card__label text-heading text-h6 neon-solid-cyan">
+                    {card.label}
+                  </HoloText>
+                  <span className="text-2xl neon-solid-magenta">{card.icon}</span>
                 </div>
                 <div className="card__content flex flex-col relative text-white">
-                  <h3 className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''}`}>
+                  <HoloText size="lg" weight="bold" className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''} neon-solid-cyan`}>
                     {card.title}
-                  </h3>
-                  <div className="earning-value text-mono text-h3 text-cyan-300" style={{ textShadow: '0 0 20px rgba(0, 255, 255, 0.8)' }}>
-                    {card.value}
+                  </HoloText>
+                  <div className="earning-value text-mono text-h3 neon-solid-cyan" style={{ textShadow: '0 0 20px rgba(0, 255, 255, 0.8)' }}>
+                    <HoloText size="xl" weight="bold" className="neon-solid-cyan">
+                      {card.value}
+                    </HoloText>
                   </div>
-                  <p className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''}`}>
+                  <HoloText size="sm" weight="normal" className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''} neon-solid-purple`}>
                     {card.description}
-                  </p>
+                  </HoloText>
                   {card.trend && (
                     <div className={`trend-indicator text-caption ${getTrendColor(card.trend)} mt-2`}>
-                      <span>{getTrendIcon(card.trend)}</span>
-                      <span>{card.trendValue}</span>
+                      <span className="neon-solid-cyan">{getTrendIcon(card.trend)}</span>
+                      <HoloText size="xs" weight="normal" className="neon-solid-cyan">
+                        {card.trendValue}
+                      </HoloText>
                     </div>
                   )}
                 </div>
+                
+                {/* Crystal corner accents */}
+                <div className="crystal-corner-tl" />
+                <div className="crystal-corner-tr" />
+                <div className="crystal-corner-bl" />
+                <div className="crystal-corner-br" />
+                
+                {/* Crystal scan line effect */}
+                <div className="crystal-scan-line" />
               </div>
             );
           })}
