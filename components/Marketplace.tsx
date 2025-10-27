@@ -365,7 +365,7 @@ export default function Marketplace() {
             className={`px-3 py-1 rounded-full text-body text-body-sm transition-colors ${
               filter === cat
                 ? 'bg-psy-purple text-white'
-                : 'bg-white/10 text-white/70 hover:bg-white/20'
+                : 'bg-black/30 text-white/80 hover:bg-black/40 border border-white/20'
             }`}
           >
             {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -378,7 +378,7 @@ export default function Marketplace() {
         {filteredListings.map((listing) => (
           <div
             key={listing.id}
-            className="psychat-card p-6 cursor-pointer hover:bg-black/30 transition-colors"
+            className="psychat-card p-6 cursor-pointer hover:bg-black/30 transition-colors bg-black/20 border border-white/10"
             onClick={() => setSelectedListing(listing)}
           >
             <div className="flex justify-between items-start mb-3">

@@ -393,10 +393,9 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                 onClick={handleStartChat}
                 variant="primary"
                 size="lg"
-                className="w-full sm:w-auto tracking-wider px-6 py-3 text-sm sm:text-base"
-                style={{ fontFamily: 'var(--font-display), Orbitron, monospace' }}
+                className="w-full sm:w-auto tracking-wider px-6 py-3 text-sm sm:text-base font-display"
               >
-                <span style={{ fontFamily: 'var(--font-display), Orbitron, monospace' }}>
+                <span className="font-display">
                   Enter the Chat
                 </span>
               </HoloButton>

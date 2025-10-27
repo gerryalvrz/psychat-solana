@@ -37,22 +37,22 @@ const PsyGridDistortion: React.FC<PsyGridDistortionProps> = ({
       hero: {
         grid: 20,
         className: 'z-0',
-        style: { minHeight: '100vh' }
+        style: { minHeight: '100vh' } as React.CSSProperties
       },
       background: {
         grid: 15,
         className: 'z-0',
-        style: { position: 'absolute', inset: 0 }
+        style: { position: 'absolute' as const, inset: 0 } as React.CSSProperties
       },
       card: {
         grid: 12,
         className: 'z-0 rounded-lg overflow-hidden',
-        style: { minHeight: '300px' }
+        style: { minHeight: '300px' } as React.CSSProperties
       },
       overlay: {
         grid: 18,
         className: 'z-10',
-        style: { position: 'absolute', inset: 0 }
+        style: { position: 'absolute' as const, inset: 0 } as React.CSSProperties
       }
     };
 
@@ -83,7 +83,6 @@ const PsyGridDistortion: React.FC<PsyGridDistortionProps> = ({
         strength={config.strength}
         relaxation={config.relaxation}
         className="w-full h-full"
-        isActive={isActive}
         fallbackImage="/assets/grid-distortion/default-bg.jpg"
         onError={onError}
       />

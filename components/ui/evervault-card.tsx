@@ -49,7 +49,7 @@ export const EvervaultCard = ({
         <div className="relative z-10 flex items-center justify-center">
           <div className="relative h-44 w-44  rounded-full flex items-center justify-center text-white font-bold text-4xl">
             <div className="absolute w-full h-full bg-white/[0.4] dark:bg-black/[0.3] blur-sm rounded-full" />
-            <span className="dark:text-white text-black z-20 tracking-wider" style={{ fontFamily: 'Orbitron, monospace' }}>{text}</span>
+            <span className="dark:text-white text-black z-20 tracking-wider font-display">{text}</span>
           </div>
         </div>
       </div>

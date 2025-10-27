@@ -11,7 +11,7 @@ const DebugGridPage: React.FC = () => {
           variant="background"
           intensity="strong"
           className="w-full h-full"
-          onError={(error) => console.error('GridDistortion Error:', error)}
+          onError={() => console.error('GridDistortion Error occurred')}
         />
       </div>
       

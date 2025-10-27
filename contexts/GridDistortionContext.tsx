@@ -14,7 +14,7 @@ const GridDistortionContext = createContext<GridDistortionContextType | null>(nu
 
 export const GridDistortionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const getConfigForPage = (page: string): GridDistortionConfig => {
-    const configs = {
+    const configs: Record<string, GridDistortionConfig> = {
       // Home and Chat - same image
       home: {
         imageSrc: '/assets/grid-distortion/hero-chat.png',

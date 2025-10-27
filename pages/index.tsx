@@ -61,14 +61,14 @@ export default function Home() {
     setShowLoader(false);
   };
 
-  // Memoize the background grid distortion to prevent re-renders on navigation changes
+  // Memoize the background grid distortion based on active tab
   const backgroundGrid = useMemo(() => (
     <PageGridDistortion
       className="w-full h-full"
       isActive={true}
       onError={() => console.error('Homepage GridDistortion Error')}
     />
-  ), []); // Empty dependency array means it only renders once
+  ), [activeTab]); // Re-render when activeTab changes
 
   if (!mounted || showLoader) {
     return (
