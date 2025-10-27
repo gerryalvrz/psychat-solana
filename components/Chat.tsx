@@ -678,7 +678,22 @@ export default function Chat({ onNavigateToVideo }: ChatProps) {
   // console.log('Current state:', { hnftPda, isHNFTExpanded });
 
   return (
-    <div className="chat-section-container relative fixed inset-0 z-40 bg-black/95 backdrop-blur-sm overflow-hidden">
+    <div className="chat-section-container relative fixed inset-0 z-40 chat-section-background overflow-hidden">
+      
+      {/* Crystal corner accents */}
+      <div className="crystal-corner-tl" />
+      <div className="crystal-corner-tr" />
+      <div className="crystal-corner-bl" />
+      <div className="crystal-corner-br" />
+      
+      {/* Sharp geometric lines */}
+      <div className="absolute top-0 left-1/4 right-1/4 h-0.5 crystal-line" />
+      <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 crystal-line-magenta" />
+      <div className="absolute left-0 top-1/4 bottom-1/4 w-0.5 crystal-line-purple" />
+      <div className="absolute right-0 top-1/4 bottom-1/4 w-0.5 crystal-line" />
+      
+      {/* Geometric overlay */}
+      <div className="geometric-overlay" />
       
       {/* Layout wrapper */}
       <div className="flex gap-4 h-full p-4">

@@ -66,7 +66,7 @@ export default function TerminalLoader({ onComplete, duration = 8000 }: Terminal
 
           <div className="mb-6">
             <div className="flex items-center space-x-2 mb-2">
-              <span className="text-yellow-400">Loading PsyChat modules...</span>
+              <span className="text-yellow-400">Loading the Digital Renaissance...</span>
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>

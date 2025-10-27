@@ -63,3 +63,4 @@ import PsyGridDistortion from '@/components/ui/PsyGridDistortion';
 ## Error Handling
 
 The component includes automatic fallback to `default-bg.jpg` if the primary image fails to load. Make sure to always have a fallback image in this folder.
+

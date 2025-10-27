@@ -6,6 +6,7 @@ interface PsyGridDistortionProps {
   className?: string;
   variant?: 'hero' | 'background' | 'card' | 'overlay';
   intensity?: 'subtle' | 'medium' | 'strong';
+  isActive?: boolean;
   onError?: () => void;
 }
 
@@ -14,6 +15,7 @@ const PsyGridDistortion: React.FC<PsyGridDistortionProps> = ({
   className = '',
   variant = 'background',
   intensity = 'medium',
+  isActive = true,
   onError
 }) => {
   // Configuration based on variant and intensity
@@ -81,6 +83,7 @@ const PsyGridDistortion: React.FC<PsyGridDistortionProps> = ({
         strength={config.strength}
         relaxation={config.relaxation}
         className="w-full h-full"
+        isActive={isActive}
         fallbackImage="/assets/grid-distortion/default-bg.jpg"
         onError={onError}
       />
@@ -88,6 +91,10 @@ const PsyGridDistortion: React.FC<PsyGridDistortionProps> = ({
       {/* PsyChat themed overlay for certain variants */}
       {variant === 'hero' && (
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-psy-purple/5 to-transparent pointer-events-none" />
+      )}
+      
+      {variant === 'background' && (
+        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
       )}
       
       {variant === 'overlay' && (

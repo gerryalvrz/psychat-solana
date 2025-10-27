@@ -326,7 +326,7 @@ export default function VideoChat() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-black/40 rounded-lg p-4 border border-white/10">
               <h4 className="text-white font-semibold mb-3">Key Topics Identified</h4>
               <div className="flex flex-wrap gap-2">
                 {chatInsights.topics.map((topic, idx) => (
@@ -337,7 +337,7 @@ export default function VideoChat() {
               </div>
             </div>
             
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-black/40 rounded-lg p-4 border border-white/10">
               <h4 className="text-white font-semibold mb-3">Recommended Specialties</h4>
               <div className="flex flex-wrap gap-2">
                 {chatInsights.recommendedSpecialties.map((specialty, idx) => (
@@ -381,7 +381,7 @@ export default function VideoChat() {
                   setSelectedPsychologist(psych);
                   setCurrentStep('calendar');
                 }}
-                className="bg-white/5 rounded-lg p-4 cursor-pointer hover:bg-white/10 transition-colors border border-white/10"
+                className="bg-black/40 rounded-lg p-4 cursor-pointer hover:bg-black/60 transition-colors border border-white/10"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-white font-semibold">{psych.name}</div>
@@ -434,8 +434,8 @@ export default function VideoChat() {
                     disabled={!slot.available}
                     className={`w-full p-3 rounded-lg text-left transition-colors ${
                       slot.available 
-                        ? 'bg-white/5 hover:bg-white/10 text-white border border-white/20' 
-                        : 'bg-white/5 text-white/30 border border-white/10 cursor-not-allowed'
+                        ? 'bg-black/40 hover:bg-black/60 text-white border border-white/20' 
+                        : 'bg-black/40 text-white/30 border border-white/10 cursor-not-allowed'
                     }`}
                   >
                     <div className="font-medium">{slot.date}</div>
@@ -447,7 +447,7 @@ export default function VideoChat() {
             </div>
             
             {/* Session Details */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-black/40 rounded-lg p-4 border border-white/10">
               <h4 className="text-white font-semibold mb-4">Session Details</h4>
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -509,7 +509,7 @@ export default function VideoChat() {
                   <div className="text-center">
                     <div className="text-6xl mb-4">📹</div>
                     <div className="text-white text-lg">Video Call Active</div>
-                    <div className="text-white/60 text-sm">Encrypted with Arcium ZK</div>
+                    <div className="text-white/60 text-sm">Encrypted with Arcium ZK Powered by Jitsi</div>
                     <div className="flex items-center justify-center mt-4 space-x-4">
                       <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`}></div>
                       <span className="text-white/60 text-sm">
@@ -540,13 +540,13 @@ export default function VideoChat() {
                   <div className="flex items-center space-x-4">
                     <button
                       onClick={() => setIsMuted(!isMuted)}
-                      className={`px-4 py-2 rounded ${isMuted ? 'bg-red-500/20 text-red-300' : 'bg-white/10 text-white'}`}
+                      className={`px-4 py-2 rounded ${isMuted ? 'bg-red-500/20 text-red-300' : 'bg-black/40 text-white border border-white/10'}`}
                     >
                       {isMuted ? '🔇 Unmute' : '🎤 Mute'}
                     </button>
                     <button
                       onClick={() => setIsCameraOn(!isCameraOn)}
-                      className={`px-4 py-2 rounded ${!isCameraOn ? 'bg-red-500/20 text-red-300' : 'bg-white/10 text-white'}`}
+                      className={`px-4 py-2 rounded ${!isCameraOn ? 'bg-red-500/20 text-red-300' : 'bg-black/40 text-white border border-white/10'}`}
                     >
                       {isCameraOn ? '📹 Camera On' : '📷 Camera Off'}
                     </button>
@@ -597,7 +597,7 @@ export default function VideoChat() {
           ) : (
             <div className="space-y-4">
               {sessionNotes.map((note) => (
-                <div key={note.id} className="bg-white/5 rounded-lg p-4">
+                <div key={note.id} className="bg-black/40 rounded-lg p-4 border border-white/10">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-white/60 text-sm">
                       {note.timestamp.toLocaleString()}

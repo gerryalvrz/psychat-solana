@@ -452,6 +452,7 @@ canvas {
   position: relative;
 }
 
+
 .layered-lighting::before {
   content: '';
   position: absolute;
@@ -571,6 +572,7 @@ canvas {
   position: relative;
 }
 
+
 .edge-lighting-cyan::before {
   content: '';
   position: absolute;
@@ -586,6 +588,7 @@ canvas {
 .edge-lighting-magenta {
   position: relative;
 }
+
 
 .edge-lighting-magenta::before {
   content: '';
@@ -632,6 +635,7 @@ canvas {
 .holo-border {
   position: relative;
 }
+
 
 .holo-border::before {
   content: '';
@@ -965,9 +969,11 @@ canvas {
   background: 
     radial-gradient(circle at 20% 20%, rgba(0,255,255,0.08), transparent 60%), 
     radial-gradient(circle at 80% 80%, rgba(255,0,255,0.08), transparent 60%), 
-    rgba(10,10,20,0.35);
+    rgba(10,10,20,0.28);
   backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px 0 16px 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 
 .crystal-glass-hover {
@@ -982,6 +988,7 @@ canvas {
 .refraction-overlay {
   position: relative;
 }
+
 
 .refraction-overlay::before {
   content: '';
@@ -1013,6 +1020,7 @@ canvas {
 .crystal-layer-system {
   position: relative;
 }
+
 
 .crystal-layer-1 { z-index: 1; transform: translateZ(0px); }
 .crystal-layer-2 { z-index: 2; transform: translateZ(10px); }
@@ -1055,11 +1063,14 @@ canvas {
   background: 
     linear-gradient(135deg, rgba(0,255,255,0.08) 0%, transparent 50%),
     linear-gradient(45deg, rgba(255,0,255,0.08) 0%, transparent 50%),
-    rgba(10,10,20,0.4);
+    rgba(10,10,20,0.32);
   backdrop-filter: blur(24px) saturate(200%);
   border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px 0 16px 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   position: relative;
 }
+
 
 /* Solid neon colors - no gradients */
 .neon-solid-cyan {
@@ -1079,20 +1090,27 @@ canvas {
 
 /* Sharp geometric lines */
 .crystal-line {
-  background: #00FFFF;
-  box-shadow: 0 0 8px #00FFFF;
+  background: rgba(0,255,255,0.4);
+  box-shadow: 0 0 6px rgba(0,255,255,0.2), 0 0 12px rgba(0,255,255,0.1);
   height: 2px;
   width: 100%;
+  z-index: 10;
 }
 
 .crystal-line-magenta {
-  background: #FF00FF;
-  box-shadow: 0 0 8px #FF00FF;
+  background: rgba(255,0,255,0.4);
+  box-shadow: 0 0 6px rgba(255,0,255,0.2), 0 0 12px rgba(255,0,255,0.1);
+  height: 2px;
+  width: 100%;
+  z-index: 10;
 }
 
 .crystal-line-purple {
-  background: #9D68FF;
-  box-shadow: 0 0 8px #9D68FF;
+  background: rgba(157,104,255,0.4);
+  box-shadow: 0 0 6px rgba(157,104,255,0.2), 0 0 12px rgba(157,104,255,0.1);
+  height: 2px;
+  width: 100%;
+  z-index: 10;
 }
 
 /* Crystal grid system */
@@ -1119,44 +1137,48 @@ canvas {
   position: absolute;
   top: 0;
   left: 0;
-  width: 8px;
-  height: 8px;
-  border-top: 2px solid #00FFFF;
-  border-left: 2px solid #00FFFF;
-  box-shadow: 0 0 6px #00FFFF;
+  width: 12px;
+  height: 12px;
+  border-top: 3px solid #00FFFF;
+  border-left: 3px solid #00FFFF;
+  box-shadow: 0 0 12px #00FFFF, 0 0 24px rgba(0,255,255,0.3);
+  z-index: 10;
 }
 
 .crystal-corner-tr {
   position: absolute;
   top: 0;
   right: 0;
-  width: 8px;
-  height: 8px;
-  border-top: 2px solid #FF00FF;
-  border-right: 2px solid #FF00FF;
-  box-shadow: 0 0 6px #FF00FF;
+  width: 12px;
+  height: 12px;
+  border-top: 3px solid #FF00FF;
+  border-right: 3px solid #FF00FF;
+  box-shadow: 0 0 12px #FF00FF, 0 0 24px rgba(255,0,255,0.3);
+  z-index: 10;
 }
 
 .crystal-corner-bl {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 8px;
-  height: 8px;
-  border-bottom: 2px solid #9D68FF;
-  border-left: 2px solid #9D68FF;
-  box-shadow: 0 0 6px #9D68FF;
+  width: 12px;
+  height: 12px;
+  border-bottom: 3px solid #9D68FF;
+  border-left: 3px solid #9D68FF;
+  box-shadow: 0 0 12px #9D68FF, 0 0 24px rgba(157,104,255,0.3);
+  z-index: 10;
 }
 
 .crystal-corner-br {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 8px;
-  height: 8px;
-  border-bottom: 2px solid #00FFFF;
-  border-right: 2px solid #00FFFF;
-  box-shadow: 0 0 6px #00FFFF;
+  width: 12px;
+  height: 12px;
+  border-bottom: 3px solid #00FFFF;
+  border-right: 3px solid #00FFFF;
+  box-shadow: 0 0 12px #00FFFF, 0 0 24px rgba(0,255,255,0.3);
+  z-index: 10;
 }
 
 /* Atomic/Molecular Structure */
@@ -1297,6 +1319,18 @@ canvas {
   box-shadow: 
     0 0 20px rgba(0,255,255,0.3),
     inset 0 0 2px rgba(255,255,255,0.2);
+}
+
+/* Chat Section Background - Matching Terminal Style */
+.chat-section-background {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(0,255,255,0.08), transparent 60%), 
+    radial-gradient(circle at 80% 80%, rgba(255,0,255,0.08), transparent 60%), 
+    rgba(10,10,20,0.28);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px 0 16px 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 
 /* Chat Section HNFT Revamp Styles */
@@ -1648,6 +1682,55 @@ kbd {
   border-color: rgba(0, 229, 255, 0.3);
 }
 
+/* Neon PsyChat Text Animation - Reduced Brightness */
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 1px rgba(0, 255, 255, 0.25),
+      0 0 2px rgba(0, 255, 255, 0.25),
+      0 0 3px rgba(0, 255, 255, 0.25),
+      0 0 4px rgba(0, 255, 255, 0.25),
+      0 0 6px rgba(0, 255, 255, 0.25),
+      0 0 8px rgba(0, 255, 255, 0.25);
+  }
+  50% {
+    text-shadow: 
+      0 0 0.5px rgba(0, 255, 255, 0.15),
+      0 0 1px rgba(0, 255, 255, 0.15),
+      0 0 1.5px rgba(0, 255, 255, 0.15),
+      0 0 2px rgba(0, 255, 255, 0.15),
+      0 0 3px rgba(0, 255, 255, 0.15),
+      0 0 4px rgba(0, 255, 255, 0.15);
+  }
+}
+
+@keyframes neon-flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow: 
+      0 0 1px rgba(0, 255, 255, 0.25),
+      0 0 2px rgba(0, 255, 255, 0.25),
+      0 0 3px rgba(0, 255, 255, 0.25),
+      0 0 4px rgba(0, 255, 255, 0.25);
+  }
+  20%, 24%, 55% {
+    text-shadow: 
+      0 0 0.5px rgba(0, 255, 255, 0.15),
+      0 0 1px rgba(0, 255, 255, 0.15),
+      0 0 1.5px rgba(0, 255, 255, 0.15),
+      0 0 2px rgba(0, 255, 255, 0.15);
+  }
+}
+
+.psychat-neon {
+  animation: neon-pulse 2s ease-in-out infinite;
+  color: rgba(0, 255, 255, 0.75);
+}
+
+.psychat-neon:hover {
+  animation: neon-flicker 1.5s linear infinite;
+  color: rgba(0, 255, 255, 0.9);
+}
+
 .hnft-identity-card .close-button {
   color: rgba(255, 255, 255, 0.6);
   background: rgba(255, 255, 255, 0.05);
@@ -1713,3 +1796,16 @@ kbd {
   z-index: 51;
   position: relative;
 }
+
+/* Dock Icon Positioning */
+.dock-icon-container {
+  position: relative !important;
+}
+
+.dock-icon-inner {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) translateY(2px) !important;
+}
+

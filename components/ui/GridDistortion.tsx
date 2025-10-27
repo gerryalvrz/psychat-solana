@@ -56,6 +56,9 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
   const dataTextureRef = useRef<THREE.DataTexture | null>(null);
   const animationIdRef = useRef<number | null>(null);
   const isInitializedRef = useRef(false);
+  const mouseMoveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
+  const mouseLeaveHandlerRef = useRef<(() => void) | null>(null);
+  const resizeHandlerRef = useRef<(() => void) | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState(imageSrc);
@@ -64,6 +67,17 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     if (animationIdRef.current) {
       cancelAnimationFrame(animationIdRef.current);
       animationIdRef.current = null;
+    }
+
+    // Remove document event listeners
+    if (mouseMoveHandlerRef.current) {
+      document.removeEventListener('mousemove', mouseMoveHandlerRef.current);
+    }
+    if (mouseLeaveHandlerRef.current) {
+      document.removeEventListener('mouseleave', mouseLeaveHandlerRef.current);
+    }
+    if (resizeHandlerRef.current) {
+      window.removeEventListener('resize', resizeHandlerRef.current);
     }
 
     if (rendererRef.current) {
@@ -137,7 +151,10 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
                 resolve(loadedTexture);
               },
               undefined,
-              reject
+              (error) => {
+                console.error('Texture loading error:', error);
+                reject(error);
+              }
             );
           });
           setIsLoading(false);
@@ -224,7 +241,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
           vY: 0
         };
 
-        // Event handlers
+        // Event handlers - use document for full page coverage
         const handleMouseMove = (e: MouseEvent) => {
           if (!containerRef.current) return;
           const rect = containerRef.current.getBoundingClientRect();
@@ -234,8 +251,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
           mouseState.vY = y - mouseState.prevY;
           Object.assign(mouseState, { x, y, prevX: x, prevY: y });
           
-          // Debug log to verify mouse movement
-          console.log('Mouse position:', { x, y, vX: mouseState.vX, vY: mouseState.vY });
+          // Mouse movement tracking (debug logs removed for production)
         };
 
         const handleMouseLeave = () => {
@@ -247,7 +263,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
             vX: 0,
             vY: 0
           });
-          console.log('Mouse left');
+          // Mouse left event handled
         };
 
         const handleResize = () => {
@@ -277,11 +293,14 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
           uniforms.resolution.value.set(width, height, 1, 1);
         };
 
-        // Add event listeners
-        if (containerRef.current) {
-          containerRef.current.addEventListener('mousemove', handleMouseMove);
-          containerRef.current.addEventListener('mouseleave', handleMouseLeave);
-        }
+        // Store handlers in refs for proper cleanup
+        mouseMoveHandlerRef.current = handleMouseMove;
+        mouseLeaveHandlerRef.current = handleMouseLeave;
+        resizeHandlerRef.current = handleResize;
+        
+        // Add event listeners - use document for full page coverage
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseleave', handleMouseLeave);
         window.addEventListener('resize', handleResize);
 
         // Initial resize
@@ -304,18 +323,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
             const gridMouseY = size * mouseState.y;
             const maxDist = size * mouse;
 
-            // Debug: log mouse state every 60 frames
-            if (Math.floor(uniforms.time.value * 10) % 60 === 0) {
-              console.log('Mouse state in animation:', { 
-                x: mouseState.x, 
-                y: mouseState.y, 
-                vX: mouseState.vX, 
-                vY: mouseState.vY,
-                gridMouseX,
-                gridMouseY,
-                maxDist
-              });
-            }
+            // Animation loop running (debug logs removed for production)
 
             for (let i = 0; i < size; i++) {
               for (let j = 0; j < size; j++) {

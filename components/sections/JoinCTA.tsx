@@ -31,7 +31,7 @@ const JoinCTASection: React.FC = () => {
               transition={{ delay: 0.3 }}
             >
               <HoloText size="xl" weight="bold" className="mb-4">
-                Ready to Join the Dataconomy?
+                Ready to Join the Digital Renaissance?
               </HoloText>
             </motion.div>
             

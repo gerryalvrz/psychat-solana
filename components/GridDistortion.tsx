@@ -10,6 +10,7 @@ interface GridDistortionProps {
   relaxation?: number;
   imageSrc: string;
   className?: string;
+  isActive?: boolean;
 }
 
 const vertexShader = `
@@ -106,7 +107,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
   strength = 0.15,
   relaxation = 0.9,
   imageSrc,
-  className = ''
+  className = '',
+  isActive = true
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -227,6 +229,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (!isActive) return;
+      
       const rect = container.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = 1 - (e.clientY - rect.top) / rect.height;
@@ -245,6 +249,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     };
 
     const handleMouseLeave = () => {
+      if (!isActive) return;
+      
       if (dataTexture) {
         dataTexture.needsUpdate = true;
       }

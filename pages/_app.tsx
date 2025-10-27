@@ -6,6 +6,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 import type { AppProps } from 'next/app';
 import { useMemo, useEffect, useState } from 'react';
 import '../styles/globals.css';
+import { GridDistortionProvider } from '../contexts/GridDistortionContext';
 
 // Import wallet adapter CSS
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -50,7 +51,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <Component {...pageProps} />
+          <GridDistortionProvider>
+            <Component {...pageProps} />
+          </GridDistortionProvider>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
