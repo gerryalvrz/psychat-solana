@@ -7,6 +7,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'orbitron': ['Orbitron', 'monospace'],
+        'display': ['Orbitron', 'monospace'],
+        'heading': ['JetBrains Mono', 'monospace'],
+        'mono': ['JetBrains Mono', 'monospace'],
+        'body': ['Inter', 'sans-serif'],
+        'special': ['Jura', 'sans-serif'],
+      },
       colors: {
         'psy-purple': '#8B5CF6',
         'psy-blue': '#3B82F6',

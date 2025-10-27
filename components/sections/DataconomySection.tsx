@@ -99,7 +99,7 @@ export default function DataconomySection() {
                     <Icon className="absolute h-6 w-6 -bottom-3 -left-3 neon-solid-magenta" />
                     <Icon className="absolute h-6 w-6 -top-3 -right-3 neon-solid-purple" />
                     <Icon className="absolute h-6 w-6 -bottom-3 -right-3 neon-solid-cyan" />
-                    <EvervaultCard text="lunar" />
+                    <EvervaultCard text="lunar" className="font-orbitron" />
                   </div>
                 </div>
                 
@@ -157,7 +157,7 @@ export default function DataconomySection() {
                     <Icon className="absolute h-6 w-6 -bottom-3 -left-3 neon-solid-cyan" />
                     <Icon className="absolute h-6 w-6 -top-3 -right-3 neon-solid-cyan" />
                     <Icon className="absolute h-6 w-6 -bottom-3 -right-3 neon-solid-purple" />
-                    <EvervaultCard text="punk" />
+                    <EvervaultCard text="punk" className="font-orbitron" />
                   </div>
                 </div>
                 
@@ -215,7 +215,7 @@ export default function DataconomySection() {
                     <Icon className="absolute h-6 w-6 -bottom-3 -left-3 neon-solid-magenta" />
                     <Icon className="absolute h-6 w-6 -top-3 -right-3 neon-solid-magenta" />
                     <Icon className="absolute h-6 w-6 -bottom-3 -right-3 neon-solid-cyan" />
-                    <EvervaultCard text="(r)evolution" />
+                    <EvervaultCard text="(r)evolution" className="font-orbitron" />
                   </div>
                 </div>
                 
