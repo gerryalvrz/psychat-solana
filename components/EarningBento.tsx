@@ -51,6 +51,8 @@ export interface EarningBentoProps {
   onToggleAutoCompound?: () => void;
   isAutoCompoundEnabled?: boolean;
   isClaimingUbi?: boolean;
+  claimUbiStatus?: 'idle' | 'success' | 'error';
+  claimUbiMessage?: string;
 }
 
 const DEFAULT_PARTICLE_COUNT = 12;
@@ -284,7 +286,9 @@ const EarningBento: React.FC<EarningBentoProps> = ({
   onClaimUbi,
   onToggleAutoCompound,
   isAutoCompoundEnabled = true,
-  isClaimingUbi = false
+  isClaimingUbi = false,
+  claimUbiStatus = 'idle',
+  claimUbiMessage = ''
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
@@ -293,6 +297,26 @@ const EarningBento: React.FC<EarningBentoProps> = ({
   const formatCurrency = (amount: number, currency: string) => {
     return `${amount.toFixed(2)} ${currency}`;
   };
+
+  // Calculate total portfolio value (simplified - in real app would need conversion rates)
+  const calculateTotalValue = () => {
+    if (!earnings) return { total: 0, currency: 'PSY' };
+    
+    // For demo purposes, assume 1 PSY = 0.5 rUSD (would be dynamic in real app)
+    const psyToRusdRate = 0.5;
+    const totalInRusd = earnings.totalEarned * psyToRusdRate + earnings.fromYieldFarming + earnings.autoCompounded;
+    
+    return {
+      total: totalInRusd,
+      currency: 'rUSD',
+      breakdown: {
+        psy: earnings.totalEarned,
+        rusd: earnings.fromYieldFarming + earnings.autoCompounded
+      }
+    };
+  };
+
+  const totalValue = calculateTotalValue();
 
   const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
     switch (trend) {
@@ -310,44 +334,22 @@ const EarningBento: React.FC<EarningBentoProps> = ({
     }
   };
 
-  // Create earning-specific card data
+  // Create earning-specific card data with improved UX
   const cardData: EarningCardProps[] = [
     {
       color: '#060010',
-      title: 'Total Earned',
-      description: 'Your complete earnings',
-      label: 'Primary',
-      value: earnings ? formatCurrency(earnings.totalEarned, earnings.currency) : '0.00 PSY',
+      title: 'Total Portfolio Value',
+      description: `Complete earnings: ${totalValue.breakdown?.psy.toFixed(1) || '0.0'} PSY + ${totalValue.breakdown?.rusd.toFixed(1) || '0.0'} rUSD`,
+      label: 'Overview',
+      value: formatCurrency(totalValue.total, totalValue.currency),
       icon: '💰',
       trend: 'up',
       trendValue: '+12.5%'
     },
     {
       color: '#060010',
-      title: 'Available UBI',
-      description: 'Ready to claim',
-      label: 'Action',
-      value: earnings ? formatCurrency(earnings.ubiAvailable, 'rUSD') : '0.00 rUSD',
-      icon: '🎁',
-      trend: 'up',
-      trendValue: 'Claim now',
-      onClick: onClaimUbi
-    },
-    {
-      color: '#060010',
-      title: 'Auto-Compounded',
-      description: 'Passive growth',
-      label: 'Growth',
-      value: earnings ? formatCurrency(earnings.autoCompounded, 'rUSD') : '0.00 rUSD',
-      icon: '⚡',
-      trend: 'up',
-      trendValue: isAutoCompoundEnabled ? 'Active' : 'Paused',
-      onClick: onToggleAutoCompound
-    },
-    {
-      color: '#060010',
-      title: 'Data Sales',
-      description: 'Mental health insights',
+      title: 'Data Sales Revenue',
+      description: 'Earnings from mental health insights',
       label: 'Revenue',
       value: earnings ? formatCurrency(earnings.fromDataSales, 'PSY') : '0.00 PSY',
       icon: '📊',
@@ -382,7 +384,49 @@ const EarningBento: React.FC<EarningBentoProps> = ({
           .bento-section { --glow-x: 50%; --glow-y: 50%; --glow-intensity: 0; --glow-radius: 200px; --glow-color: ${glowColor}; --border-color: #392e4e; --background-dark: #060010; --white: hsl(0,0%,100%); --purple-primary: rgba(132, 0, 255, 1); --purple-glow: rgba(132, 0, 255, 0.2); --purple-border: rgba(132, 0, 255, 0.8); }
           .card-responsive { grid-template-columns: 1fr; width: 90%; margin: 0 auto; padding: 0.5rem; }
           @media (min-width: 600px) { .card-responsive { grid-template-columns: repeat(2, 1fr); } }
-          @media (min-width: 1024px) { .card-responsive { grid-template-columns: repeat(4, 1fr); } .card-responsive .card:nth-child(1){ grid-column: span 2; grid-row: span 2;} .card-responsive .card:nth-child(2){ grid-column:3 / span 2; grid-row:1 / span 2;} .card-responsive .card:nth-child(3){ grid-column:1 / span 2; grid-row:3;} .card-responsive .card:nth-child(6){ grid-column:4; grid-row:3;} }
+          @media (min-width: 1024px) { 
+            .card-responsive { grid-template-columns: 1fr 1fr 0.5fr 1fr 1fr; } 
+            .card-responsive .card:nth-child(1){ grid-column:1 / span 2; grid-row:1 / span 2; } 
+            .card-responsive .card:nth-child(2){ grid-column:4 / span 2; grid-row:2; } 
+            .card-responsive .card:nth-child(3){ grid-column:4 / span 2; grid-row:3; } 
+            .card-responsive .card:nth-child(4){ grid-column:4 / span 2; grid-row:1; } 
+            .left-aligned-cards { 
+              border-right: 1px solid rgba(132, 0, 255, 0.2); 
+              padding-right: 1rem; 
+              position: relative;
+            }
+            .left-aligned-cards::before {
+              content: 'NFT Portfolio';
+              position: absolute;
+              top: -0.5rem;
+              right: 1rem;
+              background: rgba(132, 0, 255, 0.1);
+              color: rgba(132, 0, 255, 0.8);
+              font-size: 0.75rem;
+              font-weight: 600;
+              padding: 0.25rem 0.5rem;
+              border-radius: 0.25rem;
+              border: 1px solid rgba(132, 0, 255, 0.3);
+            }
+            .right-aligned-cards { 
+              border-left: 1px solid rgba(132, 0, 255, 0.2); 
+              padding-left: 1rem; 
+              position: relative;
+            }
+            .right-aligned-cards::before {
+              content: 'Revenue Streams';
+              position: absolute;
+              top: -0.5rem;
+              left: 1rem;
+              background: rgba(132, 0, 255, 0.1);
+              color: rgba(132, 0, 255, 0.8);
+              font-size: 0.75rem;
+              font-weight: 600;
+              padding: 0.25rem 0.5rem;
+              border-radius: 0.25rem;
+              border: 1px solid rgba(132, 0, 255, 0.3);
+            }
+          }
           .card--border-glow::after { content:''; position:absolute; inset:0; padding:6px; background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y), rgba(${glowColor}, calc(var(--glow-intensity) * 0.8)) 0%, rgba(${glowColor}, calc(var(--glow-intensity) * 0.4)) 30%, transparent 60%); border-radius: inherit; mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: subtract; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; pointer-events:none; transition: opacity 0.3s ease; z-index:1; }
           .card--border-glow:hover::after { opacity:1; }
           .card--border-glow:hover { box-shadow: 0 4px 20px rgba(46,24,78,0.4), 0 0 30px rgba(${glowColor}, 0.2); }
@@ -401,7 +445,39 @@ const EarningBento: React.FC<EarningBentoProps> = ({
           .text-clamp-2 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; text-overflow:ellipsis; }
           .earning-value { font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0; }
           .trend-indicator { display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; }
+          .action-button { 
+            background: linear-gradient(135deg, rgba(132, 0, 255, 0.8), rgba(59, 130, 246, 0.8));
+            border: 1px solid rgba(132, 0, 255, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+          }
+          .action-button:hover { 
+            background: linear-gradient(135deg, rgba(132, 0, 255, 1), rgba(59, 130, 246, 1));
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(132, 0, 255, 0.3);
+          }
+          .action-button:disabled { 
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.8), rgba(55, 65, 81, 0.8));
+            border-color: rgba(75, 85, 99, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+          }
+          .toggle-switch { 
+            background: linear-gradient(135deg, rgba(132, 0, 255, 0.8), rgba(147, 51, 234, 0.8));
+            border: 1px solid rgba(132, 0, 255, 0.5);
+            transition: all 0.3s ease;
+          }
+          .toggle-switch:hover { 
+            background: linear-gradient(135deg, rgba(132, 0, 255, 1), rgba(147, 51, 234, 1));
+            box-shadow: 0 0 20px rgba(132, 0, 255, 0.4);
+          }
+          .toggle-switch.disabled { 
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.8), rgba(55, 65, 81, 0.8));
+            border-color: rgba(75, 85, 99, 0.5);
+          }
           @media (max-width: 599px) { .card-responsive { grid-template-columns:1fr; width:90%; margin:0 auto; padding:0.5rem; } .card-responsive .card { width:100%; min-height:180px; } }
+          @media (min-width: 600px) and (max-width: 1023px) { .card-responsive { grid-template-columns: repeat(2, 1fr); } .card-responsive .card:nth-child(1){ grid-column: span 2; } }
         `}</style>
 
       {enableSpotlight && (
@@ -409,9 +485,20 @@ const EarningBento: React.FC<EarningBentoProps> = ({
       )}
 
       <BentoCardGrid gridRef={gridRef}>
+        {/* Information Section Header */}
+        <div className="mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent"></div>
+            <div className="text-sm font-medium text-purple-300/80 px-4">Earnings Overview</div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent"></div>
+          </div>
+        </div>
+        
         <div className="card-responsive grid gap-2">
           {cardData.map((card, index) => {
-            const baseClassName = `card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[12px] font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 crystal-glass crystal-glass-hover crystal-panel crystal-layer-2 motion-crystal-hover ${enableBorderGlow ? 'card--border-glow' : ''}`;
+            // Card 1: Overview (left, 2 rows), Card 2: Data Sales (middle right), Card 3: DeFi (bottom right), Card 4: NFT (top right)
+            const isRightAligned = index > 0; // Cards 2, 3, 4 are right-aligned
+            const baseClassName = `card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[12px] font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 crystal-glass crystal-glass-hover crystal-panel crystal-layer-2 motion-crystal-hover ${enableBorderGlow ? 'card--border-glow' : ''} ${isRightAligned ? 'right-aligned-cards' : ''}`;
             const cardStyle = { 
               backgroundColor: 'transparent', 
               color: 'var(--white)', 
@@ -515,6 +602,135 @@ const EarningBento: React.FC<EarningBentoProps> = ({
               </div>
             );
           })}
+        </div>
+        
+        {/* Section Divider */}
+        <div className="mt-8 mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+            <div className="text-sm font-medium text-cyan-300/80 px-4">Actions</div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+          </div>
+        </div>
+        
+        {/* Action Buttons Section */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* UBI Claim Card */}
+          <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-emerald-400/30 rounded-xl p-6 backdrop-blur-sm hover:border-emerald-400/50 transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center text-2xl">
+                  🎁
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Available UBI</h3>
+                  <p className="text-sm text-emerald-300/80">Ready to claim</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-emerald-300">
+                  {earnings ? formatCurrency(earnings.ubiAvailable, 'rUSD') : '0.00 rUSD'}
+                </div>
+                <div className="text-xs text-emerald-400/70">Universal Basic Income</div>
+              </div>
+            </div>
+            <button
+              onClick={onClaimUbi}
+              disabled={isClaimingUbi || !earnings?.ubiAvailable || earnings.ubiAvailable <= 0}
+              className={`w-full font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:opacity-50 flex items-center justify-center space-x-2 ${
+                claimUbiStatus === 'success' 
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' 
+                  : claimUbiStatus === 'error'
+                  ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white'
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white'
+              }`}
+            >
+              {isClaimingUbi ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Claiming...</span>
+                </>
+              ) : claimUbiStatus === 'success' ? (
+                <>
+                  <span>✅</span>
+                  <span>Claimed!</span>
+                </>
+              ) : claimUbiStatus === 'error' ? (
+                <>
+                  <span>❌</span>
+                  <span>Failed</span>
+                </>
+              ) : (
+                <>
+                  <span>💰</span>
+                  <span>Claim UBI</span>
+                </>
+              )}
+            </button>
+            
+            {/* Status Message */}
+            {(claimUbiStatus === 'success' || claimUbiStatus === 'error') && claimUbiMessage && (
+              <div className={`mt-2 text-sm text-center ${
+                claimUbiStatus === 'success' ? 'text-green-300' : 'text-red-300'
+              }`}>
+                {claimUbiMessage}
+              </div>
+            )}
+          </div>
+
+          {/* Auto-Compound Toggle Card */}
+          <div className={`bg-gradient-to-r from-purple-500/10 via-violet-500/10 to-indigo-500/10 border rounded-xl p-6 backdrop-blur-sm transition-all duration-300 ${
+            isAutoCompoundEnabled ? 'border-purple-400/50' : 'border-gray-500/30'
+          }`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl ${
+                  isAutoCompoundEnabled 
+                    ? 'bg-gradient-to-br from-purple-400 to-violet-500' 
+                    : 'bg-gradient-to-br from-gray-500 to-gray-600'
+                }`}>
+                  ⚡
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Auto-Compound</h3>
+                  <p className="text-sm text-purple-300/80">Passive growth</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-purple-300">
+                  {earnings ? formatCurrency(earnings.autoCompounded, 'rUSD') : '0.00 rUSD'}
+                </div>
+                <div className="text-xs text-purple-400/70">Compounded earnings</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <span className={`text-sm font-medium ${
+                  isAutoCompoundEnabled ? 'text-purple-300' : 'text-gray-400'
+                }`}>
+                  {isAutoCompoundEnabled ? 'Active' : 'Paused'}
+                </span>
+                <div className="text-xs text-purple-400/70">
+                  {isAutoCompoundEnabled ? '5-15% APY' : 'Manual mode'}
+                </div>
+              </div>
+              
+              {/* Toggle Switch */}
+              <button
+                onClick={onToggleAutoCompound}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ${
+                  isAutoCompoundEnabled ? 'toggle-switch' : 'toggle-switch disabled'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                    isAutoCompoundEnabled ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
         </div>
       </BentoCardGrid>
     </>
