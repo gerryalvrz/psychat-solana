@@ -243,17 +243,17 @@ export default function ChatTerminal({
             {!hasHNFT ? (
               <div className="text-center py-12 text-white/80">
                 <div className="text-6xl mb-4">🔐</div>
-                <h2 className="text-2xl font-bold text-white mb-4">Mint Your Identity First</h2>
-                <p className="text-lg mb-2 text-white/90">To start chatting, you need to mint your PsyChat identity HNFT.</p>
-                <p className="text-sm text-white/60">
+                <h2 className="text-display text-h2 text-white mb-4">Mint Your Identity First</h2>
+                <p className="text-body text-body-lg mb-2 text-white/90">To start chatting, you need to mint your PsyChat identity HNFT.</p>
+                <p className="text-body text-body-sm text-white/60">
                   This creates your decentralized identity for secure, private conversations.
                 </p>
               </div>
             ) : messages.length === 0 ? (
               <div className="text-center py-8 text-white/80">
                 <div className="text-4xl mb-2">💭</div>
-                <p className="text-white text-lg">Start a conversation with Psychat...</p>
-                <p className="text-sm mt-2 text-white/60">
+                <p className="text-body text-body-lg text-white">Start a conversation with Psychat...</p>
+                <p className="text-body text-body-sm mt-2 text-white/60">
                   Each conversation will be encrypted and minted as a ChatNFT
                 </p>
               </div>
@@ -282,17 +282,17 @@ export default function ChatTerminal({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className={`w-2 h-2 rounded-full ${arciumStatus.isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
-                <span className="text-sm text-white/80">
+                <span className="text-body text-body-sm text-white/80">
                   Arcium MPC: {arciumStatus.isConnected ? 'Connected' : 'Disconnected'}
                 </span>
                 {arciumStatus.nodeCount > 0 && (
-                  <span className="text-xs text-white/60">
+                  <span className="text-caption text-white/60">
                     ({arciumStatus.nodeCount} nodes)
                   </span>
                 )}
               </div>
               <div className="flex items-center space-x-2">
-                <div className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-400/30">
+                <div className="text-caption px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-400/30">
                   🔒 Encrypted
                 </div>
               </div>
@@ -319,7 +319,7 @@ export default function ChatTerminal({
             <button
               onClick={onEndSession}
               disabled={isEncrypting || isMinting || messages.length === 0}
-              className="text-sm text-white hover:text-white transition-all duration-300 px-4 py-2 rounded-lg border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] font-medium"
+              className="text-body text-body-sm text-white hover:text-white transition-all duration-300 px-4 py-2 rounded-lg border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
             >
               End Session and Mint ChatNFT
             </button>
@@ -331,7 +331,7 @@ export default function ChatTerminal({
           <div className="mb-4 flex justify-center">
             <button
               onClick={onNavigateToVideo}
-              className="text-sm text-white hover:text-white transition-all duration-300 px-6 py-3 rounded-lg border border-cyan-400/50 hover:border-cyan-400/70 bg-cyan-500/10 hover:bg-cyan-500/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] font-medium flex items-center space-x-2"
+              className="text-body text-body-sm text-white hover:text-white transition-all duration-300 px-6 py-3 rounded-lg border border-cyan-400/50 hover:border-cyan-400/70 bg-cyan-500/10 hover:bg-cyan-500/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] flex items-center space-x-2"
             >
               <span>👨‍⚕️</span>
               <span>Talk to a Human Therapist</span>
@@ -342,7 +342,7 @@ export default function ChatTerminal({
         {/* Encryption Status Indicator */}
         {hasHNFT && encryptionStatus !== 'idle' && (
           <div className="mb-4 flex justify-center">
-            <div className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all duration-300 ${
+            <div className={`px-4 py-2 rounded-lg border text-body text-body-sm transition-all duration-300 ${
               encryptionStatus === 'encrypting' 
                 ? 'text-yellow-400 border-yellow-400/50 bg-yellow-400/10 animate-pulse' 
                 : encryptionStatus === 'encrypted'

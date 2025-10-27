@@ -219,7 +219,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
             <div className="w-2 h-2 bg-red-500 rounded-full"></div>
             <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <div className="ml-4 text-gray-300 text-xs font-mono select-none">PsyChat Terminal v1.1</div>
+            <div className="ml-4 text-gray-300 text-caption text-mono select-none">PsyChat Terminal v1.1</div>
           </div>
 
           {/* Body */}

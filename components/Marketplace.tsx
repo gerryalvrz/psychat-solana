@@ -297,36 +297,36 @@ export default function Marketplace() {
       {/* Header */}
       <div className="psychat-card p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-white">Data Marketplace</h2>
-          <div className="text-sm text-white/60">
+          <h2 className="text-display text-h1 text-white">Data Marketplace</h2>
+          <div className="text-body text-body-sm text-white/60">
             Powered by Raydium AMM • {listings.length} listings
           </div>
         </div>
-        <div className="text-xs text-white/60">
+        <div className="text-caption text-white/60">
           Verify transactions on <a className="underline" href={`https://solscan.io/?cluster=devnet`} target="_blank" rel="noreferrer">Solscan (devnet)</a>
         </div>
 
-        <div className="text-sm text-white/60 mb-4">
+        <div className="text-body text-body-sm text-white/60 mb-4">
           💡 Anonymized mental health insights • 🔒 ZK-verified data integrity • 💰 Earn from your data
         </div>
 
         {/* How It Works Steps */}
         <div className="bg-white/5 rounded-lg p-4 mb-4">
-          <h3 className="text-lg font-semibold text-white mb-3">How Your Data Works for You</h3>
+          <h3 className="text-heading text-h3 text-white mb-3">How Your Data Works for You</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-psy-purple rounded-full flex items-center justify-center text-xs font-bold text-white">1</div>
                 <div>
-                  <div className="text-sm font-medium text-white">Generate Valuable Insights</div>
-                  <div className="text-xs text-white/70">Your conversations create anonymized mental health patterns and therapeutic insights</div>
+                  <div className="text-heading text-h6 text-white">Generate Valuable Insights</div>
+                  <div className="text-caption text-white/70">Your conversations create anonymized mental health patterns and therapeutic insights</div>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-psy-blue rounded-full flex items-center justify-center text-xs font-bold text-white">2</div>
                 <div>
-                  <div className="text-sm font-medium text-white">Self-Custody & Sovereignty</div>
-                  <div className="text-xs text-white/70">You own your data completely - stored in your wallet, controlled by you</div>
+                  <div className="text-heading text-h6 text-white">Self-Custody & Sovereignty</div>
+                  <div className="text-caption text-white/70">You own your data completely - stored in your wallet, controlled by you</div>
                 </div>
               </div>
             </div>
@@ -334,21 +334,21 @@ export default function Marketplace() {
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-psy-green rounded-full flex items-center justify-center text-xs font-bold text-white">3</div>
                 <div>
-                  <div className="text-sm font-medium text-white">Choose to Monetize</div>
-                  <div className="text-xs text-white/70">List your insights for verified buyers or keep them private - your choice</div>
+                  <div className="text-heading text-h6 text-white">Choose to Monetize</div>
+                  <div className="text-caption text-white/70">List your insights for verified buyers or keep them private - your choice</div>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-black">4</div>
                 <div>
-                  <div className="text-sm font-medium text-white">Earn $PSY Tokens</div>
-                  <div className="text-xs text-white/70">Get paid in $PSY tokens with 95% revenue share, auto-compound DeFi yields</div>
+                  <div className="text-heading text-h6 text-white">Earn $PSY Tokens</div>
+                  <div className="text-caption text-white/70">Get paid in $PSY tokens with 95% revenue share, auto-compound DeFi yields</div>
                 </div>
               </div>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-white/10">
-            <div className="text-xs text-white/60">
+            <div className="text-caption text-white/60">
               <strong>Key Benefits:</strong> Complete liquid RWAs ownership • ZK privacy protection • Transparent buyer verification • 
               Fair pricing via Raydium AMM • Your data, your rules
             </div>
@@ -362,7 +362,7 @@ export default function Marketplace() {
           <button
             key={cat}
             onClick={() => setFilter(cat as any)}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
+            className={`px-3 py-1 rounded-full text-body text-body-sm transition-colors ${
               filter === cat
                 ? 'bg-psy-purple text-white'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
@@ -395,46 +395,46 @@ export default function Marketplace() {
               </span>
             </div>
 
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-heading text-h3 text-white mb-2">
               {listing.title}
             </h3>
 
             <div className="mb-3">
-              <div className="text-sm text-psy-blue font-medium mb-1">
+              <div className="text-body text-body-sm text-psy-blue mb-1">
                 👤 {listing.buyer}
               </div>
-              <div className="text-xs text-white/70">
+              <div className="text-caption text-white/70">
                 Purpose: {listing.purpose}
               </div>
             </div>
 
-            <p className="text-white/70 text-sm mb-4 line-clamp-2">
+            <p className="text-body text-body-sm text-white/70 mb-4 line-clamp-2">
               {listing.description}
             </p>
 
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-body text-body-sm">
                 <span className="text-white/60">Price:</span>
-                <span className="text-white font-semibold">
+                <span className="text-mono text-body-md text-white">
                   {listing.price} {listing.currency}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-body text-body-sm">
                 <span className="text-white/60">Data Sources:</span>
-                <span className="text-psy-green">{listing.bids} sellers</span>
+                <span className="text-mono text-body-md text-psy-green">{listing.bids} sellers</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-body text-body-sm">
                 <span className="text-white/60">Liquidity:</span>
-                <span className="text-psy-blue">${listing.liquidity.toLocaleString()}</span>
+                <span className="text-mono text-body-md text-psy-blue">${listing.liquidity.toLocaleString()}</span>
               </div>
               <div className="flex space-x-2 mt-2">
                 {listing.verified && (
-                  <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">
+                  <span className="text-caption bg-green-500/20 text-green-300 px-2 py-1 rounded">
                     ✓ Verified Buyer
                   </span>
                 )}
                 {listing.ethicsApproved && (
-                  <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                  <span className="text-caption bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
                     ✓ Ethics Approved
                   </span>
                 )}
@@ -458,7 +458,7 @@ export default function Marketplace() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="psychat-card p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-2xl font-bold text-white">
+              <h3 className="text-display text-h2 text-white">
                 {selectedListing.title}
               </h3>
               <button
@@ -474,43 +474,43 @@ export default function Marketplace() {
                 <span className={`px-2 py-1 rounded text-sm font-medium ${getCategoryColor(selectedListing.category)}`}>
                   {selectedListing.category}
                 </span>
-                <span className="text-white/60 text-sm">
+                <span className="text-body text-body-sm text-white/60">
                   by {selectedListing.seller}
                 </span>
               </div>
 
-              <p className="text-white/80">
+              <p className="text-body text-body-md text-white/80">
                 {selectedListing.description}
               </p>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white/5 rounded-lg p-4">
-                  <div className="text-sm text-white/60 mb-1">Current Price</div>
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-body text-body-sm text-white/60 mb-1">Current Price</div>
+                  <div className="text-mono text-h2 text-white">
                     {selectedListing.price} {selectedListing.currency}
                   </div>
                 </div>
                 <div className="bg-white/5 rounded-lg p-4">
-                  <div className="text-sm text-white/60 mb-1">Data Sources</div>
-                  <div className="text-2xl font-bold text-psy-green">
+                  <div className="text-body text-body-sm text-white/60 mb-1">Data Sources</div>
+                  <div className="text-mono text-h2 text-psy-green">
                     {selectedListing.bids} sellers
                   </div>
                 </div>
               </div>
 
               <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
-                <div className="text-sm text-white/80 mb-2">
+                <div className="text-body text-body-sm text-white/80 mb-2">
                   <strong>Raydium AMM Integration:</strong> This listing is powered by Raydium's 
                   automated market maker for fair pricing and instant liquidity.
                 </div>
-                <div className="text-sm text-white/60">
+                <div className="text-body text-body-sm text-white/60">
                   Liquidity Pool: ${selectedListing.liquidity.toLocaleString()}
                 </div>
               </div>
 
               {/* Purchase Section */}
               <div className="space-y-3">
-                <h4 className="text-lg font-semibold text-white">Purchase Aggregated Data</h4>
+                <h4 className="text-heading text-h4 text-white">Purchase Aggregated Data</h4>
                 <div className="flex space-x-3">
                   <input
                     type="number"
@@ -527,7 +527,7 @@ export default function Marketplace() {
                     {isBidding ? 'Purchasing...' : 'Purchase'}
                   </button>
                 </div>
-                <div className="text-xs text-white/60">
+                <div className="text-caption text-white/60">
                   Access aggregated data from {selectedListing.bids} sellers • Payment via $PSY tokens • 95% revenue to data owners
                 </div>
               </div>
@@ -539,7 +539,7 @@ export default function Marketplace() {
       {/* Data Buyer Directory */}
       <div className="psychat-card p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-white">Data Buyer Directory</h3>
+          <h3 className="text-heading text-h3 text-white">Data Buyer Directory</h3>
           <button
             onClick={() => setShowBuyerDirectory(true)}
             className="psychat-button bg-psy-blue hover:bg-psy-blue/80 transition-colors flex items-center space-x-2"
@@ -550,11 +550,11 @@ export default function Marketplace() {
         </div>
         
         <div className="bg-gradient-to-r from-psy-blue/10 to-psy-purple/10 border border-psy-blue/20 rounded-lg p-4">
-          <div className="text-sm text-white/80 mb-2">
+          <div className="text-body text-body-sm text-white/80 mb-2">
             <strong>Full Transparency:</strong> See exactly who's buying your data and why. 
             All buyers are verified and ethics-approved.
           </div>
-          <div className="text-xs text-white/60">
+          <div className="text-caption text-white/60">
             Revenue Split: 95% to you, 5% to platform • All transactions on-chain
           </div>
         </div>
@@ -563,7 +563,7 @@ export default function Marketplace() {
       {/* Token Trading Section */}
       <div className="psychat-card p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-white">Token Trading</h3>
+          <h3 className="text-heading text-h3 text-white">Token Trading</h3>
           <button
             onClick={() => setShowTrading(!showTrading)}
             className="psychat-button bg-psy-purple hover:bg-psy-purple/80 transition-colors"
@@ -574,10 +574,10 @@ export default function Marketplace() {
         
         {!showTrading && (
           <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
-            <div className="text-sm text-white/80 mb-2">
+            <div className="text-body text-body-sm text-white/80 mb-2">
               <strong>AMM Trading Available:</strong> Trade $PSY and $rUSD tokens with instant liquidity through Raydium AMM.
             </div>
-            <div className="text-xs text-white/60">
+            <div className="text-caption text-white/60">
               Click "Show Trading" to access the trading interface and participate in the PsyChat token economy.
             </div>
           </div>
@@ -592,26 +592,26 @@ export default function Marketplace() {
 
       {/* Info Panel */}
       <div className="psychat-card p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">How It Works</h3>
+        <h3 className="text-heading text-h3 text-white mb-4">How It Works</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
             <div className="text-3xl mb-2">🔒</div>
-            <h4 className="font-semibold text-white mb-2">ZK Privacy</h4>
-            <p className="text-sm text-white/70">
+            <h4 className="text-heading text-h5 text-white mb-2">ZK Privacy</h4>
+            <p className="text-body text-body-sm text-white/70">
               Data is anonymized with Arcium ZK proofs to protect privacy while proving data integrity.
             </p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-2">🏪</div>
-            <h4 className="font-semibold text-white mb-2">Raydium AMM</h4>
-            <p className="text-sm text-white/70">
+            <h4 className="text-heading text-h5 text-white mb-2">Raydium AMM</h4>
+            <p className="text-body text-body-sm text-white/70">
               Fair pricing and instant liquidity through Raydium's automated market maker.
             </p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-2">💰</div>
-            <h4 className="font-semibold text-white mb-2">$PSY Token Payments</h4>
-            <p className="text-sm text-white/70">
+            <h4 className="text-heading text-h5 text-white mb-2">$PSY Token Payments</h4>
+            <p className="text-body text-body-sm text-white/70">
               Secure payments with $PSY tokens and auto-compound earnings into DeFi yields.
             </p>
           </div>
@@ -623,7 +623,7 @@ export default function Marketplace() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="psychat-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-6">
-              <h3 className="text-2xl font-bold text-white">Data Buyer Directory</h3>
+              <h3 className="text-display text-h2 text-white">Data Buyer Directory</h3>
               <button
                 onClick={() => setShowBuyerDirectory(false)}
                 className="text-white/60 hover:text-white text-2xl"
@@ -638,25 +638,25 @@ export default function Marketplace() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-psy-blue rounded-full flex items-center justify-center text-white font-bold">AI</div>
                   <div>
-                    <div className="text-lg font-semibold text-white">AI Companies</div>
-                    <div className="text-sm text-psy-blue">12 Active Buyers</div>
+                    <div className="text-heading text-h4 text-white">AI Companies</div>
+                    <div className="text-body text-body-sm text-psy-blue">12 Active Buyers</div>
                   </div>
                 </div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-body text-body-sm">
                   <div className="flex justify-between">
                     <span className="text-white/70">OpenAI</span>
-                    <span className="text-psy-green">$2.3M spent</span>
+                    <span className="text-mono text-psy-green">$2.3M spent</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/70">Anthropic</span>
-                    <span className="text-psy-green">$1.8M spent</span>
+                    <span className="text-mono text-psy-green">$1.8M spent</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/70">Google DeepMind</span>
-                    <span className="text-psy-green">$3.1M spent</span>
+                    <span className="text-mono text-psy-green">$3.1M spent</span>
                   </div>
                 </div>
-                <div className="mt-3 text-xs text-white/60">
+                <div className="mt-3 text-caption text-white/60">
                   Focus: Training LLMs for therapeutic responses and mental health empathy
                 </div>
               </div>
@@ -666,8 +666,8 @@ export default function Marketplace() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-psy-green rounded-full flex items-center justify-center text-white font-bold">R</div>
                   <div>
-                    <div className="text-lg font-semibold text-white">Research Labs</div>
-                    <div className="text-sm text-psy-green">8 Active Buyers</div>
+                    <div className="text-heading text-h4 text-white">Research Labs</div>
+                    <div className="text-body text-body-sm text-psy-green">8 Active Buyers</div>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -694,8 +694,8 @@ export default function Marketplace() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-psy-purple rounded-full flex items-center justify-center text-white font-bold">W</div>
                   <div>
-                    <div className="text-lg font-semibold text-white">Wellness Apps</div>
-                    <div className="text-sm text-psy-purple">5 Active Buyers</div>
+                    <div className="text-heading text-h4 text-white">Wellness Apps</div>
+                    <div className="text-body text-body-sm text-psy-purple">5 Active Buyers</div>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -722,8 +722,8 @@ export default function Marketplace() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-psy-orange rounded-full flex items-center justify-center text-white font-bold">C</div>
                   <div>
-                    <div className="text-lg font-semibold text-white">Corporate</div>
-                    <div className="text-sm text-psy-orange">3 Active Buyers</div>
+                    <div className="text-heading text-h4 text-white">Corporate</div>
+                    <div className="text-body text-body-sm text-psy-orange">3 Active Buyers</div>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -750,8 +750,8 @@ export default function Marketplace() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold">G</div>
                   <div>
-                    <div className="text-lg font-semibold text-white">Government & NGOs</div>
-                    <div className="text-sm text-yellow-400">4 Active Buyers</div>
+                    <div className="text-heading text-h4 text-white">Government & NGOs</div>
+                    <div className="text-body text-body-sm text-yellow-400">4 Active Buyers</div>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -778,8 +778,8 @@ export default function Marketplace() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
                   <div>
-                    <div className="text-lg font-semibold text-white">Academic</div>
-                    <div className="text-sm text-cyan-400">6 Active Buyers</div>
+                    <div className="text-heading text-h4 text-white">Academic</div>
+                    <div className="text-body text-body-sm text-cyan-400">6 Active Buyers</div>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -803,11 +803,11 @@ export default function Marketplace() {
             </div>
 
             <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
-              <div className="text-sm text-white/80 mb-2">
+              <div className="text-body text-body-sm text-white/80 mb-2">
                 <strong>Verification Process:</strong> All buyers undergo strict verification including ethics review, 
                 data usage transparency, and compliance with privacy regulations.
               </div>
-              <div className="text-xs text-white/60">
+              <div className="text-caption text-white/60">
                 Total Market Value: $28.7M • Average Purchase: $2,400 • 95% Revenue Share to Data Owners
               </div>
             </div>

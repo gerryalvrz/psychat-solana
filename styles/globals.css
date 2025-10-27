@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Orbitron:wght@400;500;600;700;800;900&family=Jura:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Orbitron:wght@400;500;600;700;800;900&family=Jura:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -68,6 +68,13 @@ canvas {
   --color-text: rgba(255,255,255,0.9);
   --blur: 20px;
   --radius: 12px;
+  
+  /* Typography System */
+  --font-display: 'Orbitron', monospace;
+  --font-heading: 'JetBrains Mono', monospace;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Inter', sans-serif;
+  --font-special: 'Jura', sans-serif;
   
   /* Z-Index System */
   --z-background-deep: -20;
@@ -719,15 +726,100 @@ canvas {
               #000;
 }
 
-/* Custom fonts */
+/* Typography System */
+.text-display { 
+  font-family: var(--font-display); 
+  font-weight: 700; 
+  letter-spacing: 0.05em; 
+}
+
+.text-heading-major { 
+  font-family: var(--font-body); 
+  font-weight: 600; 
+  letter-spacing: 0.01em; 
+}
+
+.text-heading { 
+  font-family: var(--font-body); 
+  font-weight: 500; 
+  letter-spacing: 0.01em; 
+}
+
+.text-body { 
+  font-family: var(--font-body); 
+  font-weight: 400; 
+  line-height: 1.6; 
+}
+
+.text-mono { 
+  font-family: var(--font-mono); 
+  font-weight: 500; 
+}
+
+.text-special { 
+  font-family: var(--font-special); 
+  font-weight: 500; 
+  letter-spacing: 0.03em; 
+}
+
+/* Typography Size Utilities */
+.text-display-lg { 
+  font-size: clamp(2.5rem, 5vw, 4rem); 
+}
+
+.text-display-md { 
+  font-size: clamp(2rem, 4vw, 3rem); 
+}
+
+.text-h1 { 
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem); 
+}
+
+.text-h2 { 
+  font-size: clamp(1.5rem, 3vw, 2rem); 
+}
+
+.text-h3 { 
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem); 
+}
+
+.text-h4 { 
+  font-size: clamp(1.125rem, 2vw, 1.25rem); 
+}
+
+.text-h5 { 
+  font-size: clamp(1rem, 1.5vw, 1.125rem); 
+}
+
+.text-h6 { 
+  font-size: clamp(0.875rem, 1.25vw, 1rem); 
+}
+
+.text-body-lg { 
+  font-size: clamp(1.125rem, 2vw, 1.25rem); 
+}
+
+.text-body-md { 
+  font-size: clamp(1rem, 1.5vw, 1.125rem); 
+}
+
+.text-body-sm { 
+  font-size: clamp(0.875rem, 1.25vw, 1rem); 
+}
+
+.text-caption { 
+  font-size: clamp(0.75rem, 1vw, 0.875rem); 
+}
+
+/* Legacy font classes - updated to use new system */
 .font-futuristic {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-body);
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.01em;
 }
 
 .font-terminal {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-weight: 500;
 }
 
@@ -855,15 +947,15 @@ canvas {
   -webkit-mask-composite: xor;
 }
 
-/* Futuristic Typography */
+/* Futuristic Typography - Updated to use new system */
 .font-futuristic-sans {
-  font-family: 'Jura', sans-serif;
+  font-family: var(--font-special);
   font-weight: 500;
   letter-spacing: 0.05em;
 }
 
 .font-futuristic-mono {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.1em;
 }

@@ -2,6 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import EarningBento from './EarningBento';
 
 // Import chart configuration to ensure proper registration
 import '../lib/chartConfig';
@@ -68,6 +69,7 @@ export default function Dashboard() {
   const [stakeAmount, setStakeAmount] = useState('');
   const [isStaking, setIsStaking] = useState(false);
   const [isClaimingUbi, setIsClaimingUbi] = useState(false);
+  const [isAutoCompoundEnabled, setIsAutoCompoundEnabled] = useState(true);
   const [chartReady, setChartReady] = useState(false);
 
   useEffect(() => {
@@ -147,6 +149,10 @@ export default function Dashboard() {
     }
   };
 
+  const handleToggleAutoCompound = () => {
+    setIsAutoCompoundEnabled(!isAutoCompoundEnabled);
+  };
+
   const handleStake = async () => {
     if (!selectedYield || !stakeAmount) return;
 
@@ -206,131 +212,149 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Earnings Overview */}
+      {/* Primary Metrics - Hero Section with EarningBento */}
       <div className="psychat-card p-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Earnings Dashboard</h2>
+        <h2 className="text-display text-h1 text-white mb-6">Earnings Dashboard</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-black/20 rounded-lg p-4">
-            <div className="text-sm text-white/60 mb-1">Total Earned</div>
-            <div className="text-2xl font-bold text-white">
-              {formatCurrency(earnings.totalEarned, 'PSY')}
-            </div>
+        {/* Interactive EarningBento Grid */}
+        <EarningBento
+          earnings={earnings}
+          hnftStats={hnftStats}
+          onClaimUbi={handleClaimUbi}
+          onToggleAutoCompound={handleToggleAutoCompound}
+          isAutoCompoundEnabled={isAutoCompoundEnabled}
+          isClaimingUbi={isClaimingUbi}
+          enableStars={true}
+          enableSpotlight={true}
+          enableBorderGlow={true}
+          enableTilt={false}
+          enableMagnetism={true}
+          clickEffect={true}
+          glowColor="132, 0, 255"
+          particleCount={8}
+        />
+
+        {/* UBI Stream Status */}
+        <div className={`bg-gradient-to-r from-teal-500/15 via-cyan-500/15 to-blue-500/15 border rounded-lg p-4 backdrop-blur-sm mt-6 ${
+          isAutoCompoundEnabled ? 'border-teal-400/40' : 'border-gray-500/40'
+        }`}>
+          <div className="flex items-center space-x-2 mb-2">
+            <span className={`${isAutoCompoundEnabled ? 'text-teal-300' : 'text-gray-400'}`} style={{ 
+              textShadow: isAutoCompoundEnabled ? '0 0 15px rgba(20, 184, 166, 0.8)' : 'none' 
+            }}>💰</span>
+            <span className={`text-heading text-h4 text-mono tracking-wider ${
+              isAutoCompoundEnabled ? 'text-teal-300' : 'text-gray-400'
+            }`} style={{ 
+              textShadow: isAutoCompoundEnabled ? '0 0 15px rgba(20, 184, 166, 0.8)' : 'none' 
+            }}>
+              UBI Stream {isAutoCompoundEnabled ? 'Active' : 'Paused'}
+            </span>
           </div>
-          <div className="bg-black/20 rounded-lg p-4">
-            <div className="text-sm text-white/60 mb-1">From Data Sales</div>
-            <div className="text-xl font-semibold text-psy-green">
+          <p className={`text-body text-body-sm text-mono ${
+            isAutoCompoundEnabled ? 'text-teal-300/90' : 'text-gray-400/70'
+          }`}>
+            {isAutoCompoundEnabled 
+              ? 'Your data earnings are automatically compounding at 5-15% APY, creating a sustainable Universal Basic Income stream from your mental health insights.'
+              : 'Auto-compounding is currently paused. Enable the toggle above to resume automatic earnings growth.'
+            }
+          </p>
+        </div>
+      </div>
+
+      {/* Secondary Metrics - Earnings Breakdown */}
+      <div className="psychat-card p-6">
+        <h3 className="text-heading-major text-h2 text-white mb-4">Earnings Breakdown</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Data Sales */}
+          <div className="bg-gradient-to-br from-fuchsia-500/15 to-red-500/15 border border-fuchsia-400/40 rounded-lg p-6 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-body text-body-sm text-mono tracking-wider text-fuchsia-300/90">From Data Sales</div>
+              <span className="text-xl">📊</span>
+            </div>
+            <div className="text-mono text-h2 text-fuchsia-300 mb-1" style={{ textShadow: '0 0 15px rgba(255, 0, 255, 0.8)' }}>
               {formatCurrency(earnings.fromDataSales, 'PSY')}
             </div>
+            <div className="text-caption text-mono text-fuchsia-300/70">Mental health insights monetization</div>
           </div>
-          <div className="bg-black/20 rounded-lg p-4">
-            <div className="text-sm text-white/60 mb-1">From Yield Farming</div>
-            <div className="text-xl font-semibold text-psy-blue">
+
+          {/* Yield Farming */}
+          <div className="bg-gradient-to-br from-purple-500/15 to-pink-500/15 border border-purple-400/40 rounded-lg p-6 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-body text-body-sm text-mono tracking-wider text-purple-300/90">From Yield Farming</div>
+              <span className="text-xl">🌾</span>
+            </div>
+            <div className="text-mono text-h2 text-purple-300 mb-1" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.8)' }}>
               {formatCurrency(earnings.fromYieldFarming, 'rUSD')}
             </div>
-          </div>
-          <div className="bg-black/20 rounded-lg p-4">
-            <div className="text-sm text-white/60 mb-1">Auto-Compounded</div>
-            <div className="text-xl font-semibold text-psy-purple">
-              {formatCurrency(earnings.autoCompounded, 'rUSD')}
-            </div>
+            <div className="text-caption text-mono text-purple-300/70">DeFi protocol yields</div>
           </div>
         </div>
+      </div>
 
-        {/* UBI Claiming Section */}
-        <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4 mb-6">
-          <div className="flex justify-between items-center mb-3">
-            <div>
-              <div className="text-sm text-white/80 mb-1">Available UBI</div>
-              <div className="text-2xl font-bold text-psy-green">
-                {formatCurrency(earnings.ubiAvailable, 'rUSD')}
-              </div>
-            </div>
-            <button
-              onClick={handleClaimUbi}
-              disabled={earnings.ubiAvailable === 0 || isClaimingUbi}
-              className="psychat-button px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isClaimingUbi ? 'Claiming...' : 'Claim UBI'}
-            </button>
-          </div>
-          <div className="text-xs text-white/60">
-            🎁 Earned from participating in the dataconomy • Auto-compounds into DeFi yields
-          </div>
-        </div>
-
-        {/* Revenue Split Display */}
-        <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Revenue Share Breakdown</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Tertiary Metrics - Revenue Share */}
+      <div className="psychat-card p-6">
+        <h3 className="text-heading-major text-h2 text-white mb-4">Revenue Share Breakdown</h3>
+        
+        <div className="bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-pink-500/15 border border-indigo-400/40 rounded-lg p-6 backdrop-blur-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-psy-green mb-1">
+              <div className="text-mono text-h1 text-emerald-300 mb-2" style={{ textShadow: '0 0 15px rgba(16, 185, 129, 0.8)' }}>
                 {formatCurrency(earnings.revenueShare.userEarnings, 'rUSD')}
               </div>
-              <div className="text-sm text-white/60">Your Earnings (95%)</div>
+              <div className="text-body text-body-sm text-mono tracking-wider text-emerald-300/80">Your Earnings (95%)</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-psy-blue mb-1">
+              <div className="text-mono text-h1 text-rose-300 mb-2" style={{ textShadow: '0 0 15px rgba(251, 113, 133, 0.8)' }}>
                 {formatCurrency(earnings.revenueShare.platformFee, 'rUSD')}
               </div>
-              <div className="text-sm text-white/60">Platform Fee (5%)</div>
+              <div className="text-body text-body-sm text-mono tracking-wider text-rose-300/80">Platform Fee (5%)</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white mb-1">
+              <div className="text-mono text-h1 text-violet-300 mb-2" style={{ textShadow: '0 0 15px rgba(196, 181, 253, 0.8)' }}>
                 {formatCurrency(earnings.revenueShare.totalRevenue, 'rUSD')}
               </div>
-              <div className="text-sm text-white/60">Total Revenue</div>
+              <div className="text-body text-body-sm text-mono tracking-wider text-violet-300/80">Total Revenue</div>
             </div>
           </div>
-          <div className="mt-4 bg-white/5 rounded-lg p-3">
-            <div className="text-sm text-white/80">
+          <div className="mt-6 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 border border-cyan-400/30 rounded-lg p-4">
+            <div className="text-body text-body-sm text-mono text-cyan-300/90">
               <strong>Transparent Economics:</strong> You keep 95% of all data sales revenue. 
               The remaining 5% supports platform development, security, and infrastructure.
             </div>
           </div>
         </div>
-
-        <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <span className="text-psy-green">💰</span>
-            <span className="font-semibold text-white">UBI Stream Active</span>
-          </div>
-          <p className="text-sm text-white/80">
-            Your data earnings are automatically compounding at 5-15% APY, 
-            creating a sustainable Universal Basic Income stream from your mental health insights.
-          </p>
-        </div>
       </div>
 
       {/* HNFT Statistics */}
       <div className="psychat-card p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Your HNFT Portfolio</h3>
+        <h3 className="text-heading-major text-h2 text-white mb-4">Your HNFT Portfolio</h3>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-white">{hnftStats.totalMinted}</div>
-            <div className="text-sm text-white/60">Total Minted</div>
+            <div className="text-mono text-h2 text-white">{hnftStats.totalMinted}</div>
+            <div className="text-body text-body-sm text-white/60">Total Minted</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-psy-blue">{hnftStats.totalListed}</div>
-            <div className="text-sm text-white/60">Listed</div>
+            <div className="text-mono text-h2 text-psy-blue">{hnftStats.totalListed}</div>
+            <div className="text-body text-body-sm text-white/60">Listed</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-psy-green">{hnftStats.totalSold}</div>
-            <div className="text-sm text-white/60">Sold</div>
+            <div className="text-mono text-h2 text-psy-green">{hnftStats.totalSold}</div>
+            <div className="text-body text-body-sm text-white/60">Sold</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-psy-purple">
+            <div className="text-mono text-h2 text-psy-purple">
               {formatCurrency(hnftStats.averagePrice, 'PSY')}
             </div>
-            <div className="text-sm text-white/60">Avg Price</div>
+            <div className="text-body text-body-sm text-white/60">Avg Price</div>
           </div>
         </div>
       </div>
 
       {/* Growth & UBI Chart */}
       <div className="psychat-card p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Growth & UBI Projection</h3>
+        <h3 className="text-heading-major text-h2 text-white mb-4">Growth & UBI Projection</h3>
         <div className="bg-white/5 rounded-lg p-4">
           <div className="h-64">
             {typeof window !== 'undefined' && chartReady ? (
@@ -379,7 +403,7 @@ export default function Dashboard() {
             />
             ) : (
               <div className="flex items-center justify-center h-full">
-                <div className="text-white/70">Loading chart...</div>
+                <div className="text-body text-body-md text-white/70">Loading chart...</div>
               </div>
             )}
           </div>
@@ -388,8 +412,8 @@ export default function Dashboard() {
 
       {/* Yield Farming Options */}
       <div className="psychat-card p-6">
-        <h3 className="text-xl font-bold text-white mb-4">DeFi Yield Options</h3>
-        <p className="text-white/70 mb-6">
+        <h3 className="text-heading-major text-h2 text-white mb-4">DeFi Yield Options</h3>
+        <p className="text-body text-body-md text-white/70 mb-6">
           Auto-compound your earnings into high-yield DeFi protocols via Reflect $rUSD
         </p>
 
@@ -406,23 +430,23 @@ export default function Dashboard() {
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-semibold text-white">{option.name}</h4>
-                  <p className="text-sm text-white/60">{option.protocol}</p>
+                  <h4 className="text-heading text-h5 text-white">{option.name}</h4>
+                  <p className="text-body text-body-sm text-white/60">{option.protocol}</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-psy-green">
+                  <div className="text-mono text-h4 text-psy-green">
                     {formatAPY(option.apy)}
                   </div>
-                  <div className="text-sm text-white/60">
+                  <div className="text-body text-body-sm text-white/60">
                     TVL: ${(option.tvl / 1000000).toFixed(1)}M
                   </div>
                 </div>
               </div>
               <div className="flex justify-between items-center mt-2">
-                <span className={`text-sm font-medium ${getRiskColor(option.risk)}`}>
+                <span className={`text-body text-body-sm ${getRiskColor(option.risk)}`}>
                   {option.risk} Risk
                 </span>
-                <span className="text-sm text-white/60">
+                <span className="text-body text-body-sm text-white/60">
                   Min: {option.minStake} rUSD
                 </span>
               </div>
@@ -433,7 +457,7 @@ export default function Dashboard() {
         {/* Staking Interface */}
         {selectedYield && (
           <div className="bg-black/20 rounded-lg p-4">
-            <h4 className="font-semibold text-white mb-3">
+            <h4 className="text-heading text-h5 text-white mb-3">
               Stake in {yieldOptions.find(o => o.id === selectedYield)?.name}
             </h4>
             <div className="flex space-x-3">
@@ -452,7 +476,7 @@ export default function Dashboard() {
                 {isStaking ? 'Staking...' : 'Stake'}
               </button>
             </div>
-            <div className="text-xs text-white/60 mt-2">
+            <div className="text-caption text-white/60 mt-2">
               Powered by Reflect $rUSD • Auto-compound enabled
             </div>
           </div>
@@ -461,34 +485,34 @@ export default function Dashboard() {
 
       {/* Impact Metrics */}
       <div className="psychat-card p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Impact Metrics</h3>
+        <h3 className="text-heading-major text-h2 text-white mb-4">Impact Metrics</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-3xl font-bold text-psy-green mb-2">$500M</div>
-            <div className="text-sm text-white/60">Total Addressable Market</div>
-            <div className="text-xs text-white/50 mt-1">
+            <div className="text-mono text-h1 text-psy-green mb-2">$500M</div>
+            <div className="text-body text-body-sm text-white/60">Total Addressable Market</div>
+            <div className="text-caption text-white/50 mt-1">
               Mental health data economy
             </div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-psy-blue mb-2">40%</div>
-            <div className="text-sm text-white/60">Therapy Cost Reduction</div>
-            <div className="text-xs text-white/50 mt-1">
+            <div className="text-mono text-h1 text-psy-blue mb-2">40%</div>
+            <div className="text-body text-body-sm text-white/60">Therapy Cost Reduction</div>
+            <div className="text-caption text-white/50 mt-1">
               Through tokenized subsidies
             </div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-psy-purple mb-2">1M+</div>
-            <div className="text-sm text-white/60">Scalable Users</div>
-            <div className="text-xs text-white/50 mt-1">
+            <div className="text-mono text-h1 text-psy-purple mb-2">1M+</div>
+            <div className="text-body text-body-sm text-white/60">Scalable Users</div>
+            <div className="text-caption text-white/50 mt-1">
               Platform capacity
             </div>
           </div>
         </div>
 
         <div className="mt-6 p-4 bg-psy-blue/10 border border-psy-blue/20 rounded-lg">
-          <div className="text-sm text-white/80">
+          <div className="text-body text-body-sm text-white/80">
             <strong>MotusDAO Vision:</strong> PsyChat aligns with our mission to democratize 
             mental health access through Web3 technology. By tokenizing therapy data and 
             creating sustainable UBI streams, we're building a more equitable mental health ecosystem.
@@ -498,3 +522,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
