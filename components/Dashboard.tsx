@@ -80,7 +80,7 @@ export default function Dashboard() {
     const mockYieldOptions: YieldOption[] = [
       {
         id: 'raydium-sol-usdc',
-        name: 'SOL-USDC Pool',
+        name: 'PSY-rUSD Pool',
         apy: 15.2,
         tvl: 2500000,
         protocol: 'Raydium',

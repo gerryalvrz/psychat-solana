@@ -117,7 +117,7 @@ export const mockYieldPositions: MockYieldPosition[] = [
   {
     id: 'yield_1',
     protocol: 'Raydium',
-    pool: 'SOL-USDC',
+    pool: 'PSY-rUSD',
     amount: 5.2,
     apy: 15.2,
     currency: 'SOL',
