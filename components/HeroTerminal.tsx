@@ -22,7 +22,6 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
   const [showBullet2, setShowBullet2] = useState(false);
   const [showBullet3, setShowBullet3] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
-  const [terminalHeight, setTerminalHeight] = useState<number | null>(null);
   const [animationKey, setAnimationKey] = useState(0);
   const terminalRef = useRef<HTMLDivElement>(null);
   const loopCleanupRef = useRef<(() => void) | null>(null);
@@ -64,10 +63,6 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
     // Mark animation as complete when all content is shown
     const completeTimer = setTimeout(() => {
       setAnimationComplete(true);
-      // Capture terminal height after first animation
-      if (terminalRef.current && !terminalHeight) {
-        setTerminalHeight(terminalRef.current.offsetHeight);
-      }
     }, 17000); // After all content is shown
     
     return () => {
@@ -206,7 +201,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
         }}
       />
 
-      <div className="w-full max-w-4xl mx-2 sm:mx-4 relative z-10">
+      <div className="w-full max-w-4xl mx-2 sm:mx-4 relative z-10 px-2 sm:px-0">
         {/* Terminal Frame */}
         <div
           className="bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-md overflow-hidden shadow-2xl crt-curvature"
@@ -219,7 +214,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
             <div className="w-2 h-2 bg-red-500 rounded-full"></div>
             <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <div className="ml-4 text-gray-300 text-xs font-mono select-none">PsyChat Terminal v1.1</div>
+            <div className="ml-4 text-gray-300 text-caption text-mono select-none">PsyChat Terminal v1.1</div>
           </div>
 
           {/* Body */}
@@ -230,8 +225,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
 
             <div 
               ref={terminalRef}
-              className="relative p-4 sm:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-sm sm:text-base"
-              style={terminalHeight ? { height: `${terminalHeight}px` } : {}}
+              className="relative p-3 sm:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-xs sm:text-sm md:text-base"
             >
               {/* Command line - Always visible and fixed at top */}
               <div className="text-green-500 mb-4">
@@ -239,12 +233,12 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
               </div>
 
               {/* Staged Terminal Content */}
-              <div className={`${animationComplete ? 'mb-20' : 'mb-6'}`}>
+              <div className="mb-6">
                 <div className="space-y-2">
                   
                   {/* Checkmarks - appear gradually with DecryptedText */}
                   {showCheckmarks && (
-                    <div className="space-y-3 mt-4">
+                    <div className="space-y-2 sm:space-y-3 mt-4">
                       {showLine1 && (
                         <div>
                           <DecryptedText
@@ -330,7 +324,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                   
                   {/* Bullet points - appear last with DecryptedText */}
                   {showBullets && (
-                    <div className="space-y-3 mt-4">
+                    <div className="space-y-2 sm:space-y-3 mt-4">
                       {showBullet1 && (
                         <div>
                           <DecryptedText
@@ -384,26 +378,29 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                 </div>
               </div>
 
-              {/* Action Button - Only appears after first animation completes */}
-              {animationComplete && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="absolute bottom-4 left-4 right-4 flex justify-center items-center"
-                >
-                  <HoloButton
-                    onClick={handleStartChat}
-                    variant="primary"
-                    size="lg"
-                    className="w-full sm:w-auto font-futuristic tracking-wider"
-                  >
-                    Enter the Chat
-                  </HoloButton>
-                </motion.div>
-              )}
             </div>
           </div>
+
+          {/* Action Button - Outside terminal, same card */}
+          {animationComplete && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="p-4 bg-black/20 border-t border-cyan-500/20 flex justify-center items-center"
+            >
+              <HoloButton
+                onClick={handleStartChat}
+                variant="primary"
+                size="lg"
+                className="w-full sm:w-auto tracking-wider px-6 py-3 text-sm sm:text-base font-display"
+              >
+                <span className="font-display">
+                  Enter the Chat
+                </span>
+              </HoloButton>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

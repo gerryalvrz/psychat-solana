@@ -144,8 +144,8 @@ export default function Profile() {
     return (
       <div className="psychat-card p-8 text-center">
         <div className="text-6xl mb-4">🔐</div>
-        <h2 className="text-2xl font-bold text-white mb-4">Connect Your Wallet</h2>
-        <p className="text-white/80 mb-6">
+        <h2 className="text-display text-h2 text-white mb-4">Connect Your Wallet</h2>
+        <p className="text-body text-body-md text-white/80 mb-6">
           Connect your wallet to view your PsyChat profile and data.
         </p>
       </div>
@@ -156,8 +156,8 @@ export default function Profile() {
     return (
       <div className="psychat-card p-8 text-center">
         <div className="text-4xl mb-4">⏳</div>
-        <h2 className="text-xl font-semibold text-white mb-2">Loading Profile...</h2>
-        <p className="text-white/60">Fetching your data from the blockchain</p>
+        <h2 className="text-heading text-h3 text-white mb-2">Loading Profile...</h2>
+        <p className="text-body text-body-sm text-white/60">Fetching your data from the blockchain</p>
       </div>
     );
   }
@@ -166,53 +166,59 @@ export default function Profile() {
     return (
       <div className="psychat-card p-8 text-center">
         <div className="text-4xl mb-4">❌</div>
-        <h2 className="text-xl font-semibold text-white mb-2">Error Loading Profile</h2>
-        <p className="text-red-400">{error}</p>
+        <h2 className="text-heading text-h3 text-white mb-2">Error Loading Profile</h2>
+        <p className="text-body text-body-sm text-red-400">{error}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Profile Header */}
-      <SpotlightCard className="p-6" spotlightColor="rgba(97, 220, 163, 0.2)">
+        {/* Profile Header */}
+        <SpotlightCard className="p-6" spotlightColor="rgba(97, 220, 163, 0.2)">
         <div className="flex items-center space-x-4 mb-4">
           <div className="w-16 h-16 bg-psy-green/20 rounded-full flex items-center justify-center">
             <span className="text-2xl">🧠</span>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Your PsyChat Profile</h1>
-            <p className="text-white/60 text-sm">
+            <h1 className="text-display text-h1 text-white">Your PsyChat Profile</h1>
+            <p className="text-body text-body-sm text-white/60">
               {profile?.walletAddress ? `${profile.walletAddress.slice(0, 8)}...${profile.walletAddress.slice(-8)}` : 'Wallet not connected'}
             </p>
+            {profile?.hnftAddress && (
+              <div className="mt-2 text-caption text-psy-green flex items-center">
+                <span className="mr-1">🎫</span>
+                HNFT Identity Active
+              </div>
+            )}
           </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-psy-green">{profile?.totalSessions || 0}</div>
-            <div className="text-sm text-white/60">Therapy Sessions</div>
+            <div className="text-mono text-h2 text-psy-green">{profile?.totalSessions || 0}</div>
+            <div className="text-body text-body-sm text-white/60">Therapy Sessions</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-psy-blue">{profile?.totalEarnings.toFixed(2) || 0}</div>
-            <div className="text-sm text-white/60">Total Earnings</div>
+            <div className="text-mono text-h2 text-psy-blue">{profile?.totalEarnings.toFixed(2) || 0}</div>
+            <div className="text-body text-body-sm text-white/60">Total Earnings</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-psy-purple">{profile?.activeYieldPositions || 0}</div>
-            <div className="text-sm text-white/60">Active Positions</div>
+            <div className="text-mono text-h2 text-psy-purple">{profile?.activeYieldPositions || 0}</div>
+            <div className="text-body text-body-sm text-white/60">Active Positions</div>
           </div>
         </div>
       </SpotlightCard>
 
       {/* Identity Section */}
       <SpotlightCard className="p-6" spotlightColor="rgba(147, 51, 234, 0.2)">
-        <h2 className="text-xl font-bold text-white mb-4">Identity & Verification</h2>
+        <h2 className="text-heading-major text-h2 text-white mb-4">Identity & Verification</h2>
         
         <div className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
             <div>
-              <div className="text-sm text-white/60 mb-1">Wallet Address</div>
-              <div className="text-white font-mono text-sm">
+              <div className="text-body text-body-sm text-white/60 mb-1">Wallet Address</div>
+              <div className="text-mono text-body-sm text-white">
                 {profile?.walletAddress ? `${profile.walletAddress.slice(0, 12)}...${profile.walletAddress.slice(-12)}` : 'Not available'}
               </div>
             </div>
@@ -221,8 +227,8 @@ export default function Profile() {
           
           <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
             <div>
-              <div className="text-sm text-white/60 mb-1">HNFT Identity</div>
-              <div className="text-white font-mono text-sm">
+              <div className="text-body text-body-sm text-white/60 mb-1">HNFT Identity</div>
+              <div className="text-mono text-body-sm text-white">
                 {profile?.hnftAddress ? `${profile.hnftAddress.slice(0, 12)}...${profile.hnftAddress.slice(-12)}` : 'Not minted yet'}
               </div>
             </div>
@@ -233,8 +239,8 @@ export default function Profile() {
           
           <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
             <div>
-              <div className="text-sm text-white/60 mb-1">Member Since</div>
-              <div className="text-white">
+              <div className="text-body text-body-sm text-white/60 mb-1">Member Since</div>
+              <div className="text-body text-body-md text-white">
                 {profile?.joinDate ? formatDate(profile.joinDate) : 'Not available'}
               </div>
             </div>
@@ -245,13 +251,13 @@ export default function Profile() {
 
       {/* Therapy Data Section */}
       <SpotlightCard className="p-6" spotlightColor="rgba(97, 179, 220, 0.2)">
-        <h2 className="text-xl font-bold text-white mb-4">Therapy Sessions & NFTs</h2>
+        <h2 className="text-heading-major text-h2 text-white mb-4">Therapy Sessions & NFTs</h2>
         
         {datasetNFTs.length === 0 ? (
           <div className="text-center py-8 text-white/60">
             <div className="text-4xl mb-2">💭</div>
-            <p>No therapy sessions yet</p>
-            <p className="text-sm mt-2">Start chatting to create your first session NFT</p>
+            <p className="text-body text-body-md">No therapy sessions yet</p>
+            <p className="text-body text-body-sm mt-2">Start chatting to create your first session NFT</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -259,25 +265,25 @@ export default function Profile() {
               <div key={nft.id} className="p-4 bg-black/20 rounded-lg">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <div className="text-white font-semibold">Session #{nft.sessionId.split('_')[1]}</div>
-                    <div className="text-sm text-white/60 capitalize">{nft.category} • {nft.messageCount} messages</div>
+                    <div className="text-heading text-h5 text-white">Session #{nft.sessionId.split('_')[1]}</div>
+                    <div className="text-body text-body-sm text-white/60 capitalize">{nft.category} • {nft.messageCount} messages</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-white/60">{formatDate(nft.date)}</div>
+                    <div className="text-body text-body-sm text-white/60">{formatDate(nft.date)}</div>
                     {nft.isListed && (
-                      <div className="text-xs bg-psy-green/20 text-psy-green px-2 py-1 rounded mt-1">
+                      <div className="text-caption bg-psy-green/20 text-psy-green px-2 py-1 rounded mt-1">
                         Listed • {formatCurrency(nft.price, 'SOL')}
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="text-xs text-white/50 font-mono">
+                <div className="text-caption text-white/50 text-mono">
                   Storage: {nft.walrusCid.slice(0, 16)}...
                 </div>
               </div>
             ))}
             {datasetNFTs.length > 5 && (
-              <div className="text-center text-white/60 text-sm">
+              <div className="text-center text-white/60 text-body text-body-sm">
                 +{datasetNFTs.length - 5} more sessions
               </div>
             )}
@@ -287,9 +293,9 @@ export default function Profile() {
 
       {/* Psychologist Connections (Mock/Placeholder) */}
       <SpotlightCard className="p-6" spotlightColor="rgba(248, 113, 113, 0.2)">
-        <h2 className="text-xl font-bold text-white mb-4">Psychologist Connections</h2>
+        <h2 className="text-heading-major text-h2 text-white mb-4">Psychologist Connections</h2>
         <div className="mb-4 p-3 bg-psy-orange/10 border border-psy-orange/20 rounded-lg">
-          <div className="text-sm text-white/80">
+          <div className="text-body text-body-sm text-white/80">
             <strong>Coming Soon:</strong> Direct connections with verified psychologists for personalized care.
           </div>
         </div>
@@ -299,15 +305,15 @@ export default function Profile() {
             <div key={psych.id} className="p-4 bg-black/20 rounded-lg">
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="text-white font-semibold">{psych.name}</div>
-                  <div className="text-sm text-white/60">{psych.specialty}</div>
-                  <div className="text-xs text-white/50 mt-1">
+                  <div className="text-heading text-h5 text-white">{psych.name}</div>
+                  <div className="text-body text-body-sm text-white/60">{psych.specialty}</div>
+                  <div className="text-caption text-white/50 mt-1">
                     {psych.sessionCount} sessions • Last: {formatDate(psych.lastSession)}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-psy-green text-sm">⭐ {psych.rating}</div>
-                  <div className="text-xs text-white/50">
+                  <div className="text-mono text-body-sm text-psy-green">⭐ {psych.rating}</div>
+                  <div className="text-caption text-white/50">
                     {psych.isVerified ? 'Verified' : 'Pending'}
                   </div>
                 </div>
@@ -319,7 +325,7 @@ export default function Profile() {
 
       {/* Payments & Earnings */}
       <SpotlightCard className="p-6" spotlightColor="rgba(74, 222, 128, 0.2)">
-        <h2 className="text-xl font-bold text-white mb-4">Payment History</h2>
+        <h2 className="text-heading-major text-h2 text-white mb-4">Payment History</h2>
         
         <div className="space-y-3">
           {mockPayments.slice(0, 5).map((payment) => (
@@ -328,15 +334,15 @@ export default function Profile() {
                 <div className="flex items-center space-x-3">
                   <div className="text-2xl">{getPaymentTypeIcon(payment.type)}</div>
                   <div>
-                    <div className="text-white font-semibold">{payment.description}</div>
-                    <div className="text-sm text-white/60">{formatDate(payment.date)}</div>
+                    <div className="text-heading text-h5 text-white">{payment.description}</div>
+                    <div className="text-body text-body-sm text-white/60">{formatDate(payment.date)}</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`font-semibold ${getPaymentTypeColor(payment.type)}`}>
+                  <div className={`text-mono text-body-md ${getPaymentTypeColor(payment.type)}`}>
                     {formatCurrency(payment.amount, payment.currency)}
                   </div>
-                  <div className="text-xs text-white/50 capitalize">
+                  <div className="text-caption text-white/50 capitalize">
                     {payment.type.replace('_', ' ')}
                   </div>
                 </div>
@@ -348,22 +354,22 @@ export default function Profile() {
 
       {/* Yield Information */}
       <SpotlightCard className="p-6" spotlightColor="rgba(97, 220, 163, 0.2)">
-        <h2 className="text-xl font-bold text-white mb-4">Yield Positions</h2>
+        <h2 className="text-heading-major text-h2 text-white mb-4">Yield Positions</h2>
         
         <div className="space-y-3">
           {mockYieldPositions.map((position) => (
             <div key={position.id} className="p-4 bg-black/20 rounded-lg">
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="text-white font-semibold">{position.protocol} - {position.pool}</div>
-                  <div className="text-sm text-white/60">
+                  <div className="text-heading text-h5 text-white">{position.protocol} - {position.pool}</div>
+                  <div className="text-body text-body-sm text-white/60">
                     {formatCurrency(position.amount, position.currency)}
                     {position.autoCompound && <span className="ml-2 text-psy-green">🔄 Auto-compound</span>}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-psy-green font-semibold">{position.apy}% APY</div>
-                  <div className="text-xs text-white/50">
+                  <div className="text-mono text-body-md text-psy-green">{position.apy}% APY</div>
+                  <div className="text-caption text-white/50">
                     {position.isActive ? 'Active' : 'Inactive'}
                   </div>
                 </div>

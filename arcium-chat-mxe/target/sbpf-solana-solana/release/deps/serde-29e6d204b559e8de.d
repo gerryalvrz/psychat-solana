@@ -1,0 +1,14 @@
+/Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/deps/libserde-29e6d204b559e8de.rmeta: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/build/serde-0c0f722c4849695f/out/private.rs
+
+/Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/deps/libserde-29e6d204b559e8de.rlib: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/build/serde-0c0f722c4849695f/out/private.rs
+
+/Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/deps/serde-29e6d204b559e8de.d: /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/build/serde-0c0f722c4849695f/out/private.rs
+
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs:
+/Users/main/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs:
+/Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/build/serde-0c0f722c4849695f/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/main/PsyChat/arcium-chat-mxe/target/sbpf-solana-solana/release/build/serde-0c0f722c4849695f/out

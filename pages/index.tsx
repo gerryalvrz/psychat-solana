@@ -1,5 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Chat from '../components/Chat';
 import Dashboard from '../components/Dashboard';
@@ -14,7 +14,7 @@ import FaultyTerminal from '../components/FaultyTerminal';
 // import TerminalLoader from '../components/TerminalLoader';
 import { HoloPanel, HoloButton, HoloText, HoloDivider } from '../components/ui/holo';
 import { ComplexMolecule, WaterMolecule } from '../components/ui';
-import GridDistortion from '../components/GridDistortion';
+import PageGridDistortion from '../components/PageGridDistortion';
 import BackgroundLayer from '../components/BackgroundLayer';
 import { 
   HiHome, 
@@ -42,6 +42,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'home' | 'chat' | 'videochat' | 'marketplace' | 'dashboard' | 'profile'>('home');
   const [mounted, setMounted] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
+  const [isDockVisible, setIsDockVisible] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -59,6 +60,15 @@ export default function Home() {
   const handleLoaderComplete = () => {
     setShowLoader(false);
   };
+
+  // Memoize the background grid distortion based on active tab
+  const backgroundGrid = useMemo(() => (
+    <PageGridDistortion
+      className="w-full h-full"
+      isActive={true}
+      onError={() => console.error('Homepage GridDistortion Error')}
+    />
+  ), [activeTab]); // Re-render when activeTab changes
 
   if (!mounted || showLoader) {
     return (
@@ -188,7 +198,7 @@ export default function Home() {
             {/* Loading Animation */}
             <div className="mb-6">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-yellow-500">Loading PsyChat modules...</span>
+                <span className="text-yellow-500">Loading The Digital Renaissance...</span>
                 <div className="flex space-x-1">
                   <div className="w-1 h-1 bg-yellow-500 animate-bounce"></div>
                   <div className="w-1 h-1 bg-yellow-500 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
@@ -219,52 +229,108 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden cursor-crosshair" style={{ backgroundColor: '#0B101A' }}>
-      {/* GridDistortion Background - Single source of truth */}
-      <BackgroundLayer layer="deep">
-        <GridDistortion
-          imageSrc=""
-          grid={12}
-          mouse={0.15}
-          strength={0.08}
-          relaxation={0.95}
-          className="w-full h-full"
-        />
-      </BackgroundLayer>
-      
-      <div className="relative" style={{ zIndex: 10 }}>
-        {/* Header */}
-        <header className="p-4 border-b border-white/20 relative z-50">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <button 
-            onClick={() => setShowLoader(true)}
-            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-          >
-            <h1 className="text-2xl font-bold font-futuristic tracking-wider text-white">
-              PsyChat
-            </h1>
-            <span className="text-sm text-white/70">by MotusDAO</span>
-          </button>
-          <ClientWalletButton />
+    <>
+      {/* Dock Navigation - Outside overflow container */}
+      {isDockVisible && (
+        <div className="fixed inset-y-0 left-0 z-50">
+          <Dock 
+            items={[
+              { icon: <HiHome className="text-cyan-400" size={24} />, label: 'Home', onClick: () => setActiveTab('home') },
+              { icon: <HiChat className="text-fuchsia-400" size={24} />, label: 'Chat', onClick: () => setActiveTab('chat') },
+              { icon: <HiVideoCamera className="text-emerald-400" size={24} />, label: 'Video', onClick: () => setActiveTab('videochat') },
+              { icon: <HiShoppingBag className="text-purple-400" size={24} />, label: 'Marketplace', onClick: () => setActiveTab('marketplace') },
+              { icon: <HiChartBar className="text-blue-400" size={24} />, label: 'Dashboard', onClick: () => setActiveTab('dashboard') },
+              { icon: <HiUser className="text-orange-400" size={24} />, label: 'Profile', onClick: () => setActiveTab('profile') },
+            ]}
+            panelHeight={68}
+            baseItemSize={50}
+            magnification={70}
+          />
         </div>
-      </header>
+      )}
 
-      {/* Dock Navigation */}
-      <div className="fixed inset-y-0 left-0 z-50">
-        <Dock 
-          items={[
-            { icon: <HiHome className="text-green-400" size={24} />, label: 'Home', onClick: () => setActiveTab('home') },
-            { icon: <HiChat className="text-green-400" size={24} />, label: 'Chat', onClick: () => setActiveTab('chat') },
-            { icon: <HiVideoCamera className="text-green-400" size={24} />, label: 'Video', onClick: () => setActiveTab('videochat') },
-            { icon: <HiShoppingBag className="text-green-400" size={24} />, label: 'Marketplace', onClick: () => setActiveTab('marketplace') },
-            { icon: <HiChartBar className="text-green-400" size={24} />, label: 'Dashboard', onClick: () => setActiveTab('dashboard') },
-            { icon: <HiUser className="text-green-400" size={24} />, label: 'Profile', onClick: () => setActiveTab('profile') },
-          ]}
-          panelHeight={68}
-          baseItemSize={50}
-          magnification={70}
-        />
-      </div>
+      <div className="min-h-screen relative overflow-hidden cursor-crosshair" style={{ backgroundColor: '#0B101A' }}>
+        {/* GridDistortion Background - Full homepage background */}
+        <div className="fixed inset-0 z-0">
+          {backgroundGrid}
+        </div>
+        
+        <div className="relative" style={{ zIndex: 10 }}>
+          {/* Header */}
+          <header className="p-4 relative z-50">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  {/* Hamburger Menu - Outside and left of holo container */}
+                  <button
+                    onClick={() => setIsDockVisible(!isDockVisible)}
+                    className="flex items-center justify-center w-10 h-10 rounded-lg bg-black/40 border border-cyan-400 hover:bg-black/60 transition-colors shadow-[0_0_10px_rgba(0,255,255,0.3)] hover:shadow-[0_0_15px_rgba(0,255,255,0.5)]"
+                    title={isDockVisible ? "Hide Navigation" : "Show Navigation"}
+                  >
+                    <div className="w-4 h-4 flex flex-col justify-center space-y-1">
+                      <div className={`w-full h-0.5 bg-cyan-400 transition-all duration-300 ${isDockVisible ? 'rotate-45 translate-y-1' : ''}`} />
+                      <div className={`w-full h-0.5 bg-cyan-400 transition-all duration-300 ${isDockVisible ? 'opacity-0' : ''}`} />
+                      <div className={`w-full h-0.5 bg-cyan-400 transition-all duration-300 ${isDockVisible ? '-rotate-45 -translate-y-1' : ''}`} />
+                    </div>
+                  </button>
+
+                  {/* Compact Holo Container */}
+                  <div className="relative overflow-hidden rounded-lg crystal-glass crystal-glass-hover refraction-overlay transition-all duration-300 border-cyan-400/20 shadow-[0_0_20px_rgba(0,255,255,0.1)] crystal-panel crystal-layer-2">
+                    {/* Geometric overlay */}
+                    <div className="geometric-overlay" />
+
+                    {/* Crystal corner accents */}
+                    <div className="crystal-corner-tl" />
+                    <div className="crystal-corner-tr" />
+                    <div className="crystal-corner-bl" />
+                    <div className="crystal-corner-br" />
+
+                    {/* Sharp geometric lines */}
+                    <div className="absolute top-0 left-1/4 right-1/4 h-0.5 crystal-line" />
+                    <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 crystal-line-magenta" />
+                    <div className="absolute left-0 top-1/4 bottom-1/4 w-0.5 crystal-line-purple" />
+                    <div className="absolute right-0 top-1/4 bottom-1/4 w-0.5 crystal-line" />
+
+                    {/* Content */}
+                    <div className="relative z-10 px-3 py-2">
+                      <button 
+                        onClick={() => setShowLoader(true)}
+                        className="flex items-center space-x-2 hover:opacity-80 transition-opacity group"
+                      >
+                        <h1 
+                          className="text-lg font-bold tracking-wider psychat-neon relative"
+                          style={{ 
+                            fontFamily: 'Orbitron, monospace'
+                          }}
+                        >
+                          <span className="relative z-10">PsyChat</span>
+                          {/* Neon glow effect */}
+                          <span 
+                            className="absolute inset-0 text-lg font-bold tracking-wider opacity-40 blur-sm group-hover:opacity-60 transition-opacity duration-300"
+                            style={{ 
+                              fontFamily: 'Orbitron, monospace',
+                              color: 'rgba(0, 255, 255, 0.5)'
+                            }}
+                          >
+                            PsyChat
+                          </span>
+                        </h1>
+                        <span className="text-xs text-white/70 group-hover:text-cyan-300 transition-colors duration-300">by MotusDAO</span>
+                      </button>
+                    </div>
+
+                    {/* Crystal scan line effect */}
+                    <div className="absolute inset-0 crystal-grid animate-[holographic-scan_6s_linear_infinite]" />
+                  </div>
+                </div>
+                
+                {/* Wallet Button - Far right with padding */}
+                <div className="pr-4">
+                  <ClientWalletButton />
+                </div>
+              </div>
+            </div>
+          </header>
 
       {/* Main Content */}
       <main className="p-4 pl-24 pb-24">
@@ -284,7 +350,7 @@ export default function Home() {
                   {/* Prompt */}
                   <div className="flex items-center mb-4">
                     <span className="text-green-400 mr-2">$</span>
-                    <span className="text-gray-400">psychat --welcome --connect</span>
+                    <span className="text-gray-400">psychat --welcome --connect you wallet to explore the dApp.</span>
                     <div className="w-2 h-4 bg-green-400 ml-1 animate-pulse" />
                   </div>
                   {/* Content */}
@@ -383,7 +449,7 @@ export default function Home() {
                   <JoinCTASection />
                 </main>
               )}
-              {activeTab === 'chat' && <Chat />}
+              {activeTab === 'chat' && <Chat onNavigateToVideo={() => setActiveTab('videochat')} />}
               {activeTab === 'videochat' && <VideoChat />}
               {activeTab === 'marketplace' && <Marketplace />}
               {activeTab === 'dashboard' && <Dashboard />}
@@ -394,18 +460,42 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="p-4 border-t border-white/20 mt-8 pb-24">
-        <div className="max-w-6xl mx-auto text-center text-white/60 text-sm">
-          <p>
-            Built for Cypherpunk Colosseum • MotusDAO • 
-            <span className="text-green-400"> Phantom</span> • 
-            <span className="text-blue-400"> Arcium</span> • 
-            <span className="text-purple-400"> Raydium</span> • 
-            <span className="text-green-400"> Reflect</span>
-          </p>
+      <footer className="p-4 mt-8 pb-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative overflow-hidden rounded-2xl crystal-glass crystal-glass-hover refraction-overlay transition-all duration-300 border-cyan-400/20 shadow-[0_0_20px_rgba(0,255,255,0.1)] crystal-panel crystal-layer-2">
+            {/* Geometric overlay */}
+            <div className="geometric-overlay" />
+
+            {/* Crystal corner accents */}
+            <div className="crystal-corner-tl" />
+            <div className="crystal-corner-tr" />
+            <div className="crystal-corner-bl" />
+            <div className="crystal-corner-br" />
+
+            {/* Sharp geometric lines */}
+            <div className="absolute top-0 left-1/4 right-1/4 h-0.5 crystal-line" />
+            <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 crystal-line-magenta" />
+            <div className="absolute left-0 top-1/4 bottom-1/4 w-0.5 crystal-line-purple" />
+            <div className="absolute right-0 top-1/4 bottom-1/4 w-0.5 crystal-line" />
+
+            {/* Content */}
+            <div className="relative z-10 p-6 text-center text-white/80 text-sm">
+              <p>
+                Built for Cypherpunk Colosseum • MotusDAO • 
+                <span className="text-green-400"> Phantom</span> • 
+                <span className="text-blue-400"> Arcium</span> • 
+                <span className="text-purple-400"> Raydium</span> • 
+                <span className="text-green-400"> Reflect</span>
+              </p>
+            </div>
+
+            {/* Crystal scan line effect */}
+            <div className="absolute inset-0 crystal-grid animate-[holographic-scan_6s_linear_infinite]" />
+          </div>
         </div>
       </footer>
       </div>
     </div>
+    </>
   );
 }

@@ -29,11 +29,20 @@ export interface ChatNFTResult {
 // Transaction tracking to prevent duplicates (simplified - only for same transaction)
 const pendingTransactions = new Map<string, Promise<ChatNFTResult>>();
 
+export interface EncryptedConversation {
+  encryptedData: string;
+  decryptionKey: string;
+  timestamp: number;
+  mxeAddress: string;
+}
+
 export interface ChatSessionData {
   sessionId: string;
   startTime: Date;
   endTime: Date;
   messageCount: number;
+  encryptedConversation?: EncryptedConversation;
+  walrusCid?: string;
 }
 
 /**
@@ -103,12 +112,14 @@ async function performMinting(
   const metaplex = Metaplex.make(connection)
     .use(walletAdapterIdentity(wallet));
 
-  // Step 1: Create minimal metadata URI
-  console.log('Creating minimal metadata...');
+  // Step 1: Create metadata URI with encrypted conversation
+  console.log('Creating metadata with encrypted conversation...');
   const metadataUri = createMetadataUri(
     sessionData.sessionId,
     sessionData.startTime,
-    sessionData.endTime
+    sessionData.endTime,
+    sessionData.encryptedConversation,
+    sessionData.walrusCid
   );
 
   // Validate URI length

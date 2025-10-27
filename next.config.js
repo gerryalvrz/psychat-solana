@@ -13,6 +13,11 @@ const nextConfig = {
     };
     return config;
   },
+  // Include GLB files as assets
+  assetPrefix: '',
+  experimental: {
+    esmExternals: 'loose'
+  }
 }
 
 module.exports = nextConfig
