@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import { PublicKey } from '@solana/web3.js';
-import SpotlightCard from '../components/SpotlightCard';
+import SpotlightCard from './SpotlightCard';
 import { 
   mockPsychologists, 
   mockPayments, 
@@ -81,7 +81,7 @@ export default function Profile() {
 
         // Calculate totals
         const totalEarnings = mockPayments.reduce((sum, payment) => {
-          if (payment.currency === 'SOL') {
+          if (payment.currency === 'PSY') {
             return sum + payment.amount * 100; // Convert to cents for display
           }
           return sum + payment.amount;
@@ -173,7 +173,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-black/10 backdrop-blur-sm rounded-lg p-6">
         {/* Profile Header */}
         <SpotlightCard className="p-6" spotlightColor="rgba(97, 220, 163, 0.2)">
         <div className="flex items-center space-x-4 mb-4">
@@ -272,7 +272,7 @@ export default function Profile() {
                     <div className="text-body text-body-sm text-white/60">{formatDate(nft.date)}</div>
                     {nft.isListed && (
                       <div className="text-caption bg-psy-green/20 text-psy-green px-2 py-1 rounded mt-1">
-                        Listed • {formatCurrency(nft.price, 'SOL')}
+                        Listed • {formatCurrency(nft.price, 'PSY')}
                       </div>
                     )}
                   </div>

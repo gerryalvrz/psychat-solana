@@ -12,7 +12,7 @@ export interface MockPayment {
   id: string;
   date: string;
   amount: number;
-  currency: 'SOL' | 'rUSD';
+  currency: 'PSY' | 'rUSD';
   type: 'data_sale' | 'yield_farming' | 'ubi_claim';
   description: string;
   transactionHash: string;
@@ -65,7 +65,7 @@ export const mockPayments: MockPayment[] = [
     id: 'pay_1',
     date: '2024-01-18',
     amount: 2.5,
-    currency: 'SOL',
+    currency: 'PSY',
     type: 'data_sale',
     description: 'Therapy session dataset sale',
     transactionHash: '5KJp7Kqj8Lp9Mq0Nr1Os2Pt3Qu4Rv5Sw6Tx7Uy8Vz9Wx0Yy1Zz2Aa3Bb4Cc5Dd6Ee7Ff8Gg9Hh0Ii1Jj2Kk3Ll4Mm5Nn6Oo7Pp8Qq9Rr0Ss1Tt2Uu3Vv4Ww5Xx6Yy7Zz8',
@@ -85,9 +85,9 @@ export const mockPayments: MockPayment[] = [
     id: 'pay_3',
     date: '2024-01-12',
     amount: 1.8,
-    currency: 'SOL',
+    currency: 'PSY',
     type: 'yield_farming',
-    description: 'Raydium SOL-USDC pool rewards',
+    description: 'Raydium PSY-rUSD pool rewards',
     transactionHash: '7Zz8Aa9Bb0Cc1Dd2Ee3Ff4Gg5Hh6Ii7Jj8Kk9Ll0Mm1Nn2Oo3Pp4Qq5Rr6Ss7Tt8Uu9Vv0Ww1Xx2Yy3Zz4Aa5Bb6Cc7Dd8Ee9Ff0Gg1Hh2Ii3Jj4Kk5Ll6Mm7Nn8Oo9Pp0Qq1Rr2Ss3Tt4Uu5Vv6Ww7Xx8Yy9Zz0',
     status: 'completed',
   },
@@ -105,7 +105,7 @@ export const mockPayments: MockPayment[] = [
     id: 'pay_5',
     date: '2024-01-08',
     amount: 0.8,
-    currency: 'SOL',
+    currency: 'PSY',
     type: 'data_sale',
     description: 'Mental health insights dataset',
     transactionHash: '1Dd2Ee3Ff4Gg5Hh6Ii7Jj8Kk9Ll0Mm1Nn2Oo3Pp4Qq5Rr6Ss7Tt8Uu9Vv0Ww1Xx2Yy3Zz4Aa5Bb6Cc7Dd8Ee9Ff0Gg1Hh2Ii3Jj4Kk5Ll6Mm7Nn8Oo9Pp0Qq1Rr2Ss3Tt4Uu5Vv6Ww7Xx8Yy9Zz0Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0Kk1Ll2Mm3Nn4Oo5Pp6Qq7Rr8Ss9Tt0Uu1Vv2Ww3Xx4Yy5Zz6Aa7Bb8Cc9Dd0Ee1Ff2Gg3Hh4Ii5Jj6Kk7Ll8Mm9Nn0Oo1Pp2Qq3Rr4Ss5Tt6Uu7Vv8Ww9Xx0Yy1Zz2',
@@ -120,7 +120,7 @@ export const mockYieldPositions: MockYieldPosition[] = [
     pool: 'PSY-rUSD',
     amount: 5.2,
     apy: 15.2,
-    currency: 'SOL',
+    currency: 'PSY',
     isActive: true,
     autoCompound: true,
   },

@@ -26,6 +26,20 @@ interface DataListing {
   ethicsApproved: boolean;
 }
 
+interface UserChatNFT {
+  id: string;
+  sessionId: string;
+  category: 'anxiety' | 'depression' | 'stress' | 'relationships' | 'general';
+  messageCount: number;
+  date: string;
+  walrusCid: string;
+  mintAddress: string;
+  isListed: boolean;
+  price?: number;
+  eligiblePools: string[];
+  zkProof?: string;
+}
+
 interface Bid {
   id: string;
   amount: number;
@@ -44,6 +58,15 @@ export default function Marketplace() {
   const [nftMetadata, setNftMetadata] = useState<Map<string, any>>(new Map());
   const [showTrading, setShowTrading] = useState(false);
   const [showBuyerDirectory, setShowBuyerDirectory] = useState(false);
+  const [userChatNFTs, setUserChatNFTs] = useState<UserChatNFT[]>([]);
+  const [showMyData, setShowMyData] = useState(false);
+  const [selectedNFT, setSelectedNFT] = useState<UserChatNFT | null>(null);
+  const [isListing, setIsListing] = useState(false);
+  const [showAIScanning, setShowAIScanning] = useState(false);
+  const [scanningProgress, setScanningProgress] = useState(0);
+  const [scanningComplete, setScanningComplete] = useState(false);
+  const [showScannedResults, setShowScannedResults] = useState(false);
+  const [currentPoolCategory, setCurrentPoolCategory] = useState<string>('');
 
   // Fetch NFT metadata from Metaplex
   const fetchNFTMetadata = async (mintAddress: string) => {
@@ -64,6 +87,68 @@ export default function Marketplace() {
     } catch (error) {
       console.error('Error fetching NFT metadata:', error);
     }
+  };
+
+  // Generate mock user ChatNFTs with eligibility checking
+  const generateMockUserChatNFTs = (): UserChatNFT[] => {
+    const categories = ['anxiety', 'depression', 'stress', 'relationships', 'general'];
+    const nfts: UserChatNFT[] = [];
+    
+    for (let i = 0; i < 8; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+      const category = categories[Math.floor(Math.random() * categories.length)];
+      
+      // Simulate AI/ZKP eligibility checking
+      const eligiblePools = getEligiblePools(category, Math.floor(Math.random() * 20) + 5);
+      
+      nfts.push({
+        id: `chatnft_${i + 1}`,
+        sessionId: `session_${Date.now()}_${i}`,
+        category: category as any,
+        messageCount: Math.floor(Math.random() * 20) + 5,
+        date: date.toISOString().split('T')[0],
+        walrusCid: `walrus_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        mintAddress: `mint_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        isListed: Math.random() > 0.6,
+        price: Math.random() > 0.6 ? Math.random() * 5 + 0.5 : undefined,
+        eligiblePools,
+        zkProof: `zk_proof_${Math.random().toString(36).substr(2, 16)}`
+      });
+    }
+    
+    return nfts;
+  };
+
+  // Simulate AI/ZKP eligibility checking for data pools
+  const getEligiblePools = (category: string, messageCount: number): string[] => {
+    const pools = [];
+    
+    // All categories are eligible for general research
+    pools.push('General Research Pool');
+    
+    // Category-specific pools
+    if (category === 'anxiety') {
+      pools.push('Anxiety Patterns Pool', 'Remote Work Stress Pool');
+    } else if (category === 'depression') {
+      pools.push('Depression Recovery Pool', 'Mental Health Research Pool');
+    } else if (category === 'stress') {
+      pools.push('Workplace Stress Pool', 'Productivity Analytics Pool');
+    } else if (category === 'relationships') {
+      pools.push('Communication Patterns Pool', 'Couples Therapy Pool');
+    }
+    
+    // High message count gets access to premium pools
+    if (messageCount >= 15) {
+      pools.push('Premium Insights Pool', 'Deep Analysis Pool');
+    }
+    
+    // ZK proof verification (simulated)
+    if (Math.random() > 0.1) { // 90% pass rate
+      pools.push('ZK Verified Pool');
+    }
+    
+    return pools;
   };
 
   // Mock data for demo with buyer transparency
@@ -207,6 +292,9 @@ export default function Marketplace() {
       },
     ];
     setListings(mockListings);
+    
+    // Initialize user ChatNFTs
+    setUserChatNFTs(generateMockUserChatNFTs());
   }, []);
 
   const filteredListings = listings.filter(listing => 
@@ -241,7 +329,7 @@ export default function Marketplace() {
     if (!publicKey) return;
     const pid = process.env.NEXT_PUBLIC_PSYCHAT_PROGRAM_ID;
     if (!pid) {
-      alert('Program not configured');
+      console.error('Program not configured');
       return;
     }
     try {
@@ -252,11 +340,126 @@ export default function Marketplace() {
         .accounts({ user: publicKey })
         .rpc();
       console.log('Claim $PSY sig:', sig);
-      alert('Claimed $PSY! Verify on Solscan.');
     } catch (e: any) {
       console.error('Claim failed', e);
-      alert('Claim failed: ' + (e?.message || String(e)));
     }
+  };
+
+  const handleListNFT = async (nftId: string) => {
+    if (!publicKey) return;
+
+    setIsListing(true);
+    try {
+      // Find the NFT to get its calculated price
+      const nft = userChatNFTs.find(n => n.id === nftId);
+      if (!nft) return;
+      
+      const calculatedPrice = calculateAutomaticPrice(nft);
+      
+      // Simulate AI/ZKP verification and listing process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Update NFT with listing information
+      setUserChatNFTs(prev => prev.map(nft => 
+        nft.id === nftId 
+          ? { 
+              ...nft, 
+              isListed: true, 
+              price: calculatedPrice,
+              zkProof: `zk_proof_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`
+            }
+          : nft
+      ));
+
+      setSelectedNFT(null);
+      console.log('ChatNFT listed successfully with ZK verification');
+    } catch (error) {
+      console.error('Listing failed:', error);
+    } finally {
+      setIsListing(false);
+    }
+  };
+
+  const handleUnlistNFT = async (nftId: string) => {
+    try {
+      // Update NFT to remove listing
+      setUserChatNFTs(prev => prev.map(nft => 
+        nft.id === nftId 
+          ? { ...nft, isListed: false, price: undefined }
+          : nft
+      ));
+      
+      console.log('ChatNFT unlisted successfully');
+    } catch (error) {
+      console.error('Unlisting failed:', error);
+    }
+  };
+
+  // Filter ChatNFTs by pool category
+  const getEligibleChatNFTsForPool = (poolCategory: string) => {
+    return userChatNFTs.filter(nft => 
+      nft.category === poolCategory || 
+      nft.eligiblePools.some(pool => 
+        pool.toLowerCase().includes(poolCategory.toLowerCase()) ||
+        poolCategory.toLowerCase().includes(nft.category.toLowerCase())
+      )
+    );
+  };
+
+  // Calculate automatic price based on data quality
+  const calculateAutomaticPrice = (nft: UserChatNFT) => {
+    let basePrice = 0.5; // Base price in PSY tokens
+    
+    // Category multipliers
+    const categoryMultipliers = {
+      'anxiety': 1.2,
+      'depression': 1.3,
+      'stress': 1.1,
+      'relationships': 1.4,
+      'general': 1.0
+    };
+    
+    // Message count bonus (more messages = higher value)
+    const messageBonus = Math.min(nft.messageCount * 0.1, 2.0); // Max 2.0 bonus
+    
+    // Eligible pools bonus (more pools = higher value)
+    const poolBonus = Math.min(nft.eligiblePools.length * 0.2, 1.0); // Max 1.0 bonus
+    
+    // ZK proof bonus
+    const zkBonus = nft.zkProof ? 0.3 : 0;
+    
+    // Calculate final price
+    const categoryMultiplier = categoryMultipliers[nft.category] || 1.0;
+    const finalPrice = (basePrice + messageBonus + poolBonus + zkBonus) * categoryMultiplier;
+    
+    return Math.round(finalPrice * 10) / 10; // Round to 1 decimal place
+  };
+
+  const handleCheckDataEligibility = async (poolCategory: string) => {
+    setCurrentPoolCategory(poolCategory);
+    setShowAIScanning(true);
+    setScanningProgress(0);
+    setScanningComplete(false);
+    
+    // Simulate AI scanning progress
+    const progressInterval = setInterval(() => {
+      setScanningProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          setScanningComplete(true);
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 200);
+
+    // Auto-close after completion and show results
+    setTimeout(() => {
+      setShowAIScanning(false);
+      setShowScannedResults(true);
+      setScanningProgress(0);
+      // Keep scanningComplete true so the button stays active
+    }, 4000);
   };
 
 
@@ -455,8 +658,14 @@ export default function Marketplace() {
 
       {/* Listing Detail Modal */}
       {selectedListing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="psychat-card p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedListing(null)}
+        >
+          <div 
+            className="psychat-card p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-display text-h2 text-white">
                 {selectedListing.title}
@@ -508,33 +717,150 @@ export default function Marketplace() {
                 </div>
               </div>
 
-              {/* Purchase Section */}
+              {/* Sell Your Data Section */}
               <div className="space-y-3">
-                <h4 className="text-heading text-h4 text-white">Purchase Aggregated Data</h4>
-                <div className="flex space-x-3">
-                  <input
-                    type="number"
-                    value={bidAmount}
-                    onChange={(e) => setBidAmount(e.target.value)}
-                    placeholder="Purchase amount"
-                    className="flex-1 psychat-input"
-                  />
+                <h4 className="text-heading text-h4 text-white">Sell Your Data to This Pool</h4>
+                <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4 mb-4">
+                  <div className="text-body text-body-sm text-white/80 mb-2">
+                    <strong>Want to contribute to this data pool?</strong> Check if your ChatNFTs are eligible and list them for sale.
+                  </div>
+                  <div className="text-caption text-white/60">
+                    Your data will be aggregated with {selectedListing.bids} other sellers • Earn 95% of the revenue
+                  </div>
+                </div>
+                <div className="flex justify-center">
                   <button
-                    onClick={() => handleBid(selectedListing.id)}
-                    disabled={!bidAmount || isBidding}
-                    className="psychat-button px-6 disabled:opacity-50"
+                    onClick={() => handleCheckDataEligibility(selectedListing.category)}
+                    className="psychat-button bg-psy-green px-8 py-3 text-lg"
                   >
-                    {isBidding ? 'Purchasing...' : 'Purchase'}
+                    Check My Data Eligibility
                   </button>
                 </div>
                 <div className="text-caption text-white/60">
-                  Access aggregated data from {selectedListing.bids} sellers • Payment via $PSY tokens • 95% revenue to data owners
+                  AI analysis with ZKPs will determine if your ChatNFTs match this pool's requirements
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* My Data for Sale Section */}
+      <div className="psychat-card p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-heading text-h3 text-white">My Data for Sale</h3>
+          <button
+            onClick={() => setShowMyData(!showMyData)}
+            className="psychat-button bg-psy-green hover:bg-psy-green/80 transition-colors flex items-center space-x-2"
+          >
+            <span>{showMyData ? '👁️' : '📊'}</span>
+            <span>{showMyData ? 'Hide My Data' : 'Show My Data'}</span>
+          </button>
+        </div>
+        
+        {!showMyData && (
+          <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4">
+            <div className="text-body text-body-sm text-white/80 mb-2">
+              <strong>AI-Powered Eligibility:</strong> Your ChatNFTs are automatically analyzed using AI and ZK proofs to determine which data pools they're eligible for.
+            </div>
+            <div className="text-caption text-white/60">
+              Click "Show My Data" to see your ChatNFTs and their eligible data pools for sale.
+            </div>
+          </div>
+        )}
+        
+        {showMyData && (
+          <div className="space-y-4">
+            <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
+              <div className="text-body text-body-sm text-white/80 mb-2">
+                <strong>How It Works:</strong> Each of your therapy session ChatNFTs is analyzed by AI to determine eligibility for specific data pools. ZK proofs ensure privacy while proving data quality.
+              </div>
+              <div className="text-caption text-white/60">
+                Total ChatNFTs: {userChatNFTs.length} • Listed: {userChatNFTs.filter(nft => nft.isListed).length} • Eligible Pools: {new Set(userChatNFTs.flatMap(nft => nft.eligiblePools)).size}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userChatNFTs.map((nft) => (
+                <div
+                  key={nft.id}
+                  className="bg-black/20 border border-white/10 rounded-lg p-4 hover:bg-black/30 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex space-x-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(nft.category)}`}>
+                        {nft.category}
+                      </span>
+                      {nft.isListed && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-psy-green/20 text-psy-green">
+                          Listed
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-white/60">
+                      {nft.date}
+                    </span>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="text-heading text-h5 text-white mb-1">
+                      Session #{nft.sessionId.split('_')[1]}
+                    </div>
+                    <div className="text-body text-body-sm text-white/60">
+                      {nft.messageCount} messages • {nft.eligiblePools.length} eligible pools
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="text-body text-body-sm text-white/70">
+                      <strong>Eligible Pools:</strong>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {nft.eligiblePools.slice(0, 3).map((pool, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-psy-blue/20 text-psy-blue text-xs rounded"
+                        >
+                          {pool}
+                        </span>
+                      ))}
+                      {nft.eligiblePools.length > 3 && (
+                        <span className="px-2 py-1 bg-white/10 text-white/60 text-xs rounded">
+                          +{nft.eligiblePools.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {nft.isListed ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-body text-body-sm">
+                        <span className="text-white/60">Listed Price:</span>
+                        <span className="text-mono text-psy-green">
+                          {nft.price} PSY
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleUnlistNFT(nft.id)}
+                        className="w-full psychat-button bg-red-500 hover:bg-red-600"
+                      >
+                        Unlist
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setSelectedNFT(nft)}
+                      className="w-full psychat-button"
+                    >
+                      List for Sale
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Data Buyer Directory */}
       <div className="psychat-card p-6">
@@ -620,8 +946,14 @@ export default function Marketplace() {
 
       {/* Data Buyer Directory Modal */}
       {showBuyerDirectory && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="psychat-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowBuyerDirectory(false)}
+        >
+          <div 
+            className="psychat-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-start mb-6">
               <h3 className="text-display text-h2 text-white">Data Buyer Directory</h3>
               <button
@@ -814,6 +1146,477 @@ export default function Marketplace() {
           </div>
         </div>
       )}
+
+      {/* ChatNFT Listing Modal */}
+      {selectedNFT && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedNFT(null)}
+        >
+          <div 
+            className="psychat-card p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-display text-h2 text-white">
+                List ChatNFT for Sale
+              </h3>
+              <button
+                onClick={() => setSelectedNFT(null)}
+                className="text-white/60 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* NFT Details */}
+              <div className="bg-white/5 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <div className="text-heading text-h4 text-white">
+                      Session #{selectedNFT.sessionId.split('_')[1]}
+                    </div>
+                    <div className="text-body text-body-sm text-white/60">
+                      {selectedNFT.category} • {selectedNFT.messageCount} messages • {selectedNFT.date}
+                    </div>
+                  </div>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(selectedNFT.category)}`}>
+                    {selectedNFT.category}
+                  </span>
+                </div>
+                
+                <div className="text-body text-body-sm text-white/70 mb-2">
+                  <strong>Storage:</strong> {selectedNFT.walrusCid.slice(0, 20)}...
+                </div>
+              </div>
+
+              {/* Eligible Pools */}
+              <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
+                <div className="text-body text-body-sm text-white/80 mb-3">
+                  <strong>AI Analysis Results - Eligible Data Pools:</strong>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {selectedNFT.eligiblePools.map((pool, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 p-2 bg-psy-blue/20 rounded"
+                    >
+                      <span className="text-psy-blue">✓</span>
+                      <span className="text-body text-body-sm text-white/80">{pool}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 text-caption text-white/60">
+                  ZK Proof: {selectedNFT.zkProof}
+                </div>
+              </div>
+
+              {/* Automatic Pricing Section */}
+              <div className="space-y-3">
+                <h4 className="text-heading text-h4 text-white">Automatic Price Calculation</h4>
+                <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-heading text-h3 text-psy-green">
+                      {calculateAutomaticPrice(selectedNFT)} PSY
+                    </span>
+                    <span className="text-body text-body-sm text-white/60">Calculated Price</span>
+                  </div>
+                  <div className="text-body text-body-sm text-white/80 mb-3">
+                    AI-determined fair price based on data quality and market demand
+                  </div>
+                </div>
+                
+                {/* Price Breakdown */}
+                <div className="space-y-2">
+                  <div className="text-body text-body-sm text-white/70 mb-2">
+                    <strong>Price Breakdown:</strong>
+                  </div>
+                  <div className="space-y-1 text-caption text-white/60">
+                    <div className="flex justify-between">
+                      <span>Base Price:</span>
+                      <span>0.5 PSY</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Message Count Bonus ({selectedNFT.messageCount} msgs):</span>
+                      <span>+{Math.min(selectedNFT.messageCount * 0.1, 2.0).toFixed(1)} PSY</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Eligible Pools Bonus ({selectedNFT.eligiblePools.length} pools):</span>
+                      <span>+{Math.min(selectedNFT.eligiblePools.length * 0.2, 1.0).toFixed(1)} PSY</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>ZK Proof Bonus:</span>
+                      <span>+{selectedNFT.zkProof ? '0.3' : '0.0'} PSY</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Category Multiplier ({selectedNFT.category}):</span>
+                      <span>x{selectedNFT.category === 'anxiety' ? '1.2' : selectedNFT.category === 'depression' ? '1.3' : selectedNFT.category === 'stress' ? '1.1' : selectedNFT.category === 'relationships' ? '1.4' : '1.0'}</span>
+                    </div>
+                    <div className="border-t border-white/20 pt-1 mt-2">
+                      <div className="flex justify-between font-bold text-psy-green">
+                        <span>Final Price:</span>
+                        <span>{calculateAutomaticPrice(selectedNFT)} PSY</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Analysis Summary */}
+              <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4">
+                <div className="text-body text-body-sm text-white/80 mb-2">
+                  <strong>AI Analysis Summary:</strong>
+                </div>
+                <div className="space-y-1 text-caption text-white/60">
+                  <div>• Data Quality: High ({selectedNFT.messageCount} messages)</div>
+                  <div>• Category Relevance: {selectedNFT.category} insights</div>
+                  <div>• Privacy Compliance: ZK-verified anonymization</div>
+                  <div>• Market Demand: {selectedNFT.eligiblePools.length} active pools</div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => handleListNFT(selectedNFT.id)}
+                  disabled={isListing}
+                  className="flex-1 psychat-button bg-psy-green disabled:opacity-50"
+                >
+                  {isListing ? 'Processing...' : `List for ${calculateAutomaticPrice(selectedNFT)} PSY`}
+                </button>
+                <button
+                  onClick={() => setSelectedNFT(null)}
+                  className="px-6 psychat-button bg-gray-500 hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Scanning Modal */}
+      {showAIScanning && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
+          onClick={() => {
+            // Don't allow closing during scanning
+            if (!scanningComplete) return;
+            setShowAIScanning(false);
+          }}
+        >
+          <div 
+            className="psychat-card p-6 max-w-lg w-full text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6">
+              <h3 className="text-heading text-h3 text-white mb-3">
+                AI Data Analysis
+              </h3>
+              <p className="text-body text-body-sm text-white/70">
+                Scanning your ChatNFTs for data pool eligibility
+              </p>
+            </div>
+
+            {/* Holographic Container */}
+            <div className="relative mb-6">
+              <div className="relative w-64 h-64 mx-auto">
+                {/* Outer glow ring */}
+                <div className="absolute inset-0 rounded-full border-4 border-psy-blue/30 animate-pulse"></div>
+                
+                {/* Rotating inner rings */}
+                <div className="absolute inset-4 rounded-full border-2 border-psy-purple/50 animate-spin" style={{ animationDuration: '3s' }}></div>
+                <div className="absolute inset-8 rounded-full border border-psy-green/40 animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
+                
+                {/* Central holographic display */}
+                <div className="absolute inset-12 rounded-full bg-gradient-to-br from-psy-blue/20 via-psy-purple/20 to-psy-green/20 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4 animate-bounce">🤖</div>
+                    <div className="text-heading text-h4 text-white mb-2">
+                      {scanningComplete ? 'Analysis Complete' : 'AI Scanning...'}
+                    </div>
+                    <div className="text-body text-body-sm text-white/60">
+                      {scanningComplete ? 'Privacy verified with ZKPs' : 'Ensuring privacy with ZKPs'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating data particles */}
+                <div className="absolute inset-0">
+                  {[...Array(12)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-2 h-2 bg-psy-blue rounded-full animate-ping"
+                      style={{
+                        left: `${20 + (i * 7)}%`,
+                        top: `${15 + (i * 6)}%`,
+                        animationDelay: `${i * 0.2}s`,
+                        animationDuration: '2s'
+                      }}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-4">
+              <div className="flex justify-between text-body text-body-sm text-white/60 mb-2">
+                <span>Scanning Progress</span>
+                <span>{Math.round(scanningProgress)}%</span>
+              </div>
+              <div className="w-full bg-black/30 rounded-full h-2 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-psy-blue via-psy-purple to-psy-green transition-all duration-300 ease-out"
+                  style={{ width: `${scanningProgress}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Status Messages */}
+            <div className="space-y-2 text-left">
+              <div className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-500 ${
+                scanningProgress > 20 ? 'bg-psy-blue/10 border border-psy-blue/20' : 'bg-white/5'
+              }`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                  scanningProgress > 20 ? 'bg-psy-blue text-white' : 'bg-white/20 text-white/60'
+                }`}>
+                  {scanningProgress > 20 ? '✓' : '1'}
+                </div>
+                <div>
+                  <div className="text-body text-body-sm text-white">Data Collection</div>
+                  <div className="text-caption text-white/60">Gathering your ChatNFT metadata</div>
+                </div>
+              </div>
+
+              <div className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-500 ${
+                scanningProgress > 50 ? 'bg-psy-purple/10 border border-psy-purple/20' : 'bg-white/5'
+              }`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                  scanningProgress > 50 ? 'bg-psy-purple text-white' : 'bg-white/20 text-white/60'
+                }`}>
+                  {scanningProgress > 50 ? '✓' : '2'}
+                </div>
+                <div>
+                  <div className="text-body text-body-sm text-white">AI Analysis</div>
+                  <div className="text-caption text-white/60">Analyzing content patterns and quality</div>
+                </div>
+              </div>
+
+              <div className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-500 ${
+                scanningProgress > 80 ? 'bg-psy-green/10 border border-psy-green/20' : 'bg-white/5'
+              }`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                  scanningProgress > 80 ? 'bg-psy-green text-white' : 'bg-white/20 text-white/60'
+                }`}>
+                  {scanningProgress > 80 ? '✓' : '3'}
+                </div>
+                <div>
+                  <div className="text-body text-body-sm text-white">ZK Proof Generation</div>
+                  <div className="text-caption text-white/60">Creating privacy-preserving proofs</div>
+                </div>
+              </div>
+
+              <div className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-500 ${
+                scanningComplete ? 'bg-psy-green/10 border border-psy-green/20' : 'bg-white/5'
+              }`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                  scanningComplete ? 'bg-psy-green text-white' : 'bg-white/20 text-white/60'
+                }`}>
+                  {scanningComplete ? '✓' : '4'}
+                </div>
+                <div>
+                  <div className="text-body text-body-sm text-white">Pool Matching</div>
+                  <div className="text-caption text-white/60">Finding eligible data pools</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Completion Message */}
+            {scanningComplete && (
+              <div className="mt-4 p-3 bg-psy-green/10 border border-psy-green/20 rounded-lg">
+                <div className="text-heading text-h5 text-psy-green mb-1">
+                  🎉 Analysis Complete!
+                </div>
+                <div className="text-body text-body-sm text-white/80">
+                  Your data is eligible for sale. You can now list your ChatNFTs in the marketplace.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Scanned Results Modal */}
+      {showScannedResults && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowScannedResults(false)}
+        >
+          <div 
+            className="psychat-card p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-display text-h2 text-white mb-2">
+                  Your {currentPoolCategory} Data
+                </h3>
+                <p className="text-body text-body-md text-white/70">
+                  AI analysis complete - Your {currentPoolCategory} data is ready for sale
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => {
+                    setShowScannedResults(false);
+                    // Navigate to profile tab by triggering a custom event
+                    window.dispatchEvent(new CustomEvent('navigateToProfile'));
+                  }}
+                  className="psychat-button bg-psy-blue hover:bg-psy-blue/80 text-sm px-4 py-2"
+                >
+                  See Listed Data
+                </button>
+                <button
+                  onClick={() => setShowScannedResults(false)}
+                  className="text-white/60 hover:text-white text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Success Banner */}
+            <div className="bg-psy-green/10 border border-psy-green/20 rounded-lg p-4 mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="text-3xl">🎉</div>
+                <div>
+                  <div className="text-heading text-h4 text-psy-green mb-1">
+                    Analysis Complete!
+                  </div>
+                  <div className="text-body text-body-sm text-white/80">
+                    Found {getEligibleChatNFTsForPool(currentPoolCategory).length} eligible ChatNFTs for {currentPoolCategory} pool • ZK proofs verified • Ready for marketplace
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ChatNFTs Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {getEligibleChatNFTsForPool(currentPoolCategory).map((nft) => (
+                <div
+                  key={nft.id}
+                  className="bg-black/20 border border-white/10 rounded-lg p-4 hover:bg-black/30 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex space-x-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(nft.category)}`}>
+                        {nft.category}
+                      </span>
+                      <span className="px-2 py-1 rounded text-xs font-medium bg-psy-green/20 text-psy-green">
+                        Eligible
+                      </span>
+                    </div>
+                    <span className="text-xs text-white/60">
+                      {nft.date}
+                    </span>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="text-heading text-h5 text-white mb-1">
+                      Session #{nft.sessionId.split('_')[1]}
+                    </div>
+                    <div className="text-body text-body-sm text-white/60">
+                      {nft.messageCount} messages • {nft.eligiblePools.length} pools
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="text-body text-body-sm text-white/70">
+                      <strong>Eligible Pools:</strong>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {nft.eligiblePools.slice(0, 2).map((pool, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-psy-blue/20 text-psy-blue text-xs rounded"
+                        >
+                          {pool}
+                        </span>
+                      ))}
+                      {nft.eligiblePools.length > 2 && (
+                        <span className="px-2 py-1 bg-white/10 text-white/60 text-xs rounded">
+                          +{nft.eligiblePools.length - 2} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {nft.isListed ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-body text-body-sm">
+                        <span className="text-white/60">Listed Price:</span>
+                        <span className="text-mono text-psy-green">
+                          {nft.price} PSY
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleUnlistNFT(nft.id)}
+                        className="w-full psychat-button bg-red-500 hover:bg-red-600"
+                      >
+                        Unlist
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedNFT(nft);
+                        setShowScannedResults(false);
+                      }}
+                      className="w-full psychat-button bg-psy-green hover:bg-psy-green/80"
+                    >
+                      Sell This Data
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Summary Stats */}
+            <div className="bg-psy-blue/10 border border-psy-blue/20 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-heading text-h3 text-psy-blue mb-1">
+                    {getEligibleChatNFTsForPool(currentPoolCategory).length}
+                  </div>
+                  <div className="text-body text-body-sm text-white/60">
+                    Eligible for {currentPoolCategory}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-heading text-h3 text-psy-green mb-1">
+                    {getEligibleChatNFTsForPool(currentPoolCategory).filter(nft => nft.isListed).length}
+                  </div>
+                  <div className="text-body text-body-sm text-white/60">
+                    Already Listed
+                  </div>
+                </div>
+                <div>
+                  <div className="text-heading text-h3 text-psy-purple mb-1">
+                    {getEligibleChatNFTsForPool(currentPoolCategory).filter(nft => !nft.isListed).length}
+                  </div>
+                  <div className="text-body text-body-sm text-white/60">
+                    Ready to Sell
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

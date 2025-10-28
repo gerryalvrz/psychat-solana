@@ -488,9 +488,9 @@ const EarningBento: React.FC<EarningBentoProps> = ({
         {/* Information Section Header */}
         <div className="mb-6">
           <div className="flex items-center space-x-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent"></div>
-            <div className="text-sm font-medium text-purple-300/80 px-4">Earnings Overview</div>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent"></div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-psy-purple/30 to-transparent"></div>
+            <div className="text-body text-body-sm text-psy-purple/80 px-4">Earnings Overview</div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-psy-purple/30 to-transparent"></div>
           </div>
         </div>
         
@@ -523,29 +523,27 @@ const EarningBento: React.FC<EarningBentoProps> = ({
                   onClick={card.onClick}
                 >
                   <div className="card__header flex justify-between gap-3 relative text-white">
-                    <HoloText size="sm" weight="semibold" className="card__label text-heading text-h6 neon-solid-cyan">
+                    <div className="card__label text-heading text-h6 text-psy-blue">
                       {card.label}
-                    </HoloText>
-                    <span className="text-2xl neon-solid-magenta">{card.icon}</span>
+                    </div>
+                    <span className="text-2xl text-psy-purple">{card.icon}</span>
                   </div>
                   <div className="card__content flex flex-col relative text-white">
-                    <HoloText size="lg" weight="bold" className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''} neon-solid-cyan`}>
+                    <div className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''} text-white`}>
                       {card.title}
-                    </HoloText>
-                    <div className="earning-value text-mono text-h3 neon-solid-cyan" style={{ textShadow: '0 0 20px rgba(0, 255, 255, 0.8)' }}>
-                      <HoloText size="xl" weight="bold" className="neon-solid-cyan">
-                        {card.value}
-                      </HoloText>
                     </div>
-                    <HoloText size="sm" weight="normal" className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''} neon-solid-purple`}>
+                    <div className="earning-value text-mono text-h3 text-psy-green">
+                      {card.value}
+                    </div>
+                    <div className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''} text-white/70`}>
                       {card.description}
-                    </HoloText>
+                    </div>
                     {card.trend && (
                       <div className={`trend-indicator text-caption ${getTrendColor(card.trend)} mt-2`}>
-                        <span className="neon-solid-cyan">{getTrendIcon(card.trend)}</span>
-                        <HoloText size="xs" weight="normal" className="neon-solid-cyan">
+                        <span>{getTrendIcon(card.trend)}</span>
+                        <span className="text-psy-blue">
                           {card.trendValue}
-                        </HoloText>
+                        </span>
                       </div>
                     )}
                   </div>
@@ -564,29 +562,27 @@ const EarningBento: React.FC<EarningBentoProps> = ({
             return (
               <div key={index} className={baseClassName} style={cardStyle} onClick={card.onClick}>
                 <div className="card__header flex justify-between gap-3 relative text-white">
-                  <HoloText size="sm" weight="semibold" className="card__label text-heading text-h6 neon-solid-cyan">
+                  <div className="card__label text-heading text-h6 text-psy-blue">
                     {card.label}
-                  </HoloText>
-                  <span className="text-2xl neon-solid-magenta">{card.icon}</span>
+                  </div>
+                  <span className="text-2xl text-psy-purple">{card.icon}</span>
                 </div>
                 <div className="card__content flex flex-col relative text-white">
-                  <HoloText size="lg" weight="bold" className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''} neon-solid-cyan`}>
+                  <div className={`card__title text-heading text-h4 m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''} text-white`}>
                     {card.title}
-                  </HoloText>
-                  <div className="earning-value text-mono text-h3 neon-solid-cyan" style={{ textShadow: '0 0 20px rgba(0, 255, 255, 0.8)' }}>
-                    <HoloText size="xl" weight="bold" className="neon-solid-cyan">
-                      {card.value}
-                    </HoloText>
                   </div>
-                  <HoloText size="sm" weight="normal" className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''} neon-solid-purple`}>
+                  <div className="earning-value text-mono text-h3 text-psy-green">
+                    {card.value}
+                  </div>
+                  <div className={`card__description text-body text-body-sm leading-5 opacity-90 ${textAutoHide ? 'text-clamp-2' : ''} text-white/70`}>
                     {card.description}
-                  </HoloText>
+                  </div>
                   {card.trend && (
                     <div className={`trend-indicator text-caption ${getTrendColor(card.trend)} mt-2`}>
-                      <span className="neon-solid-cyan">{getTrendIcon(card.trend)}</span>
-                      <HoloText size="xs" weight="normal" className="neon-solid-cyan">
+                      <span>{getTrendIcon(card.trend)}</span>
+                      <span className="text-psy-blue">
                         {card.trendValue}
-                      </HoloText>
+                      </span>
                     </div>
                   )}
                 </div>
@@ -607,9 +603,9 @@ const EarningBento: React.FC<EarningBentoProps> = ({
         {/* Section Divider */}
         <div className="mt-8 mb-6">
           <div className="flex items-center space-x-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
-            <div className="text-sm font-medium text-cyan-300/80 px-4">Actions</div>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-psy-blue/30 to-transparent"></div>
+            <div className="text-body text-body-sm text-psy-blue/80 px-4">Actions</div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-psy-blue/30 to-transparent"></div>
           </div>
         </div>
         
@@ -623,15 +619,15 @@ const EarningBento: React.FC<EarningBentoProps> = ({
                   🎁
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Available UBI</h3>
-                  <p className="text-sm text-emerald-300/80">Ready to claim</p>
+                  <h3 className="text-heading text-h5 text-white">Available UBI</h3>
+                  <p className="text-body text-body-sm text-psy-green/80">Ready to claim</p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-emerald-300">
+                <div className="text-mono text-h3 text-psy-green">
                   {earnings ? formatCurrency(earnings.ubiAvailable, 'rUSD') : '0.00 rUSD'}
                 </div>
-                <div className="text-xs text-emerald-400/70">Universal Basic Income</div>
+                <div className="text-caption text-psy-green/70">Universal Basic Income</div>
               </div>
             </div>
             <button
@@ -670,8 +666,8 @@ const EarningBento: React.FC<EarningBentoProps> = ({
             
             {/* Status Message */}
             {(claimUbiStatus === 'success' || claimUbiStatus === 'error') && claimUbiMessage && (
-              <div className={`mt-2 text-sm text-center ${
-                claimUbiStatus === 'success' ? 'text-green-300' : 'text-red-300'
+              <div className={`mt-2 text-body text-body-sm text-center ${
+                claimUbiStatus === 'success' ? 'text-psy-green' : 'text-red-300'
               }`}>
                 {claimUbiMessage}
               </div>
@@ -692,26 +688,26 @@ const EarningBento: React.FC<EarningBentoProps> = ({
                   ⚡
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Auto-Compound</h3>
-                  <p className="text-sm text-purple-300/80">Passive growth</p>
+                  <h3 className="text-heading text-h5 text-white">Auto-Compound</h3>
+                  <p className="text-body text-body-sm text-psy-purple/80">Passive growth</p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-purple-300">
+                <div className="text-mono text-h3 text-psy-purple">
                   {earnings ? formatCurrency(earnings.autoCompounded, 'rUSD') : '0.00 rUSD'}
                 </div>
-                <div className="text-xs text-purple-400/70">Compounded earnings</div>
+                <div className="text-caption text-psy-purple/70">Compounded earnings</div>
               </div>
             </div>
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <span className={`text-sm font-medium ${
-                  isAutoCompoundEnabled ? 'text-purple-300' : 'text-gray-400'
+                <span className={`text-body text-body-sm ${
+                  isAutoCompoundEnabled ? 'text-psy-purple' : 'text-white/40'
                 }`}>
                   {isAutoCompoundEnabled ? 'Active' : 'Paused'}
                 </span>
-                <div className="text-xs text-purple-400/70">
+                <div className="text-caption text-psy-purple/70">
                   {isAutoCompoundEnabled ? '5-15% APY' : 'Manual mode'}
                 </div>
               </div>

@@ -211,7 +211,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-black/10 backdrop-blur-sm rounded-lg p-6">
       {/* Primary Metrics - Hero Section with EarningBento */}
       <div className="psychat-card p-6">
         <h2 className="text-display text-h1 text-white mb-6">Earnings Dashboard</h2>
@@ -242,7 +242,7 @@ export default function Dashboard() {
             <span className={`${isAutoCompoundEnabled ? 'text-teal-300' : 'text-gray-400'}`} style={{ 
               textShadow: isAutoCompoundEnabled ? '0 0 15px rgba(20, 184, 166, 0.8)' : 'none' 
             }}>💰</span>
-            <span className={`text-heading text-h4 text-mono tracking-wider ${
+            <span className={`text-heading text-h4 ${
               isAutoCompoundEnabled ? 'text-teal-300' : 'text-gray-400'
             }`} style={{ 
               textShadow: isAutoCompoundEnabled ? '0 0 15px rgba(20, 184, 166, 0.8)' : 'none' 
@@ -250,7 +250,7 @@ export default function Dashboard() {
               UBI Stream {isAutoCompoundEnabled ? 'Active' : 'Paused'}
             </span>
           </div>
-          <p className={`text-body text-body-sm text-mono ${
+          <p className={`text-body text-body-sm ${
             isAutoCompoundEnabled ? 'text-teal-300/90' : 'text-gray-400/70'
           }`}>
             {isAutoCompoundEnabled 
@@ -263,38 +263,38 @@ export default function Dashboard() {
 
       {/* Secondary Metrics - Earnings Breakdown */}
       <div className="psychat-card p-6">
-        <h3 className="text-heading-major text-h2 text-white mb-4">Earnings Breakdown</h3>
+        <h3 className="text-heading text-h2 text-white mb-4">Earnings Breakdown</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Data Sales */}
           <div className="bg-gradient-to-br from-fuchsia-500/15 to-red-500/15 border border-fuchsia-400/40 rounded-lg p-6 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-body text-body-sm text-mono tracking-wider text-fuchsia-300/90">From Data Sales</div>
+              <div className="text-body text-body-sm text-fuchsia-300/90">From Data Sales</div>
               <span className="text-xl">📊</span>
             </div>
             <div className="text-mono text-h2 text-fuchsia-300 mb-1" style={{ textShadow: '0 0 15px rgba(255, 0, 255, 0.8)' }}>
               {formatCurrency(earnings.fromDataSales, 'PSY')}
             </div>
-            <div className="text-caption text-mono text-fuchsia-300/70">Mental health insights monetization</div>
+            <div className="text-caption text-fuchsia-300/70">Mental health insights monetization</div>
           </div>
 
           {/* Yield Farming */}
           <div className="bg-gradient-to-br from-purple-500/15 to-pink-500/15 border border-purple-400/40 rounded-lg p-6 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-body text-body-sm text-mono tracking-wider text-purple-300/90">From Yield Farming</div>
+              <div className="text-body text-body-sm text-purple-300/90">From Yield Farming</div>
               <span className="text-xl">🌾</span>
             </div>
             <div className="text-mono text-h2 text-purple-300 mb-1" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.8)' }}>
               {formatCurrency(earnings.fromYieldFarming, 'rUSD')}
             </div>
-            <div className="text-caption text-mono text-purple-300/70">DeFi protocol yields</div>
+            <div className="text-caption text-purple-300/70">DeFi protocol yields</div>
           </div>
         </div>
       </div>
 
       {/* Tertiary Metrics - Revenue Share */}
       <div className="psychat-card p-6">
-        <h3 className="text-heading-major text-h2 text-white mb-4">Revenue Share Breakdown</h3>
+        <h3 className="text-heading text-h2 text-white mb-4">Revenue Share Breakdown</h3>
         
         <div className="bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-pink-500/15 border border-indigo-400/40 rounded-lg p-6 backdrop-blur-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -302,23 +302,23 @@ export default function Dashboard() {
               <div className="text-mono text-h1 text-emerald-300 mb-2" style={{ textShadow: '0 0 15px rgba(16, 185, 129, 0.8)' }}>
                 {formatCurrency(earnings.revenueShare.userEarnings, 'rUSD')}
               </div>
-              <div className="text-body text-body-sm text-mono tracking-wider text-emerald-300/80">Your Earnings (95%)</div>
+              <div className="text-body text-body-sm text-emerald-300/80">Your Earnings (95%)</div>
             </div>
             <div className="text-center">
               <div className="text-mono text-h1 text-rose-300 mb-2" style={{ textShadow: '0 0 15px rgba(251, 113, 133, 0.8)' }}>
                 {formatCurrency(earnings.revenueShare.platformFee, 'rUSD')}
               </div>
-              <div className="text-body text-body-sm text-mono tracking-wider text-rose-300/80">Platform Fee (5%)</div>
+              <div className="text-body text-body-sm text-rose-300/80">Platform Fee (5%)</div>
             </div>
             <div className="text-center">
               <div className="text-mono text-h1 text-violet-300 mb-2" style={{ textShadow: '0 0 15px rgba(196, 181, 253, 0.8)' }}>
                 {formatCurrency(earnings.revenueShare.totalRevenue, 'rUSD')}
               </div>
-              <div className="text-body text-body-sm text-mono tracking-wider text-violet-300/80">Total Revenue</div>
+              <div className="text-body text-body-sm text-violet-300/80">Total Revenue</div>
             </div>
           </div>
           <div className="mt-6 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 border border-cyan-400/30 rounded-lg p-4">
-            <div className="text-body text-body-sm text-mono text-cyan-300/90">
+            <div className="text-body text-body-sm text-cyan-300/90">
               <strong>Transparent Economics:</strong> You keep 95% of all data sales revenue. 
               The remaining 5% supports platform development, security, and infrastructure.
             </div>
@@ -328,7 +328,7 @@ export default function Dashboard() {
 
       {/* HNFT Statistics */}
       <div className="psychat-card p-6">
-        <h3 className="text-heading-major text-h2 text-white mb-4">Your HNFT Portfolio</h3>
+        <h3 className="text-heading text-h2 text-white mb-4">Your HNFT Portfolio</h3>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
@@ -354,7 +354,7 @@ export default function Dashboard() {
 
       {/* Growth & UBI Chart */}
       <div className="psychat-card p-6">
-        <h3 className="text-heading-major text-h2 text-white mb-4">Growth & UBI Projection</h3>
+        <h3 className="text-heading text-h2 text-white mb-4">Growth & UBI Projection</h3>
         <div className="bg-white/5 rounded-lg p-4">
           <div className="h-64">
             {typeof window !== 'undefined' && chartReady ? (
@@ -412,7 +412,7 @@ export default function Dashboard() {
 
       {/* Yield Farming Options */}
       <div className="psychat-card p-6">
-        <h3 className="text-heading-major text-h2 text-white mb-4">DeFi Yield Options</h3>
+        <h3 className="text-heading text-h2 text-white mb-4">DeFi Yield Options</h3>
         <p className="text-body text-body-md text-white/70 mb-6">
           Auto-compound your earnings into high-yield DeFi protocols via Reflect $rUSD
         </p>
@@ -485,7 +485,7 @@ export default function Dashboard() {
 
       {/* Impact Metrics */}
       <div className="psychat-card p-6">
-        <h3 className="text-heading-major text-h2 text-white mb-4">Impact Metrics</h3>
+        <h3 className="text-heading text-h2 text-white mb-4">Impact Metrics</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
