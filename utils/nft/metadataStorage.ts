@@ -56,31 +56,21 @@ export function createMetadataUri(
   },
   walrusCid?: string
 ): string {
-  // Create ultra-minimal metadata to stay under 200 character limit
-  const metadata: ChatNFTMetadata = {
-    name: `PC#${sessionId.substring(0, 4)}`, // Very short session ID
-    symbol: 'PC',
-    description: 'S', // Single character
-    attributes: [
-      {
-        trait_type: 'encrypted',
-        value: encryptedConversation ? '1' : '0'
-      },
-      {
-        trait_type: 'key',
-        value: encryptedConversation?.decryptionKey?.substring(0, 6) || ''
-      },
-      {
-        trait_type: 'timestamp',
-        value: String(encryptedConversation?.timestamp || 0)
-      }
-    ]
+  // Use the simplest possible metadata to stay under 200 character limit
+  // Just use a simple data URI with minimal JSON
+  const minimalData = {
+    n: `PC#${sessionId.substring(0, 2)}`, // Very short name
+    s: 'PC', // Short symbol
+    e: encryptedConversation ? 1 : 0 // Encrypted flag
   };
   
-  const uri = createDataUri(metadata);
+  const jsonString = JSON.stringify(minimalData);
+  const base64 = btoa(jsonString);
+  const uri = `data:application/json;base64,${base64}`;
   
   // Debug logging
   console.log('Generated ultra-minimal metadata');
+  console.log('JSON string:', jsonString);
   console.log('Metadata URI length:', uri.length);
   console.log('Encrypted data length:', encryptedConversation?.encryptedData?.length || 0);
   
