@@ -212,7 +212,7 @@ const EcosystemImpactSection: React.FC = () => {
           </HoloText>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { value: '$500M', label: 'Total Addressable Market', sublabel: 'Mental health data economy', color: 'text-emerald-400' },
+              { value: '$30B', label: 'Total Addressable Market', sublabel: 'Mental health data economy', color: 'text-emerald-400' },
               { value: '40%', label: 'Therapy Cost Reduction', sublabel: 'Through tokenized subsidies', color: 'text-cyan-400' },
               { value: '1M+', label: 'Scalable Users', sublabel: 'Platform capacity', color: 'text-purple-400' }
             ].map((metric, index) => (
