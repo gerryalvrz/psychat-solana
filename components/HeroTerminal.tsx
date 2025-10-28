@@ -201,7 +201,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
         }}
       />
 
-      <div className="w-full max-w-4xl mx-2 sm:mx-4 relative z-10 px-2 sm:px-0">
+      <div className="w-full max-w-4xl mx-2 sm:mx-4 relative z-10 px-2 sm:px-0 md:px-0">
         {/* Terminal Frame */}
         <div
           className="bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-md overflow-hidden shadow-2xl crt-curvature"
@@ -225,7 +225,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
 
             <div 
               ref={terminalRef}
-              className="relative p-3 sm:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-xs sm:text-sm md:text-base"
+              className="relative p-4 sm:p-6 md:p-6 font-mono text-green-400 bg-black/20 backdrop-blur-sm leading-relaxed text-sm sm:text-base md:text-lg min-h-[300px] sm:min-h-[400px]"
             >
               {/* Command line - Always visible and fixed at top */}
               <div className="text-green-500 mb-4">
@@ -238,7 +238,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                   
                   {/* Checkmarks - appear gradually with DecryptedText */}
                   {showCheckmarks && (
-                    <div className="space-y-2 sm:space-y-3 mt-4">
+                    <div className="space-y-3 sm:space-y-3 mt-4">
                       {showLine1 && (
                         <div>
                           <DecryptedText
@@ -324,7 +324,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
                   
                   {/* Bullet points - appear last with DecryptedText */}
                   {showBullets && (
-                    <div className="space-y-2 sm:space-y-3 mt-4">
+                    <div className="space-y-3 sm:space-y-3 mt-4">
                       {showBullet1 && (
                         <div>
                           <DecryptedText

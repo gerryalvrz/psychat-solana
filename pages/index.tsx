@@ -333,8 +333,16 @@ export default function Home() {
           </header>
 
       {/* Main Content */}
-      <main className="p-4 pl-24 pb-24">
-        <div className="max-w-6xl mx-auto">
+      <main className={`p-4 pb-24 transition-all duration-300 ${
+        isDockVisible 
+          ? 'pl-24 md:pl-24' // Desktop: keep left padding
+          : 'pl-4 md:pl-24'  // Mobile: remove left padding when dock hidden
+      }`}>
+        <div className={`max-w-6xl mx-auto ${
+          !isDockVisible && typeof window !== 'undefined' && window.innerWidth < 768 
+            ? 'px-2' // Full width on mobile when dock hidden
+            : 'px-4' // Normal padding otherwise
+        }`}>
           {!connected ? (
             <div className="max-w-4xl mx-auto">
               <div>
@@ -481,7 +489,7 @@ export default function Home() {
             {/* Content */}
             <div className="relative z-10 p-6 text-center text-white/80 text-sm">
               <p>
-                Built for Cypherpunk Colosseum • MotusDAO • 
+                •Built for Cypherpunk Colosseum • MotusDAO • 
                 <span className="text-green-400"> Phantom</span> • 
                 <span className="text-blue-400"> Arcium</span> • 
                 <span className="text-purple-400"> Raydium</span> • 
