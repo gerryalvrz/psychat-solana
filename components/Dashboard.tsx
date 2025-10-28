@@ -489,7 +489,7 @@ export default function Dashboard() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-mono text-h1 text-psy-green mb-2">$500M</div>
+            <div className="text-mono text-h1 text-psy-green mb-2">$30B</div>
             <div className="text-body text-body-sm text-white/60">Total Addressable Market</div>
             <div className="text-caption text-white/50 mt-1">
               Mental health data economy

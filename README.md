@@ -393,7 +393,7 @@ See `docs/demo_script.md` for the complete demo presentation including:
 - **40% Novelty/Impact:** First mental health data ownership platform on Solana
 - **30% Execution:** 4+ sponsor integrations, working MVP
 - **20% UX:** Mobile-first design, seamless wallet integration
-- **10% Business Plan:** $500M TAM, sustainable UBI model
+- **10% Business Plan:** $30B TAM, sustainable UBI model
 
 ### Sponsor Integration Bonus
 - ✅ **Phantom:** Primary wallet, mobile UX

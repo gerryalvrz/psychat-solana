@@ -67,7 +67,7 @@
 ## Impact (60 seconds)
 
 ### Market Opportunity
-- **$500M TAM** in mental health data economy
+- **$30B TAM** in mental health data economy
 - **1M+ users** scalable platform capacity
 - **40% therapy cost reduction** through tokenized subsidies
 
