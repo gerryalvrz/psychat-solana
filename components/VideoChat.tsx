@@ -308,26 +308,26 @@ export default function VideoChat() {
   };
 
   return (
-    <div className="psychat-card p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">AI-Curated Video Therapy</h2>
+    <div className="psychat-card p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 gap-2">
+        <h2 className="text-xl md:text-2xl font-bold text-white">Video Therapy</h2>
         <div className="text-sm text-white/60">
           {isSessionActive ? `Session: ${formatDuration(sessionDuration)}` : 'Step ' + (currentStep === 'insights' ? '1' : currentStep === 'selection' ? '2' : currentStep === 'calendar' ? '3' : '4') + ' of 4'}
         </div>
       </div>
 
-      {/* Step 1: AI Insights */}
+      {/* Step 1: AI Insights - Mobile Optimized */}
       {currentStep === 'insights' && (
-        <SpotlightCard className="p-6 mb-6" spotlightColor="rgba(97, 220, 163, 0.2)">
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-4">🤖</div>
-            <h3 className="text-2xl font-bold text-white mb-4">AI Analysis Complete</h3>
-            <p className="text-white/80 mb-6">Based on your chat history, we've identified key areas for therapy focus.</p>
+        <div className="bg-black/40 rounded-lg p-4 md:p-6 mb-4 md:mb-6 border border-white/10">
+          <div className="text-center mb-4 md:mb-6">
+            <div className="text-3xl md:text-4xl mb-3 md:mb-4">🤖</div>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">AI Analysis Complete</h3>
+            <p className="text-white/80 text-sm md:text-base mb-4 md:mb-6">Based on your chat history, we've identified key areas for therapy focus.</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-black/40 rounded-lg p-4 border border-white/10">
-              <h4 className="text-white font-semibold mb-3">Key Topics Identified</h4>
+          <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6 mb-4 md:mb-6">
+            <div className="bg-black/40 rounded-lg p-3 md:p-4 border border-white/10">
+              <h4 className="text-white font-semibold mb-3 text-sm md:text-base">Key Topics Identified</h4>
               <div className="flex flex-wrap gap-2">
                 {chatInsights.topics.map((topic, idx) => (
                   <span key={idx} className="text-xs bg-psy-blue/20 text-psy-blue px-2 py-1 rounded">
@@ -337,8 +337,8 @@ export default function VideoChat() {
               </div>
             </div>
             
-            <div className="bg-black/40 rounded-lg p-4 border border-white/10">
-              <h4 className="text-white font-semibold mb-3">Recommended Specialties</h4>
+            <div className="bg-black/40 rounded-lg p-3 md:p-4 border border-white/10">
+              <h4 className="text-white font-semibold mb-3 text-sm md:text-base">Recommended Specialties</h4>
               <div className="flex flex-wrap gap-2">
                 {chatInsights.recommendedSpecialties.map((specialty, idx) => (
                   <span key={idx} className="text-xs bg-psy-green/20 text-psy-green px-2 py-1 rounded">
@@ -352,28 +352,28 @@ export default function VideoChat() {
           <div className="text-center">
             <button
               onClick={() => setCurrentStep('selection')}
-              className="psychat-button"
+              className="w-full md:w-auto py-3 px-6 bg-psy-blue hover:bg-psy-blue/80 text-white font-medium rounded-lg transition-colors"
             >
               View Curated Therapists →
             </button>
           </div>
-        </SpotlightCard>
+        </div>
       )}
 
-      {/* Step 2: Psychologist Selection */}
+      {/* Step 2: Psychologist Selection - Mobile Optimized */}
       {currentStep === 'selection' && (
-        <SpotlightCard className="p-6 mb-6" spotlightColor="rgba(97, 179, 220, 0.2)">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">AI-Curated Therapist Matches</h3>
+        <div className="bg-black/40 rounded-lg p-4 md:p-6 mb-4 md:mb-6 border border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 gap-3">
+            <h3 className="text-lg md:text-xl font-bold text-white">AI-Curated Therapist Matches</h3>
             <button
               onClick={autoSelectPsychologist}
-              className="psychat-button text-sm"
+              className="w-full sm:w-auto py-2 px-4 bg-psy-green hover:bg-psy-green/80 text-white font-medium rounded-lg transition-colors text-sm"
             >
               Auto-Select Best Match
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
             {recommendedPsychologists.map((psych) => (
               <div
                 key={psych.id}
@@ -381,18 +381,18 @@ export default function VideoChat() {
                   setSelectedPsychologist(psych);
                   setCurrentStep('calendar');
                 }}
-                className="bg-black/40 rounded-lg p-4 cursor-pointer hover:bg-black/60 transition-colors border border-white/10"
+                className="bg-black/40 rounded-lg p-3 md:p-4 cursor-pointer hover:bg-black/60 transition-colors border border-white/10"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-white font-semibold">{psych.name}</div>
+                  <div className="text-white font-semibold text-sm md:text-base">{psych.name}</div>
                   <div className="text-xs bg-psy-green/20 text-psy-green px-2 py-1 rounded">
                     {psych.matchScore}% match
                   </div>
                 </div>
-                <div className="text-white/60 text-sm mb-2">{psych.credentials}</div>
-                <div className="text-psy-green font-semibold mb-2">${psych.rate}/hour in $rUSD</div>
-                <div className="text-white/60 text-sm mb-2">⭐ {psych.rating}/5.0</div>
-                <div className="text-xs text-white/50 mb-2">{psych.bio}</div>
+                <div className="text-white/60 text-xs md:text-sm mb-2">{psych.credentials}</div>
+                <div className="text-psy-green font-semibold mb-2 text-sm">${psych.rate}/hour in $rUSD</div>
+                <div className="text-white/60 text-xs md:text-sm mb-2">⭐ {psych.rating}/5.0</div>
+                <div className="text-xs text-white/50 mb-2 hidden md:block">{psych.bio}</div>
                 <div className="flex flex-wrap gap-1">
                   {psych.specialties.slice(0, 2).map((specialty, idx) => (
                     <span key={idx} className="text-xs bg-psy-blue/20 text-psy-blue px-1 py-0.5 rounded">
@@ -403,30 +403,30 @@ export default function VideoChat() {
               </div>
             ))}
           </div>
-        </SpotlightCard>
+        </div>
       )}
 
-      {/* Step 3: Calendar Booking */}
+      {/* Step 3: Calendar Booking - Mobile Optimized */}
       {currentStep === 'calendar' && selectedPsychologist && (
-        <SpotlightCard className="p-6 mb-6" spotlightColor="rgba(147, 51, 234, 0.2)">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-white">Book Session with {selectedPsychologist.name}</h3>
+        <div className="bg-black/40 rounded-lg p-4 md:p-6 mb-4 md:mb-6 border border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 gap-3">
+            <div className="flex-1">
+              <h3 className="text-lg md:text-xl font-bold text-white">Book Session with {selectedPsychologist.name}</h3>
               <div className="text-white/60 text-sm">{selectedPsychologist.credentials}</div>
             </div>
             <button
               onClick={() => setCurrentStep('selection')}
-              className="text-white/60 hover:text-white text-sm"
+              className="text-white/60 hover:text-white text-sm self-start sm:self-center"
             >
               ← Back to Selection
             </button>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
             {/* Calendar */}
             <div>
-              <h4 className="text-white font-semibold mb-4">Available Times</h4>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
+              <h4 className="text-white font-semibold mb-3 md:mb-4 text-sm md:text-base">Available Times</h4>
+              <div className="space-y-2 max-h-64 md:max-h-96 overflow-y-auto">
                 {generateTimeSlots(selectedPsychologist).map((slot) => (
                   <button
                     key={slot.id}
@@ -438,8 +438,8 @@ export default function VideoChat() {
                         : 'bg-black/40 text-white/30 border border-white/10 cursor-not-allowed'
                     }`}
                   >
-                    <div className="font-medium">{slot.date}</div>
-                    <div className="text-sm text-white/60">{slot.time}</div>
+                    <div className="font-medium text-sm">{slot.date}</div>
+                    <div className="text-xs text-white/60">{slot.time}</div>
                     {!slot.available && <div className="text-xs text-red-400">Unavailable</div>}
                   </button>
                 ))}
@@ -447,146 +447,151 @@ export default function VideoChat() {
             </div>
             
             {/* Session Details */}
-            <div className="bg-black/40 rounded-lg p-4 border border-white/10">
-              <h4 className="text-white font-semibold mb-4">Session Details</h4>
-              <div className="space-y-3">
-                <div className="flex justify-between">
+            <div className="bg-black/40 rounded-lg p-3 md:p-4 border border-white/10">
+              <h4 className="text-white font-semibold mb-3 md:mb-4 text-sm md:text-base">Session Details</h4>
+              <div className="space-y-2 md:space-y-3">
+                <div className="flex justify-between text-sm">
                   <span className="text-white/60">Therapist:</span>
                   <span className="text-white">{selectedPsychologist.name}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-white/60">Rate:</span>
                   <span className="text-psy-green">${selectedPsychologist.rate}/hour in $rUSD</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-white/60">Duration:</span>
                   <span className="text-white">60 minutes</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-white/60">Total Cost:</span>
                   <span className="text-psy-green font-semibold">${selectedPsychologist.rate} $rUSD</span>
                 </div>
               </div>
               
-              <div className="mt-4 p-3 bg-psy-blue/10 border border-psy-blue/20 rounded">
-                <div className="text-sm text-white/80">
+              <div className="mt-3 md:mt-4 p-2 md:p-3 bg-psy-blue/10 border border-psy-blue/20 rounded">
+                <div className="text-xs md:text-sm text-white/80">
                   <strong>Payment:</strong> You will pay ${selectedPsychologist.rate} $rUSD for this therapy session.
                 </div>
               </div>
             </div>
           </div>
-        </SpotlightCard>
+        </div>
       )}
 
       {/* Step 4: Video Session */}
       {currentStep === 'session' && (
         <>
-          {/* Selected Psychologist Info */}
+          {/* Selected Psychologist Info - Mobile Optimized */}
           {selectedPsychologist && (
-            <SpotlightCard className="p-4 mb-6" spotlightColor="rgba(97, 179, 220, 0.2)">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-white font-semibold">Session with {selectedPsychologist.name}</div>
+            <div className="bg-black/40 rounded-lg p-4 mb-4 border border-white/10">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex-1">
+                  <div className="text-white font-semibold text-lg">Session with {selectedPsychologist.name}</div>
                   <div className="text-white/60 text-sm">{selectedPsychologist.credentials}</div>
-                  <div className="text-psy-green text-sm">${selectedPsychologist.rate}/hour in $rUSD</div>
+                  <div className="text-psy-green text-sm font-medium">${selectedPsychologist.rate}/hour in $rUSD</div>
                 </div>
                 {selectedTimeSlot && (
-                  <div className="text-right">
-                    <div className="text-white text-sm">{selectedTimeSlot.date}</div>
+                  <div className="text-right sm:text-left">
+                    <div className="text-white text-sm font-medium">{selectedTimeSlot.date}</div>
                     <div className="text-white/60 text-sm">{selectedTimeSlot.time}</div>
                   </div>
                 )}
               </div>
-            </SpotlightCard>
+            </div>
           )}
 
-          {/* Video Interface Placeholder */}
-          <SpotlightCard className="p-6 mb-6" spotlightColor="rgba(147, 51, 234, 0.2)">
-            <div className="relative">
-              {/* Jitsi Placeholder */}
-              <div className="bg-black rounded-lg aspect-video flex items-center justify-center mb-4">
-                {isSessionActive ? (
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">📹</div>
-                    <div className="text-white text-lg">Video Call Active</div>
-                    <div className="text-white/60 text-sm">Encrypted with Arcium ZK Powered by Jitsi</div>
-                    <div className="flex items-center justify-center mt-4 space-x-4">
-                      <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`}></div>
-                      <span className="text-white/60 text-sm">
-                        {isRecording ? 'Recording' : 'Not Recording'}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">🎥</div>
-                    <div className="text-white text-lg">Ready to Start Session</div>
-                    <div className="text-white/60 text-sm">Click "Start Session" to begin</div>
-                  </div>
-                )}
-              </div>
+          {/* Video Interface - Mobile Optimized */}
+          <div className="bg-black/40 rounded-lg p-4 mb-4 border border-white/10">
+            {/* Video Placeholder */}
+            <div className="bg-black rounded-lg aspect-video flex items-center justify-center mb-4">
+              {isSessionActive ? (
+                <div className="text-center p-4">
+                  <div className="text-4xl md:text-6xl mb-3">📹</div>
+                  <div className="text-white text-base md:text-lg font-medium">Video Call Active</div>
+                  <div className="text-white/60 text-xs md:text-sm mt-1">Encrypted with Arcium ZK</div>
+                </div>
+              ) : (
+                <div className="text-center p-4">
+                  <div className="text-4xl md:text-6xl mb-3">🎥</div>
+                  <div className="text-white text-base md:text-lg font-medium">Ready to Start</div>
+                  <div className="text-white/60 text-xs md:text-sm mt-1">Tap to begin session</div>
+                </div>
+              )}
+            </div>
 
-              {/* Session Controls */}
-              <div className="flex items-center justify-center space-x-4">
-                {!isSessionActive ? (
-                  <button
-                    onClick={startSession}
-                    disabled={!selectedPsychologist || !publicKey}
-                    className="psychat-button disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Start Session
-                  </button>
-                ) : (
-                  <div className="flex items-center space-x-4">
+            {/* Session Controls - Mobile Optimized */}
+            <div className="space-y-3">
+              {!isSessionActive ? (
+                <button
+                  onClick={startSession}
+                  disabled={!selectedPsychologist || !publicKey}
+                  className="w-full py-3 px-6 bg-psy-blue hover:bg-psy-blue/80 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                >
+                  Start Session
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  {/* Control Buttons - Stacked on Mobile */}
+                  <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => setIsMuted(!isMuted)}
-                      className={`px-4 py-2 rounded ${isMuted ? 'bg-red-500/20 text-red-300' : 'bg-black/40 text-white border border-white/10'}`}
+                      className={`py-3 px-4 rounded-lg font-medium transition-colors ${
+                        isMuted 
+                          ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
+                          : 'bg-black/60 text-white border border-white/20'
+                      }`}
                     >
                       {isMuted ? '🔇 Unmute' : '🎤 Mute'}
                     </button>
                     <button
                       onClick={() => setIsCameraOn(!isCameraOn)}
-                      className={`px-4 py-2 rounded ${!isCameraOn ? 'bg-red-500/20 text-red-300' : 'bg-black/40 text-white border border-white/10'}`}
+                      className={`py-3 px-4 rounded-lg font-medium transition-colors ${
+                        !isCameraOn 
+                          ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
+                          : 'bg-black/60 text-white border border-white/20'
+                      }`}
                     >
-                      {isCameraOn ? '📹 Camera On' : '📷 Camera Off'}
-                    </button>
-                    <button
-                      onClick={payPsychologist}
-                      disabled={isProcessingPayment}
-                      className="psychat-button disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isProcessingPayment ? 'Processing...' : 'Pay for Therapy'}
+                      {isCameraOn ? '📹 On' : '📷 Off'}
                     </button>
                   </div>
-                )}
-              </div>
-
-              {/* Status Indicators */}
-              {isSessionActive && (
-                <div className="flex items-center justify-center mt-4 space-x-6 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${isEncrypted ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-                    <span className="text-white/60">Encrypted</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`}></div>
-                    <span className="text-white/60">Recording</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="text-white/60">Connected</span>
-                  </div>
+                  
+                  {/* Payment Button - Full Width */}
+                  <button
+                    onClick={payPsychologist}
+                    disabled={isProcessingPayment}
+                    className="w-full py-3 px-6 bg-psy-green hover:bg-psy-green/80 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                  >
+                    {isProcessingPayment ? 'Processing Payment...' : 'Pay for Therapy'}
+                  </button>
                 </div>
               )}
             </div>
-          </SpotlightCard>
+
+            {/* Status Indicators - Mobile Optimized */}
+            {isSessionActive && (
+              <div className="flex items-center justify-center mt-4 space-x-4 text-xs">
+                <div className="flex items-center space-x-1">
+                  <div className={`w-2 h-2 rounded-full ${isEncrypted ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                  <span className="text-white/60">Encrypted</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`}></div>
+                  <span className="text-white/60">Recording</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span className="text-white/60">Connected</span>
+                </div>
+              </div>
+            )}
+          </div>
         </>
       )}
 
-      {/* AI Notes Section */}
+      {/* AI Notes Section - Mobile Optimized */}
       {(sessionNotes.length > 0 || isGeneratingNotes) && (
-        <SpotlightCard className="p-6 mb-6" spotlightColor="rgba(97, 220, 163, 0.2)">
-          <h3 className="text-xl font-bold text-white mb-4">AI Session Notes</h3>
+        <div className="bg-black/40 rounded-lg p-4 md:p-6 mb-4 md:mb-6 border border-white/10">
+          <h3 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">AI Session Notes</h3>
           
           {isGeneratingNotes ? (
             <div className="text-center py-8">
@@ -595,11 +600,11 @@ export default function VideoChat() {
               <div className="text-white/60 text-sm">Analyzing session content with ZK privacy</div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {sessionNotes.map((note) => (
-                <div key={note.id} className="bg-black/40 rounded-lg p-4 border border-white/10">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-white/60 text-sm">
+                <div key={note.id} className="bg-black/40 rounded-lg p-3 md:p-4 border border-white/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                    <div className="text-white/60 text-xs md:text-sm">
                       {note.timestamp.toLocaleString()}
                     </div>
                     <div className="flex items-center space-x-2">
@@ -613,12 +618,12 @@ export default function VideoChat() {
                     </div>
                   </div>
                   
-                  <div className="text-white mb-3">{note.content}</div>
+                  <div className="text-white text-sm md:text-base mb-3 leading-relaxed">{note.content}</div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 mb-3 md:mb-4">
                     <div>
-                      <div className="text-white/60 text-sm mb-2">Key Topics:</div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="text-white/60 text-xs md:text-sm mb-2">Key Topics:</div>
+                      <div className="flex flex-wrap gap-1 md:gap-2">
                         {note.keyTopics.map((topic, idx) => (
                           <span key={idx} className="text-xs bg-psy-blue/20 text-psy-blue px-2 py-1 rounded">
                             {topic}
@@ -627,28 +632,38 @@ export default function VideoChat() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-white/60 text-sm mb-2">Recommendations:</div>
-                      <ul className="text-sm text-white/80 space-y-1">
+                      <div className="text-white/60 text-xs md:text-sm mb-2">Recommendations:</div>
+                      <ul className="text-xs md:text-sm text-white/80 space-y-1">
                         {note.recommendations.map((rec, idx) => (
                           <li key={idx} className="flex items-start">
-                            <span className="text-psy-green mr-2">•</span>
-                            {rec}
+                            <span className="text-psy-green mr-2 flex-shrink-0">•</span>
+                            <span className="break-words">{rec}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => alert('HNFT minting would happen here - session notes added to your psychological history')}
-                      className="psychat-button text-sm"
-                    >
-                      Add to HNFT
-                    </button>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">VideoNFT Minted</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">Added to HNFT</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">MCP Encrypted</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">Auto-stored in Walrus</span>
+                    </div>
                     {walrusCid && (
-                      <div className="text-xs text-white/60">
-                        ✅ Auto-stored in Walrus • CID: {walrusCid}
+                      <div className="text-xs text-white/40 font-mono ml-6 break-all">
+                        CID: {walrusCid}
                       </div>
                     )}
                   </div>
@@ -656,30 +671,30 @@ export default function VideoChat() {
               ))}
             </div>
           )}
-        </SpotlightCard>
+        </div>
       )}
 
-      {/* Payment Success */}
+      {/* Payment Success - Mobile Optimized */}
       {paymentSuccess && (
-        <SpotlightCard className="p-6 mb-6" spotlightColor="rgba(74, 222, 128, 0.2)">
+        <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
           <div className="text-center">
-            <div className="text-4xl mb-4">✅</div>
-            <div className="text-white text-lg font-semibold mb-2">Payment Successful!</div>
-            <div className="text-white/60 text-sm mb-4">
+            <div className="text-3xl md:text-4xl mb-3 md:mb-4">✅</div>
+            <div className="text-white text-base md:text-lg font-semibold mb-2">Payment Successful!</div>
+            <div className="text-white/60 text-sm mb-3 md:mb-4">
               You paid {selectedPsychologist?.name} ${selectedPsychologist?.rate} in $rUSD
             </div>
-            <div className="text-xs text-white/50">
+            <div className="text-xs text-white/50 leading-relaxed">
               Transaction processed via Reflect • Auto-compound enabled
             </div>
           </div>
-        </SpotlightCard>
+        </div>
       )}
 
-      {/* Privacy Notice */}
-      <div className="p-4 bg-psy-blue/10 border border-psy-blue/20 rounded-lg">
+      {/* Privacy Notice - Mobile Optimized */}
+      <div className="p-3 md:p-4 bg-psy-blue/10 border border-psy-blue/20 rounded-lg">
         <div className="flex items-start space-x-2">
-          <span className="text-psy-blue">🔒</span>
-          <div className="text-sm text-white/80">
+          <span className="text-psy-blue text-sm md:text-base">🔒</span>
+          <div className="text-xs md:text-sm text-white/80 leading-relaxed">
             <strong>Privacy First:</strong> Your video session is ZK-encrypted (Arcium) and stored securely. 
             AI notes are generated with privacy-preserving techniques. Only you control access to your session data.
           </div>

@@ -5,7 +5,7 @@ import Chat from '../components/Chat';
 import Dashboard from '../components/Dashboard';
 import Marketplace from '../components/Marketplace';
 import VideoChat from '../components/VideoChat';
-import Profile from './profile';
+import Profile from '../components/Profile';
 import ClientWalletButton from '../components/ClientWalletButton';
 // import LetterGlitch from '../components/backgrounds/LetterGlitch';
 import Dock from '../components/Dock';
@@ -56,6 +56,19 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [showLoader]);
+
+  // Listen for navigation events from other components
+  useEffect(() => {
+    const handleNavigateToProfile = () => {
+      setActiveTab('profile');
+    };
+
+    window.addEventListener('navigateToProfile', handleNavigateToProfile);
+    
+    return () => {
+      window.removeEventListener('navigateToProfile', handleNavigateToProfile);
+    };
+  }, []);
 
   const handleLoaderComplete = () => {
     setShowLoader(false);

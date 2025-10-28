@@ -96,7 +96,7 @@ This is **genius** because:
 ### For Therapists
 - Get paid instantly in $rUSD
 - Access to anonymized insights
-- Network effects from data marketplace
+- Network effects from place
 
 ### For Data Buyers
 - Access to valuable psychological insights
