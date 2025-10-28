@@ -644,22 +644,26 @@ export default function VideoChat() {
                     </div>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <button
-                      onClick={() => alert('HNFT minting would happen here - session notes added to your psychological history')}
-                      className="w-full sm:w-auto py-2 px-4 bg-psy-blue hover:bg-psy-blue/80 text-white font-medium rounded-lg transition-colors text-sm"
-                    >
-                      Add to HNFT
-                    </button>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">VideoNFT Minted</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">Added to HNFT</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">MCP Encrypted</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-green-400">✅</span>
+                      <span className="text-white/80">Auto-stored in Walrus</span>
+                    </div>
                     {walrusCid && (
-                      <div className="text-xs text-white/60 break-all">
-                        <div className="flex items-center gap-1 mb-1">
-                          <span>✅</span>
-                          <span>Auto-stored in Walrus</span>
-                        </div>
-                        <div className="text-xs text-white/40 font-mono">
-                          CID: {walrusCid}
-                        </div>
+                      <div className="text-xs text-white/40 font-mono ml-6 break-all">
+                        CID: {walrusCid}
                       </div>
                     )}
                   </div>

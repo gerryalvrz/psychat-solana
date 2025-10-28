@@ -166,7 +166,7 @@ export default function ChatTerminal({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[90vh]">
+    <div className="flex flex-col h-full max-h-[90vh] md:max-h-[90vh]">
       
       {/* Header - Separate component on top */}
       <ChatHeader 
@@ -174,7 +174,7 @@ export default function ChatTerminal({
         isHNFTVisible={isHNFTVisible}
       />
       
-      {/* Terminal Container */}
+      {/* Terminal Container - Mobile Optimized */}
       <div className="chat-terminal flex-1 flex flex-col crystal-glass crystal-panel crystal-layer-2 relative">
         {/* Grid Distortion Background */}
         <GridDistortion 
@@ -204,36 +204,36 @@ export default function ChatTerminal({
         {/* Crystal scan line effect */}
         <div className="absolute inset-0 crystal-grid animate-[holographic-scan_6s_linear_infinite]" />
       
-      {/* Content Area */}
-      <div className="flex-1 flex flex-col p-4 crystal-glass-hover relative z-10 min-h-0">
+      {/* Content Area - Mobile Optimized */}
+      <div className="flex-1 flex flex-col p-3 md:p-4 crystal-glass-hover relative z-10 min-h-0">
 
-        {/* Messages - Scrollable Container */}
+        {/* Messages - Scrollable Container - Mobile Optimized */}
         <div 
           ref={messagesContainerRef}
-          className="messages-container flex-1 overflow-y-auto mb-4 custom-scrollbar max-h-[50vh] min-h-[200px] relative"
+          className="messages-container flex-1 overflow-y-auto mb-3 md:mb-4 custom-scrollbar max-h-[40vh] md:max-h-[50vh] min-h-[150px] md:min-h-[200px] relative"
         >
           {/* Scroll fade indicators */}
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black/20 to-transparent pointer-events-none z-10" />
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-10" />
           
-          {/* Scroll to top button */}
+          {/* Scroll to top button - Mobile Optimized */}
           {showScrollToTop && (
             <button
               onClick={scrollToTop}
-              className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-black/60 border border-cyan-400/30 hover:border-cyan-400/50 hover:bg-cyan-400/10 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] crystal-glass-hover"
+              className="absolute top-2 md:top-4 right-2 md:right-4 z-20 p-2 md:p-2 rounded-lg bg-black/60 border border-cyan-400/30 hover:border-cyan-400/50 hover:bg-cyan-400/10 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] crystal-glass-hover"
               title="Scroll to top"
             >
-              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
             </button>
           )}
           
           
-          {/* Scroll down indicator */}
+          {/* Scroll down indicator - Mobile Optimized */}
           {showScrollDown && (
-            <div className="absolute bottom-4 right-4 z-20 p-2 rounded-lg bg-black/60 border border-cyan-400/30 animate-bounce">
-              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-20 p-2 rounded-lg bg-black/60 border border-cyan-400/30 animate-bounce">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </div>
@@ -241,20 +241,20 @@ export default function ChatTerminal({
           
           <div className="p-2">
             {!hasHNFT ? (
-              <div className="text-center py-12 text-white/80">
-                <div className="text-6xl mb-4">🔐</div>
-                <h2 className="text-display text-h2 text-white mb-4">Mint Your Identity First</h2>
-                <p className="text-body text-body-lg mb-2 text-white/90">To start chatting, you need to mint your PsyChat identity HNFT.</p>
-                <p className="text-body text-body-sm text-white/60">
+              <div className="text-center py-8 md:py-12 text-white/80">
+                <div className="text-4xl md:text-6xl mb-3 md:mb-4">🔐</div>
+                <h2 className="text-lg md:text-h2 text-white mb-3 md:mb-4">Mint Your Identity First</h2>
+                <p className="text-sm md:text-body-lg mb-2 text-white/90">To start chatting, you need to mint your PsyChat identity HNFT.</p>
+                <p className="text-xs md:text-body-sm text-white/60">
                   This creates your decentralized identity for secure, private conversations.
                 </p>
               </div>
             ) : messages.length === 0 ? (
-              <div className="text-center py-8 text-white/80">
-                <div className="text-4xl mb-2">💭</div>
-                <p className="text-body text-body-lg text-white">Start a conversation with Psychat...</p>
-                <p className="text-body text-body-sm mt-2 text-white/60">
-                  Each conversation will be encrypted and minted as a ChatNFT
+              <div className="text-center py-6 md:py-8 text-white/80">
+                <div className="text-3xl md:text-4xl mb-2">💭</div>
+                <p className="text-sm md:text-body-lg text-white">Start a conversation with Psychat...</p>
+                <p className="text-xs md:text-body-sm mt-2 text-white/60">
+                  Each conversation will be encrypted, minted as a ChatNFT and added to you HNFT.
                 </p>
               </div>
             ) : (
@@ -276,23 +276,23 @@ export default function ChatTerminal({
           </div>
         </div>
 
-        {/* Arcium Status Display */}
+        {/* Arcium Status Display - Mobile Optimized */}
         {hasHNFT && (
-          <div className="mb-4 p-3 rounded-lg bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-400/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
+          <div className="mb-3 md:mb-4 p-2 md:p-3 rounded-lg bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-400/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center space-x-2 md:space-x-3">
                 <div className={`w-2 h-2 rounded-full ${arciumStatus.isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
-                <span className="text-body text-body-sm text-white/80">
+                <span className="text-xs md:text-body-sm text-white/80">
                   Arcium MPC: {arciumStatus.isConnected ? 'Connected' : 'Disconnected'}
                 </span>
                 {arciumStatus.nodeCount > 0 && (
-                  <span className="text-caption text-white/60">
+                  <span className="text-xs text-white/60">
                     ({arciumStatus.nodeCount} nodes)
                   </span>
                 )}
               </div>
               <div className="flex items-center space-x-2">
-                <div className="text-caption px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-400/30">
+                <div className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-400/30">
                   🔒 Encrypted
                 </div>
               </div>
@@ -300,9 +300,9 @@ export default function ChatTerminal({
           </div>
         )}
 
-        {/* Enhanced Input */}
+        {/* Enhanced Input - Mobile Optimized */}
         {hasHNFT && (
-          <div className="mb-4">
+          <div className="mb-3 md:mb-4">
             <MessageInput
               value={inputText}
               onChange={setInputText}
@@ -313,36 +313,37 @@ export default function ChatTerminal({
           </div>
         )}
 
-        {/* End Session Button */}
+        {/* End Session Button - Mobile Optimized */}
         {hasHNFT && (
-          <div className="mb-4 flex justify-end">
+          <div className="mb-3 md:mb-4 flex justify-end">
             <button
               onClick={onEndSession}
               disabled={isEncrypting || isMinting || messages.length === 0}
-              className="text-body text-body-sm text-white hover:text-white transition-all duration-300 px-4 py-2 rounded-lg border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+              className="text-xs md:text-body-sm text-white hover:text-white transition-all duration-300 px-3 md:px-4 py-2 rounded-lg border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
             >
               End Session and Mint ChatNFT
             </button>
           </div>
         )}
 
-        {/* Talk to Human Therapist Button */}
+        {/* Talk to Human Therapist Button - Mobile Optimized */}
         {hasHNFT && onNavigateToVideo && (
-          <div className="mb-4 flex justify-center">
+          <div className="mb-3 md:mb-4 flex justify-center">
             <button
               onClick={onNavigateToVideo}
-              className="text-body text-body-sm text-white hover:text-white transition-all duration-300 px-6 py-3 rounded-lg border border-cyan-400/50 hover:border-cyan-400/70 bg-cyan-500/10 hover:bg-cyan-500/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] flex items-center space-x-2"
+              className="text-xs md:text-body-sm text-white hover:text-white transition-all duration-300 px-4 md:px-6 py-2 md:py-3 rounded-lg border border-cyan-400/50 hover:border-cyan-400/70 bg-cyan-500/10 hover:bg-cyan-500/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] flex items-center space-x-2"
             >
               <span>👨‍⚕️</span>
-              <span>Talk to a Human Therapist</span>
+              <span className="hidden sm:inline">Talk to a Human Therapist</span>
+              <span className="sm:hidden">Human Therapist</span>
             </button>
           </div>
         )}
 
-        {/* Encryption Status Indicator */}
+        {/* Encryption Status Indicator - Mobile Optimized */}
         {hasHNFT && encryptionStatus !== 'idle' && (
-          <div className="mb-4 flex justify-center">
-            <div className={`px-4 py-2 rounded-lg border text-body text-body-sm transition-all duration-300 ${
+          <div className="mb-3 md:mb-4 flex justify-center">
+            <div className={`px-3 md:px-4 py-2 rounded-lg border text-xs md:text-body-sm transition-all duration-300 ${
               encryptionStatus === 'encrypting' 
                 ? 'text-yellow-400 border-yellow-400/50 bg-yellow-400/10 animate-pulse' 
                 : encryptionStatus === 'encrypted'
@@ -350,18 +351,24 @@ export default function ChatTerminal({
                 : 'text-red-400 border-red-400/50 bg-red-400/10'
             }`}>
               {encryptionStatus === 'encrypting' && (
-                <span className="flex items-center gap-2">
-                  🔐 Encrypting conversation with Arcium MPC...
+                <span className="flex items-center gap-1 md:gap-2">
+                  <span>🔐</span>
+                  <span className="hidden sm:inline">Encrypting conversation with Arcium MPC...</span>
+                  <span className="sm:hidden">Encrypting...</span>
                 </span>
               )}
               {encryptionStatus === 'encrypted' && (
-                <span className="flex items-center gap-2">
-                  ✅ Conversation encrypted and stored in ChatNFT
+                <span className="flex items-center gap-1 md:gap-2">
+                  <span>✅</span>
+                  <span className="hidden sm:inline">Conversation encrypted and stored in ChatNFT</span>
+                  <span className="sm:hidden">Encrypted & Stored</span>
                 </span>
               )}
               {encryptionStatus === 'error' && (
-                <span className="flex items-center gap-2">
-                  ⚠️ Encryption failed, but ChatNFT will still be created
+                <span className="flex items-center gap-1 md:gap-2">
+                  <span>⚠️</span>
+                  <span className="hidden sm:inline">Encryption failed, but ChatNFT will still be created</span>
+                  <span className="sm:hidden">Encryption failed</span>
                 </span>
               )}
             </div>
