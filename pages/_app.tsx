@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app';
 import { useMemo, useEffect, useState } from 'react';
 import '../styles/globals.css';
 import { GridDistortionProvider } from '../contexts/GridDistortionContext';
+import AssistantWidget from '../components/AssistantWidget';
 
 // Import wallet adapter CSS
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -53,6 +54,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <WalletModalProvider>
           <GridDistortionProvider>
             <Component {...pageProps} />
+            <AssistantWidget />
           </GridDistortionProvider>
         </WalletModalProvider>
       </WalletProvider>
