@@ -1,8 +1,22 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { ArciumIntegration, WalrusIntegration, ReflectIntegration } from '../utils/sponsorIntegrations';
 import SpotlightCard from './SpotlightCard';
+
+// Dynamic import Jitsi to avoid SSR issues
+const JitsiMeet = dynamic(() => import('./video/JitsiMeet'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full bg-black/40 rounded-lg">
+      <div className="text-center">
+        <div className="w-10 h-10 border-2 border-psy-blue border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <div className="text-white/60 text-sm">Loading video...</div>
+      </div>
+    </div>
+  ),
+});
 
 interface SessionNote {
   id: string;
@@ -502,21 +516,24 @@ export default function VideoChat() {
 
           {/* Video Interface - Mobile Optimized */}
           <div className="bg-black/40 rounded-lg p-4 mb-4 border border-white/10">
-            {/* Video Placeholder */}
-            <div className="bg-black rounded-lg aspect-video flex items-center justify-center mb-4">
-              {isSessionActive ? (
-                <div className="text-center p-4">
-                  <div className="text-4xl md:text-6xl mb-3">📹</div>
-                  <div className="text-white text-base md:text-lg font-medium">Video Call Active</div>
-                  <div className="text-white/60 text-xs md:text-sm mt-1">Encrypted with Arcium ZK</div>
-                </div>
-              ) : (
-                <div className="text-center p-4">
-                  <div className="text-4xl md:text-6xl mb-3">🎥</div>
-                  <div className="text-white text-base md:text-lg font-medium">Ready to Start</div>
-                  <div className="text-white/60 text-xs md:text-sm mt-1">Tap to begin session</div>
-                </div>
-              )}
+            {/* Jitsi Video */}
+            <div className="bg-black rounded-lg aspect-video flex items-center justify-center mb-4 overflow-hidden">
+              <JitsiMeet
+                roomName={`therapy-${selectedPsychologist?.id || 'session'}`}
+                userName={publicKey?.toBase58().slice(0, 8) || 'Patient'}
+                userEmail=""
+                isModerator={false}
+                onJoinCall={() => {
+                  if (!isSessionActive) {
+                    startSession();
+                  }
+                }}
+                onLeaveCall={() => {
+                  endSession();
+                }}
+                height="100%"
+                width="100%"
+              />
             </div>
 
             {/* Session Controls - Mobile Optimized */}
