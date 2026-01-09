@@ -15,8 +15,11 @@ export default function HNFTStatusCompact({
   onHide
 }: HNFTStatusCompactProps) {
   const buildSolscanTxUrl = (sig: string) => {
-    const isDev = process.env.NEXT_PUBLIC_SOLANA_RPC?.includes('devnet');
-    return `https://solscan.io/tx/${sig}${isDev ? '?cluster=devnet' : ''}`;
+    // Default to devnet unless explicitly set to mainnet
+    const envNetwork = process.env.NEXT_PUBLIC_SOLANA_NETWORK;
+    const rpcEndpoint = process.env.NEXT_PUBLIC_SOLANA_RPC || '';
+    const isDevnet = envNetwork !== 'mainnet' && (envNetwork === 'devnet' || envNetwork === 'testnet' || rpcEndpoint.includes('devnet') || rpcEndpoint.includes('testnet') || !envNetwork);
+    return `https://explorer.solana.com/tx/${sig}${isDevnet ? '?cluster=devnet' : ''}`;
   };
 
   const abbreviatePDA = (pda: string) => {

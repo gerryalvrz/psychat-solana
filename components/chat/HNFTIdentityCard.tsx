@@ -28,8 +28,11 @@ export default function HNFTIdentityCard({
   publicKey
 }: HNFTIdentityCardProps) {
   const buildSolscanTxUrl = (sig: string) => {
-    const isDev = process.env.NEXT_PUBLIC_SOLANA_RPC?.includes('devnet');
-    return `https://solscan.io/tx/${sig}${isDev ? '?cluster=devnet' : ''}`;
+    // Default to devnet unless explicitly set to mainnet
+    const envNetwork = process.env.NEXT_PUBLIC_SOLANA_NETWORK;
+    const rpcEndpoint = process.env.NEXT_PUBLIC_SOLANA_RPC || '';
+    const isDevnet = envNetwork !== 'mainnet' && (envNetwork === 'devnet' || envNetwork === 'testnet' || rpcEndpoint.includes('devnet') || rpcEndpoint.includes('testnet') || !envNetwork);
+    return `https://explorer.solana.com/tx/${sig}${isDevnet ? '?cluster=devnet' : ''}`;
   };
 
   return (
@@ -103,7 +106,7 @@ export default function HNFTIdentityCard({
                       rel="noopener noreferrer"
                       className="text-cyan-400 hover:text-cyan-300 underline text-sm cursor-pointer relative z-10 pointer-events-auto hover:bg-cyan-400/10 px-2 py-1 rounded transition-all duration-200"
                     >
-                      View on Solscan →
+                      View on Explorer →
                     </a>
                   </div>
                 )}

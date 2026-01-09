@@ -85,9 +85,31 @@ export default function Chat({ onNavigateToVideo }: ChatProps) {
   };
 
   const buildSolscanTxUrl = (sig: string) => {
-    const ep = (connection as any)?.rpcEndpoint as string | undefined;
-    const isDev = ep ? ep.includes('devnet') : (process.env.NEXT_PUBLIC_SOLANA_RPC || '').includes('devnet');
-    return `https://solscan.io/tx/${sig}${isDev ? '?cluster=devnet' : ''}`;
+    // Check multiple sources to determine if we're on devnet
+    const envNetwork = process.env.NEXT_PUBLIC_SOLANA_NETWORK;
+    const rpcEndpoint = process.env.NEXT_PUBLIC_SOLANA_RPC || '';
+    const connectionEndpoint = (connection as any)?.rpcEndpoint || '';
+    
+    // Determine if we're on devnet (default to devnet unless explicitly mainnet)
+    let isDevnet = true; // Default to devnet for safety
+    
+    // Check if explicitly set to mainnet
+    if (envNetwork === 'mainnet') {
+      isDevnet = false;
+    } else if (envNetwork === 'devnet' || envNetwork === 'testnet') {
+      isDevnet = true;
+    } else {
+      // Check RPC endpoints for network indicators
+      const endpointStr = `${rpcEndpoint}${connectionEndpoint}`.toLowerCase();
+      if (endpointStr.includes('mainnet') && !endpointStr.includes('devnet') && !endpointStr.includes('testnet')) {
+        isDevnet = false;
+      } else {
+        // Default to devnet if unclear
+        isDevnet = true;
+      }
+    }
+    
+    return `https://explorer.solana.com/tx/${sig}${isDevnet ? '?cluster=devnet' : ''}`;
   };
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -316,6 +338,27 @@ export default function Chat({ onNavigateToVideo }: ChatProps) {
             commitment: 'confirmed'
           });
 
+        console.log('Transaction signature received:', sig);
+        
+        // Verify the transaction actually succeeded
+        console.log('Verifying transaction status...');
+        const status = await connection.getSignatureStatus(sig);
+        
+        if (!status || !status.value) {
+          throw new Error(`Transaction verification failed: Unable to get status for signature ${sig}`);
+        }
+        
+        if (status.value.err) {
+          throw new Error(`Transaction failed: ${JSON.stringify(status.value.err)}. Signature: ${sig}`);
+        }
+        
+        // Verify the HNFT account was actually created
+        console.log('Verifying HNFT account creation...');
+        const hnftAccount = await connection.getAccountInfo(hnftPda);
+        if (!hnftAccount) {
+          throw new Error(`Transaction succeeded but HNFT account not found at ${hnftPda.toBase58()}. This may indicate a program error.`);
+        }
+        
         console.log('HNFT (identity container) minted successfully:', sig, 'PDA:', hnftPda.toBase58());
         
         // Store in localStorage

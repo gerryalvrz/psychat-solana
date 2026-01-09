@@ -506,7 +506,7 @@ export default function Marketplace() {
           </div>
         </div>
         <div className="text-caption text-white/60">
-          Verify transactions on <a className="underline" href={`https://solscan.io/?cluster=devnet`} target="_blank" rel="noreferrer">Solscan (devnet)</a>
+          Verify transactions on <a className="underline" href={`https://explorer.solana.com/?cluster=devnet`} target="_blank" rel="noreferrer">Solana Explorer (devnet)</a>
         </div>
 
         <div className="text-body text-body-sm text-white/60 mb-4">
