@@ -7,6 +7,7 @@ import Marketplace from '../components/Marketplace';
 import VideoChat from '../components/VideoChat';
 import Profile from '../components/Profile';
 import ClientWalletButton from '../components/ClientWalletButton';
+import WaitlistModal from '../components/WaitlistModal';
 // import LetterGlitch from '../components/backgrounds/LetterGlitch';
 import Dock from '../components/Dock';
 import DecryptedText from '../components/DecryptedText';
@@ -43,6 +44,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const [isDockVisible, setIsDockVisible] = useState(true);
+  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -382,6 +384,21 @@ export default function Home() {
                       The future of mental health is here. Own your therapy data, earn from anonymized insights, and build sustainable wealth through the dataconomy. Your privacy is protected, your data is valuable.
                     </p>
                     <div className="space-y-4">
+                      {/* Waitlist Button */}
+                      <div className="flex justify-center">
+                        <HoloButton
+                          onClick={() => setIsWaitlistModalOpen(true)}
+                          variant="secondary"
+                          size="lg"
+                          className="px-6 py-3 text-sm font-terminal border border-electric-cyan/30 hover:border-electric-cyan/50"
+                        >
+                          <span className="font-terminal">
+                            Join Beta Waitlist
+                          </span>
+                        </HoloButton>
+                      </div>
+
+                      {/* Wallet Connect Button */}
                       <div className="flex justify-center">
                         <ClientWalletButton />
                       </div>
@@ -502,7 +519,7 @@ export default function Home() {
             {/* Content */}
             <div className="relative z-10 p-6 text-center text-white/80 text-sm">
               <p>
-                •Built for Cypherpunk Colosseum • MotusDAO • 
+                •Built for the Digital Renaissance • MotusDAO • 
                 <span className="text-green-400"> Phantom</span> • 
                 <span className="text-blue-400"> Arcium</span> • 
                 <span className="text-purple-400"> Raydium</span> • 
@@ -516,6 +533,12 @@ export default function Home() {
         </div>
       </footer>
       </div>
+
+      {/* Waitlist Modal */}
+      <WaitlistModal
+        isOpen={isWaitlistModalOpen}
+        onClose={() => setIsWaitlistModalOpen(false)}
+      />
     </div>
     </>
   );

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { HoloText, HoloButton } from './ui/holo';
 import { ComplexMolecule, WaterMolecule } from './ui';
 import DecryptedText from './DecryptedText';
+import WaitlistModal from './WaitlistModal';
 
 type HeroTerminalProps = {
   onConnect: () => Promise<void> | void;
@@ -23,6 +24,7 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
   const [showBullet3, setShowBullet3] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
+  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
   const loopCleanupRef = useRef<(() => void) | null>(null);
   const initialCleanupRef = useRef<(() => void) | null>(null);
@@ -381,28 +383,61 @@ export default function HeroTerminal({ onConnect, onNavigate }: HeroTerminalProp
             </div>
           </div>
 
-          {/* Action Button - Outside terminal, same card */}
+          {/* Action Buttons - Outside terminal, same card */}
           {animationComplete && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="p-4 bg-black/20 border-t border-cyan-500/20 flex justify-center items-center"
+              className="p-4 bg-black/20 border-t border-cyan-500/20"
             >
-              <HoloButton
-                onClick={handleStartChat}
-                variant="primary"
-                size="lg"
-                className="w-full sm:w-auto tracking-wider px-6 py-3 text-sm sm:text-base font-display"
-              >
-                <span className="font-display">
-                  Enter the Chat
-                </span>
-              </HoloButton>
+              <div className="flex flex-col gap-3 justify-center items-center max-w-md mx-auto">
+                {/* Waitlist Button - Above */}
+                <motion.div
+                  className="w-full"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <HoloButton
+                    onClick={() => setIsWaitlistModalOpen(true)}
+                    variant="secondary"
+                    size="lg"
+                    className="w-full tracking-wider px-6 py-3 text-sm sm:text-base font-terminal border border-electric-cyan/30 hover:border-electric-cyan/50"
+                  >
+                    <span className="font-terminal">
+                      Join Beta Waitlist
+                    </span>
+                  </HoloButton>
+                </motion.div>
+
+                {/* Enter Chat Button - Below */}
+                <motion.div
+                  className="w-full"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <HoloButton
+                    onClick={handleStartChat}
+                    variant="primary"
+                    size="lg"
+                    className="w-full tracking-wider px-6 py-3 text-sm sm:text-base font-display"
+                  >
+                    <span className="font-display">
+                      Enter the Chat
+                    </span>
+                  </HoloButton>
+                </motion.div>
+              </div>
             </motion.div>
           )}
         </div>
       </div>
+
+      {/* Waitlist Modal */}
+      <WaitlistModal
+        isOpen={isWaitlistModalOpen}
+        onClose={() => setIsWaitlistModalOpen(false)}
+      />
     </div>
   );
 }

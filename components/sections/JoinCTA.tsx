@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import ClientWalletButton from '../ClientWalletButton';
+import WaitlistModal from '../WaitlistModal';
 import { useScrollReveal } from '../../lib/hooks/useScrollReveal';
 import { HoloText, HoloPanel, HoloButton } from '../ui/holo';
 
 const JoinCTASection: React.FC = () => {
   const { ref, motionProps } = useScrollReveal({ direction: 'up', delay: 0.2 });
+  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
 
   return (
     <section className="py-24 max-w-7xl mx-auto px-6">
@@ -47,12 +49,13 @@ const JoinCTASection: React.FC = () => {
               </HoloText>
             </motion.div>
             
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-              className="flex justify-center mb-6"
+              className="flex flex-col sm:flex-row gap-4 justify-center mb-6"
             >
+              {/* Waitlist Button */}
               <motion.div
                 className="relative hover:scale-105 active:scale-95 transition-transform duration-200"
               >
@@ -63,6 +66,32 @@ const JoinCTASection: React.FC = () => {
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent rounded-lg blur-sm"
+                  style={{
+                    backgroundSize: '200% 100%'
+                  }}
+                />
+                <div className="relative z-10">
+                  <HoloButton
+                    onClick={() => setIsWaitlistModalOpen(true)}
+                    size="lg"
+                    className="px-8 py-4 font-terminal"
+                  >
+                    Join Beta Waitlist
+                  </HoloButton>
+                </div>
+              </motion.div>
+
+              {/* Wallet Connect Button */}
+              <motion.div
+                className="relative hover:scale-105 active:scale-95 transition-transform duration-200"
+              >
+                {/* Shimmer effect */}
+                <motion.div
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-fuchsia-400/20 to-transparent rounded-lg blur-sm"
                   style={{
                     backgroundSize: '200% 100%'
                   }}
@@ -106,6 +135,12 @@ const JoinCTASection: React.FC = () => {
             </motion.div>
           </HoloPanel>
         </div>
+
+        {/* Waitlist Modal */}
+        <WaitlistModal
+          isOpen={isWaitlistModalOpen}
+          onClose={() => setIsWaitlistModalOpen(false)}
+        />
       </motion.div>
     </section>
   );
