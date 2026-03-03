@@ -1,7 +1,7 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { PhantomWalletAdapter, SolflareWalletAdapter, CoinbaseWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import type { AppProps } from 'next/app';
 import { useMemo, useEffect, useState } from 'react';
@@ -15,18 +15,19 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false);
 
-  // Configure network with safe default to devnet on Vercel unless overridden
-  const envNetwork = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as 'devnet' | 'mainnet' | 'testnet' | undefined) || 'devnet';
+  // Default to mainnet-beta for live token trading; override via NEXT_PUBLIC_SOLANA_NETWORK
+  const envNetwork = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as 'devnet' | 'mainnet' | 'testnet' | undefined) || 'mainnet';
   const network = envNetwork === 'mainnet' ? WalletAdapterNetwork.Mainnet : envNetwork === 'testnet' ? WalletAdapterNetwork.Testnet : WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => {
     if (process.env.NEXT_PUBLIC_SOLANA_RPC) return process.env.NEXT_PUBLIC_SOLANA_RPC;
     return clusterApiUrl(network);
   }, [network]);
 
-  // Configure wallets (Phantom for sponsor integration)
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new CoinbaseWalletAdapter(),
     ],
     []
   );

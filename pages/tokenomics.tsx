@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -143,8 +144,50 @@ const VerticalArrow: React.FC<{ label?: string }> = ({ label }) => (
 export default function Tokenomics() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const wallet = useWallet();
+  const scriptLoaded = useRef(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Load Jupiter Plugin script once
+  useEffect(() => {
+    if (scriptLoaded.current) return;
+    scriptLoaded.current = true;
+
+    const existing = document.querySelector('script[src="https://plugin.jup.ag/plugin-v1.js"]');
+    if (existing) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://plugin.jup.ag/plugin-v1.js';
+    script.async = true;
+    script.onload = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const Jupiter = (window as any).Jupiter;
+      if (Jupiter) {
+        Jupiter.init({
+          displayMode: 'integrated',
+          integratedTargetId: 'jupiter-plugin',
+          enableWalletPassthrough: true,
+          passthroughWalletContextState: wallet,
+          formProps: {
+            initialInputMint: 'So11111111111111111111111111111111111111112',
+            initialOutputMint: 'rHX3T6NEUEEJCiYdsis4w8skE8kL2nkD9tHiS6mcyai',
+          },
+        });
+      }
+    };
+    document.body.appendChild(script);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync wallet state into Jupiter Plugin after connect/disconnect
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Jupiter = (window as any).Jupiter;
+    if (Jupiter?.syncProps) {
+      Jupiter.syncProps({ passthroughWalletContextState: wallet });
+    }
+  }, [wallet.connected, wallet.publicKey, wallet]);
   if (!mounted) return null;
 
   const demandLoops = [
@@ -211,7 +254,7 @@ export default function Tokenomics() {
     { field: 'Token Standard', value: 'SPL-2022' },
     { field: 'Launchpad', value: 'CyreneAI (cyreneai.com)' },
     { field: 'Launch Date', value: 'March 3, 2026 — 3:00 PM UTC' },
-    { field: 'Contract Address', value: '[Updated at launch]' },
+    { field: 'Contract Address', value: 'rHX3T6NEUEEJCiYdsis4w8skE8kL2nkD9tHiS6mcyai' },
     { field: 'Trading Fee', value: '1% → Project Wallet' },
     { field: 'Launch Type', value: 'Fair Launch — Bonding Curve' },
     { field: 'Liquidity', value: 'Locked from Day 1' },
@@ -264,14 +307,14 @@ export default function Tokenomics() {
               PsyChat
             </Link>
             <span className="text-xs text-white/25 tracking-widest" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-              $PSY · MARCH 3, 2026
+              $PSY · NOW LIVE
             </span>
             <a
-              href="https://cyreneai.com/preview-page/psychat"
+              href="https://jup.ag/tokens/rHX3T6NEUEEJCiYdsis4w8skE8kL2nkD9tHiS6mcyai"
               target="_blank" rel="noopener noreferrer"
               className="hidden sm:block"
             >
-              <HoloButton variant="primary" size="sm">Join Launch ↗</HoloButton>
+              <HoloButton variant="primary" size="sm">Trade $PSY ↗</HoloButton>
             </a>
           </div>
         </div>
@@ -304,7 +347,7 @@ export default function Tokenomics() {
               <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs mb-10 tracking-widest uppercase crystal-glass"
                 style={{ border: '1px solid rgba(0,229,255,0.25)', color: '#00E5FF', fontFamily: 'JetBrains Mono, monospace' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Fair Launch · CyreneAI · March 3, 2026
+                Now Live · $PSY · Solana
               </div>
             </motion.div>
 
@@ -339,15 +382,15 @@ export default function Tokenomics() {
             <motion.p variants={fadeUp} initial="hidden" animate="show" custom={3}
               className="text-white/35 text-sm sm:text-base mb-12 tracking-widest"
               style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-              Fair launch on CyreneAI &nbsp;·&nbsp; March 3, 2026 &nbsp;·&nbsp; 3:00 PM UTC
+              Now trading on Jupiter &nbsp;·&nbsp; Launched March 3, 2026
             </motion.p>
 
             {/* CTA buttons */}
             <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}
               className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="https://cyreneai.com/preview-page/psychat" target="_blank" rel="noopener noreferrer">
+              <a href="https://jup.ag/tokens/rHX3T6NEUEEJCiYdsis4w8skE8kL2nkD9tHiS6mcyai" target="_blank" rel="noopener noreferrer">
                 <HoloButton variant="primary" size="lg" className="w-full sm:w-auto">
-                  Join Launch on CyreneAI ↗
+                  Trade $PSY on Jupiter ↗
                 </HoloButton>
               </a>
               <a href="https://psychat.motusdao.org" target="_blank" rel="noopener noreferrer">
@@ -715,10 +758,8 @@ export default function Tokenomics() {
                     >
                       {row.field}
                     </div>
-                    <div className="flex-1 px-6 py-4 text-white/75 text-sm sm:border-l" style={{ borderColor: 'rgba(0,229,255,0.08)' }}>
-                      {row.value === '[Updated at launch]'
-                        ? <span className="text-white/25 italic">{row.value}</span>
-                        : row.value}
+                    <div className="flex-1 px-6 py-4 text-white/75 text-sm sm:border-l font-mono break-all" style={{ borderColor: 'rgba(0,229,255,0.08)' }}>
+                      {row.value}
                     </div>
                   </div>
                 ))}
@@ -730,7 +771,46 @@ export default function Tokenomics() {
         <HoloDivider />
 
         {/* ══════════════════════════════════════════════════════════════════
-            SECTION 7 · AUDIENCE TABS
+            SECTION 7 · TRADE $PSY — JUPITER TERMINAL EMBED
+        ══════════════════════════════════════════════════════════════════ */}
+        <Section id="trade">
+          <div className="max-w-5xl mx-auto">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+              <SectionHeading
+                title="Trade $PSY"
+                sub="Swap directly below — powered by Jupiter, the leading Solana DEX aggregator"
+                accent="cyan"
+              />
+            </motion.div>
+
+            <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+              {/* Jupiter Terminal integrated embed */}
+              <div
+                className="rounded-2xl overflow-hidden crystal-glass"
+                style={{ border: '1px solid rgba(0,229,255,0.2)', minHeight: '560px' }}
+              >
+                <div id="jupiter-plugin" style={{ height: '560px', width: '100%' }} />
+              </div>
+
+              {/* Fallback / external link */}
+              <p className="text-center text-white/30 text-xs mt-4" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+                Having trouble?&nbsp;
+                <a
+                  href="https://jup.ag/tokens/rHX3T6NEUEEJCiYdsis4w8skE8kL2nkD9tHiS6mcyai"
+                  target="_blank" rel="noopener noreferrer"
+                  className="text-cyan-400/60 hover:text-cyan-400 transition-colors underline"
+                >
+                  Open on Jupiter ↗
+                </a>
+              </p>
+            </motion.div>
+          </div>
+        </Section>
+
+        <HoloDivider />
+
+        {/* ══════════════════════════════════════════════════════════════════
+            SECTION 8 · AUDIENCE TABS
         ══════════════════════════════════════════════════════════════════ */}
         <Section id="audience">
           <div className="max-w-7xl mx-auto">
@@ -816,18 +896,18 @@ export default function Tokenomics() {
           <div className="relative z-10 max-w-3xl mx-auto">
             <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
               <div className="mb-3" style={{ fontFamily: 'Jura, Inter, sans-serif', fontSize: 'clamp(1.8rem, 4vw, 3rem)' }}>
-                <HoloText size="xl" weight="bold" as="div">Join the Launch</HoloText>
+                <HoloText size="xl" weight="bold" as="div">Trade $PSY Now</HoloText>
               </div>
               <p className="text-white/35 mb-10 text-sm tracking-widest" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-                MARCH 3, 2026 · 3:00 PM UTC · CYRENEAI
+                NOW LIVE · SOLANA · JUPITER DEX
               </p>
             </motion.div>
 
             <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={1}
               className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
-              <a href="https://cyreneai.com/preview-page/psychat" target="_blank" rel="noopener noreferrer">
+              <a href="https://jup.ag/tokens/rHX3T6NEUEEJCiYdsis4w8skE8kL2nkD9tHiS6mcyai" target="_blank" rel="noopener noreferrer">
                 <HoloButton variant="primary" size="lg" className="w-full sm:w-auto">
-                  Launch on CyreneAI — March 3, 3 PM UTC ↗
+                  Trade $PSY on Jupiter ↗
                 </HoloButton>
               </a>
               <a href="https://psychat.motusdao.org" target="_blank" rel="noopener noreferrer">
