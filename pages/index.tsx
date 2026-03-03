@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -519,7 +520,7 @@ export default function Home() {
             {/* Content */}
             <div className="relative z-10 p-6 text-center text-white/80 text-sm">
               <p>
-                •Built for the Digital Renaissance • MotusDAO • 
+                •Built for the Digital Renaissance • <Link href="/tokenomics" className="text-cyan-400 hover:text-cyan-300 transition-colors">MotusDAO Tokenomics</Link> •
                 <span className="text-green-400"> Phantom</span> • 
                 <span className="text-blue-400"> Arcium</span> • 
                 <span className="text-purple-400"> Raydium</span> • 

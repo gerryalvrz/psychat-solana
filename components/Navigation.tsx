@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { HoloText } from "./ui";
-import { FaHome, FaPlay, FaTerminal, FaUser } from "react-icons/fa";
+import { FaHome, FaPlay, FaTerminal, FaUser, FaCoins } from "react-icons/fa";
 
 export const Navigation: React.FC = () => {
   return (
@@ -33,6 +33,13 @@ export const Navigation: React.FC = () => {
             <div className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-fuchsia-500/10 transition-colors cursor-pointer">
               <FaUser className="text-fuchsia-400" />
               <HoloText size="sm" weight="normal">Profile</HoloText>
+            </div>
+          </Link>
+
+          <Link href="/tokenomics">
+            <div className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cyan-500/10 transition-colors cursor-pointer">
+              <FaCoins className="text-cyan-400" />
+              <HoloText size="sm" weight="normal">$PSY</HoloText>
             </div>
           </Link>
         </div>
