@@ -161,7 +161,6 @@ export default function Tokenomics() {
     script.src = 'https://plugin.jup.ag/plugin-v1.js';
     script.async = true;
     script.onload = () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const Jupiter = (window as any).Jupiter;
       if (Jupiter) {
         Jupiter.init({
@@ -182,7 +181,6 @@ export default function Tokenomics() {
 
   // Sync wallet state into Jupiter Plugin after connect/disconnect
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Jupiter = (window as any).Jupiter;
     if (Jupiter?.syncProps) {
       Jupiter.syncProps({ passthroughWalletContextState: wallet });
